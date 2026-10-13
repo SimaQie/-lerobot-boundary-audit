@@ -1,0 +1,12 @@
+include README.md LICENSE NOTICE.md
+include README.zh-CN.md
+include CITATION.cff CHANGELOG.md CONTRIBUTING.md
+include .github/workflows/tests.yml
+recursive-include examples *.py
+recursive-include examples *.zip *.json
+recursive-include tests *.py
+include research/validate_agibot2026.py
+include research/check_backup.py
+include research/CONFORMANCE.md
+include research/package_preview.py
+exclude research/backup_fingerprint_before.json

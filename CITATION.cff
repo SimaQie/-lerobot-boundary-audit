@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If this software helps your research, please cite this version."
+type: software
+title: "LeRobot Boundary Audit: Independent Frame Identity Conformance and Guarded Repair"
+authors:
+  - family-names: Sima
+    given-names: Qie
+version: 0.3.0
+date-released: 2026-10-13
+license: MIT
+repository-code: "https://github.com/SimaQie/-lerobot-boundary-audit"
+url: "https://github.com/SimaQie/-lerobot-boundary-audit"
+abstract: "Lightweight LeRobot v3 boundary diagnostics and guarded copy-based repair, with original pre-encoding pixel identity fixtures for full official loader conformance."
+keywords:
+  - robotics
+  - LeRobot
+  - dataset validation
+  - reproducibility

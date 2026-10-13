@@ -1,0 +1,42 @@
+name: tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.12']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install ".[repair,dev]"
+      - run: python -m ruff check src tests examples research/validate_agibot2026.py research/check_backup.py
+      - run: python -m pytest -q
+      - run: python examples/offline_demo.py --out demo-result
+  official-loader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - run: python -m pip install ".[repair]"
+      - run: python -m venv .consumer-env
+      - run: .consumer-env/bin/python -m pip install torch==2.10.0 torchvision==0.25.0 --index-url https://download.pytorch.org/whl/cpu
+      - run: .consumer-env/bin/python -m pip install "lerobot[dataset]==0.6.1" "torchcodec==0.10.0"
+      - run: lerobot-boundary-audit fixture-suite --python .consumer-env/bin/python --out generated-suite
+      - run: lerobot-boundary-audit conformance generated-suite --python .consumer-env/bin/python --out conformance-results
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: official-loader-evidence
+          path: conformance-results

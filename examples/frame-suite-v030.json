@@ -1,0 +1,52 @@
+{
+  "license": "MIT",
+  "synthetic_only": true,
+  "sha256": "65f25f25da06e39914aade3ff240a52e8c25015fb0ce3e3e2d759cec44df3569",
+  "bytes": 175077,
+  "files": 52,
+  "producer": {
+    "lerobot": "0.6.1",
+    "av": "15.1.0",
+    "python": "3.12.14"
+  },
+  "cases": [
+    {
+      "name": "recorded-a",
+      "path": "recorded-a",
+      "expected": "pass",
+      "origin": "official LeRobot create/add_frame/save_episode/finalize"
+    },
+    {
+      "name": "recorded-b",
+      "path": "recorded-b",
+      "expected": "pass",
+      "origin": "official LeRobot create/add_frame/save_episode/finalize"
+    },
+    {
+      "name": "merged",
+      "path": "merged",
+      "expected": "pass",
+      "origin": "official merge_datasets with video/data concatenation"
+    },
+    {
+      "name": "offset-one-frame",
+      "path": "offset-one-frame",
+      "expected": "fail",
+      "origin": "controlled metadata injection",
+      "fault": "one camera, episode 1 shifted by one frame"
+    },
+    {
+      "name": "camera-swap",
+      "path": "camera-swap",
+      "expected": "fail",
+      "origin": "controlled payload injection",
+      "fault": "camera payloads swapped; timestamps stay valid"
+    },
+    {
+      "name": "repaired-offset",
+      "path": "repaired-offset",
+      "expected": "pass",
+      "origin": "guarded repair of controlled offset injection"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lerobot-boundary-audit"
+version = "0.3.0"
+description = "Episode boundary diagnostics and guarded repair for LeRobot datasets"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "NOTICE.md"]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/SimaQie/-lerobot-boundary-audit"
+Issues = "https://github.com/SimaQie/-lerobot-boundary-audit/issues"
+
+[project.optional-dependencies]
+lerobot = ["pyarrow>=14,<24"]
+decode = ["av>=14,<17"]
+repair = ["pyarrow>=14,<24", "av>=14,<17"]
+dev = ["pytest>=8,<10", "ruff>=0.9", "numpy>=1.26,<3"]
+
+[project.scripts]
+lerobot-boundary-audit = "boundary_audit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
