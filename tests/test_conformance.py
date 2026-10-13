@@ -3,7 +3,7 @@ import json
 import pytest
 
 from boundary_audit.cli import main
-from boundary_audit.conformance import generate_suite, run_suite, verify_loader, write_suite_html
+from boundary_audit.conformance import add_repair_control, generate_suite, run_suite, verify_loader, write_suite_html
 from boundary_audit.storage import write_json
 
 
@@ -64,6 +64,23 @@ def test_suite_html_escapes_untrusted_values(tmp_path):
     write_suite_html({"status": "fail", "producer": {"version": "<script>"}, "checks": []}, path)
     assert "<script>" not in path.read_text(encoding="utf-8")
     assert "&lt;script&gt;" in path.read_text(encoding="utf-8")
+
+
+def test_unsupported_producer_timing_keeps_repair_blocked(tmp_path, monkeypatch):
+    source = tmp_path / "offset-one-frame"
+    source.mkdir()
+    (source / "original.txt").write_bytes(b"untouched")
+    write_json(tmp_path / "suite.json", {"cases": [{"name": "offset-one-frame"}]})
+    monkeypatch.setattr(
+        "boundary_audit.conformance.make_plan",
+        lambda *a, **k: {"status": "blocked", "refusals": ["Unsupported video repair"]},
+    )
+    add_repair_control(tmp_path)
+    manifest = json.loads((tmp_path / "suite.json").read_text(encoding="utf-8"))
+    assert manifest["repair_control"]["status"] == "blocked"
+    assert len(manifest["cases"]) == 1
+    assert not (tmp_path / "repaired-offset").exists()
+    assert (source / "original.txt").read_bytes() == b"untouched"
 
 
 def test_generation_refuses_existing_output(tmp_path):

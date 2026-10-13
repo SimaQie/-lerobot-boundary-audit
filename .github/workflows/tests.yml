@@ -35,8 +35,15 @@ jobs:
       - run: .consumer-env/bin/python -m pip install "lerobot[dataset]==0.6.1" "torchcodec==0.10.0"
       - run: lerobot-boundary-audit fixture-suite --python .consumer-env/bin/python --out generated-suite
       - run: lerobot-boundary-audit conformance generated-suite --python .consumer-env/bin/python --out conformance-results
+      - run: python -m zipfile -e examples/frame-suite-v030.zip published-suite
+      - run: lerobot-boundary-audit conformance published-suite --python .consumer-env/bin/python --out published-conformance
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: official-loader-evidence
-          path: conformance-results
+          path: |
+            conformance-results
+            published-conformance
+            generated-suite/suite.json
+            generated-suite/producer-audit.json
+            generated-suite/repair-control.json

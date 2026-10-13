@@ -33,3 +33,10 @@ one synthetic H.264 configuration, not a broad version/codec benchmark. No natur
 occurring recording/merge defect was observed here. Markers cannot certify arbitrary
 robot footage or physical camera/action synchronization. Larger real failure corpora
 and version matrices should precede population-level or novelty claims.
+On the first Ubuntu 24.04 CI recording/concatenation run with PyAV 15.1.0, the
+generated streams differed from an exact 30 FPS grid by 5–15 MP4 ticks
+(approximately 0.326–0.977 ms). The CFR repair gate correctly refused to alter
+these B-frame timelines. Generation now preserves those five cases and records
+the refusal, rather than losing the producer artifacts or loosening repair rules.
+This timing observation alone does not prove wrong frame identity or an upstream
+bug. Full loader reports distinguish content errors from strict timing findings.

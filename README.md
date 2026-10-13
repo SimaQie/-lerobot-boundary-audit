@@ -168,8 +168,12 @@ lerobot-boundary-audit fixture-suite --python .consumer-env/Scripts/python --out
 lerobot-boundary-audit verify-loader my-new-suite/merged --python .consumer-env/Scripts/python --backend pyav --phase window --out reports/window
 ```
 
-`fixture-suite` also verifies guarded repair and exact restoration of the injected
-offset. Use fresh output directories. Phases are `single`, `window` (−1/0/+1 frame,
+`fixture-suite` also attempts guarded repair and exact restoration of the injected
+offset. If upstream encoding/concatenation produces a nonuniform timing grid, it
+preserves all five generated cases, records the refusal in `repair-control.json`,
+and does not add a repaired case. `producer-audit.json` records untouched inputs.
+Repair guards are never relaxed to make a fixture pass. Use fresh output directories.
+Phases are `single`, `window` (−1/0/+1 frame,
 episode clamping), `batch` (four rows), `workers` (two spawned workers), and `subset`
 (nonconsecutive original episode IDs). No upstream source is patched. Only the
 tested LeRobot **0.6.1**, H.264 fixture and CPU configurations are evidenced here;
@@ -210,7 +214,7 @@ Current remote results: [Actions](https://github.com/SimaQie/-lerobot-boundary-a
 Synthetic conformance: **60 / 60** combinations match their expectations
 (six cases × two decoders × five phases). Clean official recordings/merge and
 the repaired copy pass; offset and camera-swap controls return wrong pixel IDs.
-Storage timing alone passes the camera-swap control. **66 unit/regression tests**
+Storage timing alone passes the camera-swap control. **67 unit/regression tests**
 pass locally on Python 3.11 and 3.12. See [versioned evidence](research/results/v030/)
 and [reproduction notes](research/CONFORMANCE.md). Controlled failures do not
 establish any naturally occurring upstream bug or dataset-wide prevalence.

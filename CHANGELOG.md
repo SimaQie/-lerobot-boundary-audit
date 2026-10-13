@@ -9,6 +9,8 @@
 - Offset and camera-swap negative controls, guarded repair and byte-exact restoration.
 - Portable conformance HTML/JSON evidence, bundled original fixture, citation metadata.
 - Preserve lightweight normal installation and explicit unavailable results.
+- Preserve producer fixtures and explicit repair refusals when platform output
+  has a nonuniform B-frame timing grid; never weaken the repair contract.
 
 ## 0.2.0 — 2026-10-13
 

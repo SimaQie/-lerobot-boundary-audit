@@ -47,6 +47,12 @@ def generate_suite(output, python, *, ffmpeg_bin=None):
         if result["status"] != "generated":
             raise ValueError("Official fixture generation failed: " + result.get("message", "unknown error"))
         add_repair_control(stage)
+        from .audit import audit_dataset
+
+        write_json(
+            stage / "producer-audit.json",
+            {name: audit_dataset(stage / name) for name in ("recorded-a", "recorded-b", "merged")},
+        )
         result["suite"] = json.loads((stage / "suite.json").read_text(encoding="utf-8"))
         publish_new_directory(stage, output)
     return result
@@ -58,15 +64,18 @@ def add_repair_control(root):
     source = root / "offset-one-frame"
     before = fingerprint(source)
     plan = make_plan(source, assume_cfr=True)
+    manifest = json.loads((root / "suite.json").read_text(encoding="utf-8"))
     if plan["status"] != "ready":
-        from .audit import audit_dataset
-
-        evidence = {
+        if fingerprint(source) != before:
+            raise ValueError("Source changed during controlled repair planning")
+        manifest["repair_control"] = {
             "status": plan["status"],
             "refusals": plan["refusals"],
-            "findings": audit_dataset(source)["findings"][:20],
+            "note": "No repaired case was added; upstream timing must satisfy the existing repair contract.",
         }
-        raise ValueError("Controlled offset did not yield a ready repair plan: " + json.dumps(evidence))
+        write_json(root / "suite.json", manifest)
+        write_json(root / "repair-control.json", {"status": plan["status"], "source_unchanged": True, "plan": plan})
+        return
     apply_plan(plan, source, root / "repaired-offset")
     with tempfile.TemporaryDirectory(prefix=".restore-", dir=root) as temporary:
         restored = Path(temporary) / "restored"
@@ -74,7 +83,6 @@ def add_repair_control(root):
         exact = fingerprint(restored) == before
     if not exact or fingerprint(source) != before:
         raise ValueError("Controlled repair failed preservation/restoration checks")
-    manifest = json.loads((root / "suite.json").read_text(encoding="utf-8"))
     manifest["cases"].append(
         {
             "name": "repaired-offset",
@@ -83,10 +91,11 @@ def add_repair_control(root):
             "origin": "guarded repair of controlled offset injection",
         }
     )
+    manifest["repair_control"] = {"status": "pass", "source_unchanged": True, "exact_restore": True}
     write_json(root / "suite.json", manifest)
     write_json(
         root / "repair-control.json",
-        {"source_unchanged": True, "exact_restore": True, "source_files": len(before), "plan": plan},
+        {"status": "pass", "source_unchanged": True, "exact_restore": True, "source_files": len(before), "plan": plan},
     )
 
 
