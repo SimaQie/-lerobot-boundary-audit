@@ -6,12 +6,15 @@ import json
 import os
 import shutil
 import sys
+import types
 from pathlib import Path
 
-# -I isolates the official environment. Add only this owned package directory.
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from boundary_audit.identity import HEIGHT, WIDTH, render_frame
-from boundary_audit.storage import write_json
+# Expose only our modules, not our environment's entire site-packages directory.
+owned_package = types.ModuleType("boundary_audit")
+owned_package.__path__ = [str(Path(__file__).resolve().parent)]
+sys.modules["boundary_audit"] = owned_package
+from boundary_audit.identity import HEIGHT, WIDTH, render_frame  # noqa: E402
+from boundary_audit.storage import write_json  # noqa: E402
 
 HANDLES = []
 

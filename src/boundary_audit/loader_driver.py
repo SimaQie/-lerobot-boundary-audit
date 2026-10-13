@@ -6,10 +6,13 @@ import importlib.metadata
 import json
 import os
 import sys
+import types
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from boundary_audit.identity import decode_identity, validate_oracle
+owned_package = types.ModuleType("boundary_audit")
+owned_package.__path__ = [str(Path(__file__).resolve().parent)]
+sys.modules["boundary_audit"] = owned_package
+from boundary_audit.identity import decode_identity, validate_oracle  # noqa: E402
 
 DLL_HANDLES = []
 

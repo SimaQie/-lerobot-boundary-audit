@@ -214,7 +214,7 @@ Current remote results: [Actions](https://github.com/SimaQie/-lerobot-boundary-a
 Synthetic conformance: **60 / 60** combinations match their expectations
 (six cases × two decoders × five phases). Clean official recordings/merge and
 the repaired copy pass; offset and camera-swap controls return wrong pixel IDs.
-Storage timing alone passes the camera-swap control. **67 unit/regression tests**
+Storage timing alone passes the camera-swap control. **69 unit/regression tests**
 pass locally on Python 3.11 and 3.12. See [versioned evidence](research/results/v030/)
 and [reproduction notes](research/CONFORMANCE.md). Controlled failures do not
 establish any naturally occurring upstream bug or dataset-wide prevalence.

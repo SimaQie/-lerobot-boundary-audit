@@ -33,10 +33,15 @@ one synthetic H.264 configuration, not a broad version/codec benchmark. No natur
 occurring recording/merge defect was observed here. Markers cannot certify arbitrary
 robot footage or physical camera/action synchronization. Larger real failure corpora
 and version matrices should precede population-level or novelty claims.
-On the first Ubuntu 24.04 CI recording/concatenation run with PyAV 15.1.0, the
-generated streams differed from an exact 30 FPS grid by 5–15 MP4 ticks
-(approximately 0.326–0.977 ms). The CFR repair gate correctly refused to alter
-these B-frame timelines. Generation now preserves those five cases and records
-the refusal, rather than losing the producer artifacts or loosening repair rules.
-This timing observation alone does not prove wrong frame identity or an upstream
-bug. Full loader reports distinguish content errors from strict timing findings.
+
+Initial installed-wheel CI exposed a driver isolation defect: prepending the
+tool's site-packages directory could override the separately installed official
+environment's dependencies. The driver now exposes only this project's package
+directory, and regression tests reject dependency-path leakage. Timing variations
+seen in those initial mixed-environment runs are not attributed to upstream code.
+The published Windows evidence used source drivers and LeRobot 0.6.1/PyAV 15.1.0.
+
+If an official producer/runtime yields a nonuniform grid, the CFR gate still
+refuses unsupported B-frame timeline repair. Generation preserves its five cases
+and the refusal; it adds a sixth repaired case only when all existing guards pass.
+Full loader reports distinguish content errors from strict timing findings.

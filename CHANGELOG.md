@@ -9,6 +9,8 @@
 - Offset and camera-swap negative controls, guarded repair and byte-exact restoration.
 - Portable conformance HTML/JSON evidence, bundled original fixture, citation metadata.
 - Preserve lightweight normal installation and explicit unavailable results.
+- Keep optional official processes isolated even when invoked from an installed wheel;
+  the audit environment's dependencies are never added to the consumer's search path.
 - Preserve producer fixtures and explicit repair refusals when platform output
   has a nonuniform B-frame timing grid; never weaken the repair contract.
 
