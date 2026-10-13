@@ -59,7 +59,14 @@ def add_repair_control(root):
     before = fingerprint(source)
     plan = make_plan(source, assume_cfr=True)
     if plan["status"] != "ready":
-        raise ValueError("Controlled offset did not yield a ready repair plan")
+        from .audit import audit_dataset
+
+        evidence = {
+            "status": plan["status"],
+            "refusals": plan["refusals"],
+            "findings": audit_dataset(source)["findings"][:20],
+        }
+        raise ValueError("Controlled offset did not yield a ready repair plan: " + json.dumps(evidence))
     apply_plan(plan, source, root / "repaired-offset")
     with tempfile.TemporaryDirectory(prefix=".restore-", dir=root) as temporary:
         restored = Path(temporary) / "restored"
