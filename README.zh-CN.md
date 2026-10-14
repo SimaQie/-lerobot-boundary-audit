@@ -1,7 +1,7 @@
 # LeRobot Boundary Audit
 
 一个可在 CPU 上运行的 LeRobot v3 视频时间轴与轨迹边界检查工具。
-这是独立重写的 0.3.0 版本；原 `robot_data_engineering_saved` 保留原样。
+当前版本为 0.4.0 研究预览；原 `robot_data_engineering_saved` 保留原样。
 
 它检查视频帧的实际展示时间、轨迹视频起止偏移，以及数据表中的时间戳
 是否一致。输出可离线打开的 HTML 报告和 JSON 证据。日常使用只需要
@@ -90,3 +90,56 @@ TorchCodec 两种读取器；独立完整解码核对了两路视频共 47,316 �
 完整参数、复现实验与限制见 [英文说明](README.md)。
 开源地址：[SimaQie/-lerobot-boundary-audit](https://github.com/SimaQie/-lerobot-boundary-audit)。
 附有 MIT 许可、中英文说明及引用文件；尚未分配 DOI。
+# 0.4.0 研究预览补充
+
+当前代码新增全局索引和数据分片关系检查，修复了“索引整体错移仍显示 PASS”的漏检。
+关键元数据错误现在会生成结构化报告；不完整或无法判定的检查不会算作通过。
+源码与实测报告一起公开；原有 0.3.0 的实测结果仍作为历史记录保留。
+
+安装 `.[repair]` 后，无需下载外部数据即可运行安装包自带样例：
+
+```sh
+lerobot-boundary-audit demo --out demo-v040
+lerobot-boundary-audit conformance demo-v040 --python 官方环境的Python路径 --jobs 2 --out reports/v040
+```
+
+新版包含 13 个原创小样例：6 个干净控制和 7 个人工故障控制。完整矩阵为两个后端、
+八种读取方式，共 208 个组合。新增长窗口、随机与重复读取、跨两个 epoch 复用 worker，
+以及索引、动作、画面重复/交换和多分片控制。这些不是 13 个自然发生的真实缺陷。
+
+普通真实视频也可使用完整加载器探测，无需预先生成画面编号：
+
+```sh
+lerobot-boundary-audit probe-loader samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --python 官方环境的Python路径 --phase workers --max-rows 6 --out reports/agibot-probe
+```
+
+探测会将所选相机的数据复制到受预算限制的临时目录，并用顺序解码参考检查实际读取的
+窗口、动作及填充标记。相同的邻近画面或无法可靠区分的 RGB 差异会标为“无法判定”，
+不会强行显示 PASS。该结果只能证明相对于顺序解码参考的一致性，不能证明物理同步。
+PyAV 参考与 PyAV 被测路径共享颜色转换，两个后端也有 FFmpeg 共同依赖。
+
+默认预算：12 个查询行、累计解码 50,000 帧、参考图像 256 MiB、临时输入副本 300 MiB、
+消费者 300 秒。支持选择不连续的 episode、调整窗口半径和这些预算。
+参考图像预算不等于整个进程的内存上限。GPU 服务器实测仍待补充。
+
+详细实验、比较配置和局限见 [0.4.0 实验说明](research/V040.md)。
+
+## ALOHA 真实双臂数据对照
+
+增加 LeRobot 官方账号的 ALOHA 螺丝刀任务数据：50 个短 episode、20,000 行、
+50 FPS、14 维存储动作。只下载两路腕部相机及元数据/数据表，共 258,967,368 字节，
+检查范围为 2 / 4 相机。固定版本为 `21eead16760a8d94d449cadf4bc438b322ab528d`。
+这是来自 RSS 2023 研究的主流真实机器人数据，数据卡声明 MIT 许可。
+
+```sh
+lerobot-boundary-audit download aloha_screw_driver --out samples/aloha_screw_driver
+python research/validate_real_sample.py aloha_screw_driver --source samples/aloha_screw_driver --out research/runs/my-aloha-run --consumer-python 官方环境的Python路径
+```
+
+使用与 AgiBot 相同的脚本与预算，进行存储/解码检查、官方 PyAV/TorchCodec 对照、
+多进程窗口探测、全帧 PTS 参考、人工偏移定位/修复/恢复，以及全局索引错误拒绝。
+Windows 的 TorchCodec 可追加 `--ffmpeg-bin` 指向已安装的共享 FFmpeg 目录。
+
+两份真实样本均为 AV1；AgiBot 样本存储动作实际为 44 维、30 FPS。
+重复邻近画面会保留“无法判定”，不会强行显示全部通过。
+详细对比见 [两份真实数据的实验结果](research/results/v040-real-comparison/README.md)。

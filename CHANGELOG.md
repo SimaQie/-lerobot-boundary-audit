@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0 — research preview, 2026-10-14
+
+- Verify integer, nonnull global row indices against ordinal position across shards;
+  validate episode/data shard references and block unsafe repair of these defects.
+- Persist prerequisite failures as structured audit reports; continue safely across
+  unreadable data shards rather than hiding independent findings.
+- Package a 13-case original fixture and expose an offline `demo` command.
+- Add long windows, seeded random/repeated reads and persistent workers across epochs.
+- Add `probe-loader` for ordinary footage, with bounded sequential ordinal reference,
+  camera projection, action/padding checks and explicit ambiguous pixel results.
+- Add reproducible same-input comparison against frozen third-party sources and
+  the previous storage auditor; preserve raw warnings and incomplete evidence.
+- This preview is validated locally. GPU hardware and broader upstream versions
+  are separate compatibility work, and no natural upstream defect is claimed.
+- Add a pinned real ALOHA bimanual sample and a shared real-data validation script
+  covering both decoders, worker windows, full PTS reference and authored controls.
+
 ## 0.3.0 — 2026-10-13
 
 - Original CRC-checked camera/episode/frame pixel identities defined before encoding.

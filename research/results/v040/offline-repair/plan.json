@@ -1,0 +1,39 @@
+{
+  "schema_version": "boundary-repair-plan.v1",
+  "source_files": {
+    "data/chunk-000/file-000.parquet": "75fc7d260ff41b46c9d5cb03373a09b577ae45f4b39ad4b10df1283aab50c5d9",
+    "meta/episodes/chunk-000/file-000.parquet": "1cc5159b22d3f264b0cb02146364928428767935172acd5ff514258ffd9a9872",
+    "meta/info.json": "ebffa7628eadef0278d824d35b477720a1fdda55100e118d93a88e0cdd562667",
+    "videos/camera/chunk-000/file-000.mp4": "45518ab3e180aa6b1c81e679d6a49b1970f766cee1a5f4d3dbc7a42526d45359"
+  },
+  "cameras": [
+    "camera"
+  ],
+  "assume_cfr": true,
+  "contract": "All referenced video frames are ordered, contiguous samples at declared FPS; this is a user-supplied recording contract, not inferred physical truth.",
+  "operations": [
+    {
+      "kind": "mp4_fields",
+      "path": "videos/camera/chunk-000/file-000.mp4",
+      "patches": [
+        {
+          "field": "stts[1].sample_delta",
+          "offset": 1442,
+          "width": 4,
+          "before": 511,
+          "after": 512
+        },
+        {
+          "field": "mdhd.duration",
+          "offset": 1117,
+          "width": 4,
+          "before": 3071,
+          "after": 3072
+        }
+      ]
+    }
+  ],
+  "refusals": [],
+  "status": "ready",
+  "fingerprint": "0c60048de7f0a620959b29307b4b0f5259d7d8aabb076b541754d30693d11142"
+}

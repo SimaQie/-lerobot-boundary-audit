@@ -1,0 +1,57 @@
+{
+  "repository": "Voxel51/AgiBotWorld2026-sample-10ep",
+  "revision": "caa5bf1b0b5be48ed52d158ff0d66af40b0f9258",
+  "license": "cc-by-nc-sa-4.0",
+  "selected_cameras": [
+    "observation.images.hand_left",
+    "observation.images.hand_right"
+  ],
+  "note": "September 2026 public subset, 10 real G2 episodes; two of seven camera streams selected",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 12667,
+      "sha256": "29984660c6be9673cf82e84d93b3e88ed674b483ff977cf5708f6d13afb2fbdf"
+    },
+    {
+      "path": "data/chunk-000/file-000.parquet",
+      "bytes": 16049778,
+      "sha256": "e5af8683eb83804c82558983097963d6aa487b5f31c8dc79cdf098bc4fefdb51"
+    },
+    {
+      "path": "meta/episodes/chunk-000/file-000.parquet",
+      "bytes": 229256,
+      "sha256": "0f92ff0f3be0d54081d2e8238c62f28f598e01e09746306b046d7c72ab544c5f"
+    },
+    {
+      "path": "meta/info.json",
+      "bytes": 7110,
+      "sha256": "7e3db8c565ca56db3c988de92462854210035e8ca41505b76065e8d21226c496"
+    },
+    {
+      "path": "meta/stats.json",
+      "bytes": 42161,
+      "sha256": "99a64c5977db1553796e82be53557dcb58b02eaaf5d0b49ae929620c687a73fd"
+    },
+    {
+      "path": "meta/tasks.parquet",
+      "bytes": 1061,
+      "sha256": "d2a6e66e2afd724c010563736e5b948c638180ca52eb3d5a4d6a993b7c465cb5"
+    },
+    {
+      "path": "videos/observation.images.hand_left/chunk-000/file-000.mp4",
+      "bytes": 99687972,
+      "sha256": "27c00a10b25a67cac63427299bdbf70953ed178fbee541072c6d57ad588ab5d6"
+    },
+    {
+      "path": "videos/observation.images.hand_right/chunk-000/file-000.mp4",
+      "bytes": 101197596,
+      "sha256": "adf82b01bc3a9badcef5f6a4b3bbbe0dc7996ff527af283a9a0d6a2cdd4a5a30"
+    }
+  ],
+  "total_bytes": 217227601,
+  "download_budget_bytes": 230000000,
+  "source_url": "https://huggingface.co/datasets/Voxel51/AgiBotWorld2026-sample-10ep/tree/caa5bf1b0b5be48ed52d158ff0d66af40b0f9258",
+  "created_at": "2026-09-14T21:09:01.000Z",
+  "upstream_repo": "agibot-world/AgiBotWorld2026"
+}

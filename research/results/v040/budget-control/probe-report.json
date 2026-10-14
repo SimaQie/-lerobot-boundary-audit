@@ -1,0 +1,24 @@
+{
+  "status": "partial",
+  "checked_rows": 0,
+  "errors": [
+    {
+      "type": "BudgetExceeded",
+      "message": "Sequential reference decode frame budget exhausted"
+    }
+  ],
+  "schema_version": "boundary-real-probe.v1",
+  "source_unchanged": true,
+  "cameras": [
+    "observation.images.left",
+    "observation.images.right"
+  ],
+  "episodes": null,
+  "seed": 20261014,
+  "offsets": [
+    0
+  ],
+  "scope": "Relative to sequential PyAV ordinal reference; no pre-encoding identity or physical synchronization claim",
+  "preflight_status": "pass",
+  "elapsed_seconds": 11.91649260000122
+}

@@ -1,0 +1,56 @@
+{
+  "repository": "lerobot/aloha_static_screw_driver",
+  "revision": "21eead16760a8d94d449cadf4bc438b322ab528d",
+  "license": "mit",
+  "selected_cameras": [
+    "observation.images.cam_left_wrist",
+    "observation.images.cam_right_wrist"
+  ],
+  "note": "Real ALOHA bimanual screw-driver task, 50 episodes at 50 FPS; two of four cameras selected. Original research is RSS 2023, not a newly collected dataset.",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 6505,
+      "sha256": "c903c81488fbf841bae370619523c1363ef4e27ecbc9328313b2f6a41965994a"
+    },
+    {
+      "path": "data/chunk-000/file-000.parquet",
+      "bytes": 1286640,
+      "sha256": "b2d912c8adecdcd4c968f41ed2a5478f7a47268d8daa443b898c4a27b7d1de51"
+    },
+    {
+      "path": "meta/episodes/chunk-000/file-000.parquet",
+      "bytes": 129325,
+      "sha256": "11b2b178894ac83fdf3560387989f79484a9fb35edd4d1ce4660a9cb75ab838e"
+    },
+    {
+      "path": "meta/info.json",
+      "bytes": 4481,
+      "sha256": "86233932f5ee1015a2dfd14b457eb66fb172b2d894c7d7838c609fcbc6f6534f"
+    },
+    {
+      "path": "meta/stats.json",
+      "bytes": 13071,
+      "sha256": "c53c8410b1b58a7036120c8c0ea476b3393d8d841e9af8b6cfe62335a320ca72"
+    },
+    {
+      "path": "meta/tasks.parquet",
+      "bytes": 2539,
+      "sha256": "b715eba4dac940954ae9ff48aff631e15e538e8d4f6185cc46cd191bff1eb0fc"
+    },
+    {
+      "path": "videos/observation.images.cam_left_wrist/chunk-000/file-000.mp4",
+      "bytes": 128320004,
+      "sha256": "aabbc4ab572f97bf368226db78d3a89b4e8669d42004ed81fe97ee9663b8e9af"
+    },
+    {
+      "path": "videos/observation.images.cam_right_wrist/chunk-000/file-000.mp4",
+      "bytes": 129204803,
+      "sha256": "a5ad7722b9001476e97bc1c8cb2a8f01f2d00411394ee233c07dbdba1e0680f5"
+    }
+  ],
+  "total_bytes": 258967368,
+  "download_budget_bytes": 280000000,
+  "source_url": "https://huggingface.co/datasets/lerobot/aloha_static_screw_driver/tree/21eead16760a8d94d449cadf4bc438b322ab528d",
+  "upstream_url": "https://tonyzhaozh.github.io/aloha/"
+}

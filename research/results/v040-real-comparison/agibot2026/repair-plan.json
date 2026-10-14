@@ -1,0 +1,55 @@
+{
+  "schema_version": "boundary-repair-plan.v1",
+  "source_files": {
+    "data/chunk-000/file-000.parquet": "e5af8683eb83804c82558983097963d6aa487b5f31c8dc79cdf098bc4fefdb51",
+    "meta/episodes/chunk-000/file-000.parquet": "5b2be1669468725706ba67a060dd18df74d02754832077404d6a07f208e2176f",
+    "meta/info.json": "7e3db8c565ca56db3c988de92462854210035e8ca41505b76065e8d21226c496",
+    "meta/stats.json": "99a64c5977db1553796e82be53557dcb58b02eaaf5d0b49ae929620c687a73fd",
+    "meta/tasks.parquet": "d2a6e66e2afd724c010563736e5b948c638180ca52eb3d5a4d6a993b7c465cb5",
+    "README.md": "29984660c6be9673cf82e84d93b3e88ed674b483ff977cf5708f6d13afb2fbdf",
+    "source_manifest.json": "b2e42abe1c90d595f520cdb08e451557e7a8056efaebbf05cb13395cb91cff92",
+    "videos/observation.images.hand_left/chunk-000/file-000.mp4": "27c00a10b25a67cac63427299bdbf70953ed178fbee541072c6d57ad588ab5d6",
+    "videos/observation.images.hand_right/chunk-000/file-000.mp4": "adf82b01bc3a9badcef5f6a4b3bbbe0dc7996ff527af283a9a0d6a2cdd4a5a30"
+  },
+  "cameras": [
+    "observation.images.hand_left",
+    "observation.images.hand_right"
+  ],
+  "assume_cfr": true,
+  "contract": "All referenced video frames are ordered, contiguous samples at declared FPS; this is a user-supplied recording contract, not inferred physical truth.",
+  "operations": [
+    {
+      "kind": "episode_offsets",
+      "path": "meta/episodes/chunk-000/file-000.parquet",
+      "changes": [
+        {
+          "episode_index": 5,
+          "column": "videos/observation.images.hand_left/from_timestamp",
+          "before": 380.6666666666667,
+          "after": 380.6333333333333
+        },
+        {
+          "episode_index": 5,
+          "column": "videos/observation.images.hand_left/to_timestamp",
+          "before": 453.2,
+          "after": 453.1666666666667
+        },
+        {
+          "episode_index": 5,
+          "column": "videos/observation.images.hand_right/from_timestamp",
+          "before": 380.6666666666667,
+          "after": 380.6333333333333
+        },
+        {
+          "episode_index": 5,
+          "column": "videos/observation.images.hand_right/to_timestamp",
+          "before": 453.2,
+          "after": 453.1666666666667
+        }
+      ]
+    }
+  ],
+  "refusals": [],
+  "status": "ready",
+  "fingerprint": "eab53f46fa2c4449eb94b64e435517ec40a5270cca5e5038bdacf24b3c733112"
+}

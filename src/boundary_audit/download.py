@@ -10,6 +10,15 @@ from pathlib import Path, PurePosixPath
 from .storage import write_json
 
 SAMPLES = {
+    "aloha_screw_driver": {
+        "repo": "lerobot/aloha_static_screw_driver",
+        "revision": "21eead16760a8d94d449cadf4bc438b322ab528d",
+        "cameras": ["observation.images.cam_left_wrist", "observation.images.cam_right_wrist"],
+        "license": "mit",
+        "max_bytes": 280_000_000,
+        "upstream_url": "https://tonyzhaozh.github.io/aloha/",
+        "note": "Real ALOHA bimanual screw-driver task, 50 episodes at 50 FPS; two of four cameras selected. Original research is RSS 2023, not a newly collected dataset.",
+    },
     "agibot2026": {
         "repo": "Voxel51/AgiBotWorld2026-sample-10ep",
         "revision": "caa5bf1b0b5be48ed52d158ff0d66af40b0f9258",
@@ -119,7 +128,7 @@ def fetch_sample(name, destination, *, max_bytes=None):
         "download_budget_bytes": budget,
         "source_url": f"https://huggingface.co/datasets/{spec['repo']}/tree/{spec['revision']}",
     }
-    for key in ["created_at", "upstream_repo"]:
+    for key in ["created_at", "upstream_repo", "upstream_url"]:
         if key in spec:
             manifest[key] = spec[key]
     write_json(root / "source_manifest.json", manifest)

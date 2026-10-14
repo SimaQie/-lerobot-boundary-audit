@@ -1,5 +1,98 @@
 # LeRobot Boundary Audit
 
+## 0.4.0 research preview
+
+This checkout adds global-index/shard validation, **ordinary-footage full-loader
+probes**, and an expanded original regression suite. The published 0.3 evidence
+below remains historical; 0.4 results and scope are documented in
+[the new protocol](research/V040.md) and [local validation results](research/results/v040/README.md).
+The source preview includes reproducible experiments; it is not a PyPI release.
+
+Offline, after installing `.[repair]`, including from a wheel:
+
+```sh
+lerobot-boundary-audit demo --out demo-v040
+```
+
+The package includes a ~384 KiB original MIT fixture with **13 cases** (six clean
+controls, seven deliberate fault controls). New cases include global-index shift,
+duplicate global index, wrong action, repeated/swapped pixel frames, multiple data
+shards and a clean video without B-frames. Frame IDs are still determined before
+the original recording; derived encodings record their own runtime. These are
+controlled tests, not 13 naturally discovered defects.
+
+```sh
+lerobot-boundary-audit conformance demo-v040 --python PATH_TO_OFFICIAL_PYTHON --jobs 2 --out reports/v040
+```
+
+Eight phases: `single`, `window`, `batch`, `workers`, `subset`, `long-window`
+(−8/−4/−1/0/+1/+4/+8), `random` (seeded and repeated reads), and `persistent`
+(two spawned workers reused for two epochs). Two decoders × 13 cases × eight
+phases yields 208 combinations. Fault controls require actual pixel or row/action
+evidence; an exception alone cannot satisfy an expected failure.
+
+Probe **your own ordinary LeRobot v3 footage** without a frame oracle:
+
+```sh
+lerobot-boundary-audit probe-loader MY_DATA --python PATH_TO_OFFICIAL_PYTHON --camera observation.images.wrist --phase workers --max-rows 12 --radius 4 --out reports/my-probe
+```
+
+The probe copies a bounded camera projection into a temporary directory so the
+official loader never receives the original as its writable root. It compares
+requested windows against a separate sequential PyAV decode by ordinal position,
+and checks row labels, actions and padding. `--episode` may select nonconsecutive
+episodes from a complete dataset. Sampling is seeded, spreads across episodes,
+and includes first/second/last rows where the row budget permits.
+
+Default limits: 12 query rows, 50,000 sequentially decoded frames, 256 MiB of
+stored reference images, 300 MiB of copied input, and 300 seconds per consumer.
+Use `--max-decode-frames`, `--max-reference-bytes`, `--max-view-bytes`, `--timeout`
+to set budgets. Exceeding a budget produces incomplete evidence, not PASS.
+The image budget covers stored reference arrays, not total process memory.
+
+Exact unique RGB matches are recorded separately from heuristic near matches
+(uint8 mean error ≤2 with ≥0.25 separation from neighbouring candidates).
+Identical neighbouring frames and uncertain RGB matches are **ambiguous** and
+produce PARTIAL (exit 2). Cross-backend colour differences and repeated footage
+can therefore leave checks unresolved. This compares runtime reading with a
+sequential reference; it cannot certify original camera labels, arbitrary dropped
+frames before encoding, physical synchronization, or training benefit. PyAV and
+the reference share PyAV RGB conversion; both backends share FFmpeg ancestry.
+
+Main installation and the older 0.3 protocol follow. GPU hardware remains untested.
+
+## Second real-robot sample: ALOHA
+
+Use the pinned official LeRobot re-export of the real bimanual **ALOHA screw-driver**
+task: 50 short episodes, 20,000 rows, 50 FPS and 14-dimensional stored actions.
+Download metadata/data and two wrist streams only: **258,967,368 bytes**, under
+a 280 MB download budget, with **2 / 4** declared cameras checked.
+Original ALOHA research is RSS 2023; this is a mainstream real-robot benchmark,
+not a claim of newly collected 2026 data. The pinned metadata is v3.0 even though
+the dataset card's illustrative JSON still shows an older layout.
+
+```sh
+lerobot-boundary-audit download aloha_screw_driver --out samples/aloha_screw_driver
+lerobot-boundary-audit audit samples/aloha_screw_driver --camera observation.images.cam_left_wrist --camera observation.images.cam_right_wrist --decode --out reports/aloha
+```
+
+Source: [LeRobot ALOHA dataset](https://huggingface.co/datasets/lerobot/aloha_static_screw_driver),
+revision `21eead16760a8d94d449cadf4bc438b322ab528d`, dataset-card license MIT.
+Downloaded footage, actions and derivative datasets are not distributed here.
+[Same-protocol real-data comparison](research/results/v040-real-comparison/README.md)
+includes both official decoders, worker/window probes, full PTS decode, controlled
+one-frame offset repair/restoration, and the global-index rejection control.
+
+```sh
+python research/validate_real_sample.py aloha_screw_driver --source samples/aloha_screw_driver --out research/runs/my-aloha-run --consumer-python PATH_TO_OFFICIAL_PYTHON
+```
+
+The identical command protocol also accepts `agibot2026`. Both real samples use
+AV1; the existing synthetic fixture tests H.264. This comparison adds platform,
+FPS and action-vector diversity, not an additional real-data codec family.
+Repeated neighbouring frames remain explicitly unresolved; a protocol's expected
+outcomes do not mean complete frame identity has been certified.
+
 Lightweight episode-boundary diagnostics, **independent pixel identity conformance**,
 and guarded repair for **LeRobot v3**.
 Check stored row timestamps against MP4 presentation timestamps, inspect the

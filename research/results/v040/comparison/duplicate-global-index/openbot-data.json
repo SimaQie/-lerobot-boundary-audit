@@ -1,0 +1,445 @@
+{
+  "coverage": {
+    "capabilities": [
+      {
+        "capability": "advisory.measurements",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "data/chunk-000/file-000.parquet"
+        ],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "alignment.data_relations",
+        "checked": 5,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 5
+      },
+      {
+        "capability": "alignment.episode_ranges",
+        "checked": 5,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 5
+      },
+      {
+        "capability": "alignment.task_foreign_keys",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "data/chunk-000/file-000.parquet"
+        ],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "alignment.timestamps",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "data/chunk-000/file-000.parquet"
+        ],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "alignment.video_relations",
+        "checked": 10,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 10
+      },
+      {
+        "capability": "content.checksum",
+        "checked": 0,
+        "integrity": "full",
+        "omitted": [
+          "videos/observation.images.left/chunk-000/file-000.mp4",
+          "videos/observation.images.right/chunk-000/file-000.mp4"
+        ],
+        "reason": "SHA-256 content checking was not requested.",
+        "reason_code": "option_not_enabled",
+        "selected": [],
+        "status": "skipped",
+        "total": 2
+      },
+      {
+        "capability": "data.indexes",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "data/chunk-000/file-000.parquet"
+        ],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "data.inventory",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "data.parquet_footer",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "data/chunk-000/file-000.parquet"
+        ],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "data.parquet_rows",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "data/chunk-000/file-000.parquet"
+        ],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "data.parquet_schema",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "data/chunk-000/file-000.parquet"
+        ],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "format.contract",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "media.declared_contract",
+        "checked": 12,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 12
+      },
+      {
+        "capability": "media.decode",
+        "checked": 2,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "videos/observation.images.left/chunk-000/file-000.mp4",
+          "videos/observation.images.right/chunk-000/file-000.mp4"
+        ],
+        "status": "complete",
+        "total": 2
+      },
+      {
+        "capability": "media.inventory",
+        "checked": 2,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 2
+      },
+      {
+        "capability": "media.metadata",
+        "checked": 2,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "videos/observation.images.left/chunk-000/file-000.mp4",
+          "videos/observation.images.right/chunk-000/file-000.mp4"
+        ],
+        "status": "complete",
+        "total": 2
+      },
+      {
+        "capability": "metadata.episode_indexes",
+        "checked": 5,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "meta/episodes/chunk-000/file-000.parquet"
+        ],
+        "status": "complete",
+        "total": 5
+      },
+      {
+        "capability": "metadata.episodes",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "metadata.info",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "metadata.stats",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "metadata.tasks",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "metadata.totals",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "meta/info.json"
+        ],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "source.identity",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [],
+        "status": "complete",
+        "total": 1
+      },
+      {
+        "capability": "stats.recomputed",
+        "checked": 0,
+        "integrity": "full",
+        "omitted": [
+          "action",
+          "observation.state"
+        ],
+        "reason": "Some numeric features have no stored statistics to compare.",
+        "reason_code": "stored_stats_incomplete",
+        "selected": [],
+        "status": "partial",
+        "total": 2
+      },
+      {
+        "capability": "stats.stored",
+        "checked": 1,
+        "integrity": "full",
+        "omitted": [],
+        "selected": [
+          "meta/stats.json"
+        ],
+        "status": "complete",
+        "total": 1
+      }
+    ]
+  },
+  "findings": [
+    {
+      "code": "LEROBOT_FEATURE_SHAPE_MISMATCH",
+      "evidence": {
+        "actual_shape": [],
+        "declared_shape": [
+          1
+        ],
+        "source": "parquet_row"
+      },
+      "fixability": "delegated",
+      "impact": "training_tensor_shape_is_incompatible",
+      "layer": "schema",
+      "location": {
+        "episode_index": 0,
+        "feature_key": "action",
+        "frame_index": 0,
+        "row": 1
+      },
+      "message": "A feature row shape differs from info.json.",
+      "path": "data/chunk-000/file-000.parquet",
+      "remediation_ref": "openbot://remediation/LEROBOT_FEATURE_SHAPE_MISMATCH",
+      "rule_id": "lerobot.feature.shape.mismatch",
+      "severity": "error"
+    },
+    {
+      "code": "LEROBOT_FEATURE_SHAPE_MISMATCH",
+      "evidence": {
+        "actual_shape": [],
+        "declared_shape": [
+          1
+        ],
+        "source": "parquet_row"
+      },
+      "fixability": "delegated",
+      "impact": "training_tensor_shape_is_incompatible",
+      "layer": "schema",
+      "location": {
+        "episode_index": 0,
+        "feature_key": "observation.state",
+        "frame_index": 0,
+        "row": 1
+      },
+      "message": "A feature row shape differs from info.json.",
+      "path": "data/chunk-000/file-000.parquet",
+      "remediation_ref": "openbot://remediation/LEROBOT_FEATURE_SHAPE_MISMATCH",
+      "rule_id": "lerobot.feature.shape.mismatch",
+      "severity": "error"
+    },
+    {
+      "code": "LEROBOT_FEATURE_SHAPE_MISMATCH",
+      "evidence": {
+        "actual_shape": [],
+        "declared_shape": [
+          1
+        ],
+        "source": "parquet_schema"
+      },
+      "fixability": "delegated",
+      "impact": "training_tensor_shape_is_incompatible",
+      "layer": "schema",
+      "location": {
+        "feature_key": "action"
+      },
+      "message": "A fixed-size data-shard feature shape differs from info.json.",
+      "path": "data/chunk-000/file-000.parquet",
+      "remediation_ref": "openbot://remediation/LEROBOT_FEATURE_SHAPE_MISMATCH",
+      "rule_id": "lerobot.feature.shape.mismatch",
+      "severity": "error"
+    },
+    {
+      "code": "LEROBOT_FEATURE_SHAPE_MISMATCH",
+      "evidence": {
+        "actual_shape": [],
+        "declared_shape": [
+          1
+        ],
+        "source": "parquet_schema"
+      },
+      "fixability": "delegated",
+      "impact": "training_tensor_shape_is_incompatible",
+      "layer": "schema",
+      "location": {
+        "feature_key": "observation.state"
+      },
+      "message": "A fixed-size data-shard feature shape differs from info.json.",
+      "path": "data/chunk-000/file-000.parquet",
+      "remediation_ref": "openbot://remediation/LEROBOT_FEATURE_SHAPE_MISMATCH",
+      "rule_id": "lerobot.feature.shape.mismatch",
+      "severity": "error"
+    },
+    {
+      "code": "LEROBOT_GLOBAL_INDEX_DUPLICATE",
+      "evidence": {
+        "count": 2,
+        "records": [
+          {
+            "episode_index": 1,
+            "path": "data/chunk-000/file-000.parquet",
+            "row": 8
+          },
+          {
+            "episode_index": 1,
+            "path": "data/chunk-000/file-000.parquet",
+            "row": 9
+          }
+        ]
+      },
+      "fixability": "delegated",
+      "impact": "dataset_frame_order_is_ambiguous",
+      "layer": "alignment",
+      "location": {
+        "global_index": 7
+      },
+      "message": "A global frame index occurs more than once.",
+      "path": "data/chunk-000/file-000.parquet",
+      "remediation_ref": "openbot://remediation/LEROBOT_GLOBAL_INDEX_DUPLICATE",
+      "rule_id": "lerobot.global.index.duplicate",
+      "severity": "error"
+    },
+    {
+      "code": "LEROBOT_GLOBAL_INDEX_NON_CONTIGUOUS",
+      "evidence": {
+        "expected_start": 0,
+        "expected_stop_exclusive": 34,
+        "missing": [
+          8
+        ],
+        "unexpected": [
+          34
+        ]
+      },
+      "fixability": "delegated",
+      "impact": "dataset_frame_order_is_incomplete",
+      "layer": "alignment",
+      "location": {},
+      "message": "Global frame indexes must be continuous from zero.",
+      "path": "data",
+      "remediation_ref": "openbot://remediation/LEROBOT_GLOBAL_INDEX_NON_CONTIGUOUS",
+      "rule_id": "lerobot.global.index.non.contiguous",
+      "severity": "error"
+    }
+  ],
+  "input_format": "lerobot",
+  "rule_pack_version": "openbot.dataset_audit.rules.v1",
+  "schema_version": "openbot.dataset_audit.v1",
+  "skipped_checks": [
+    {
+      "layer": "provenance",
+      "location": {
+        "omitted": [
+          "videos/observation.images.left/chunk-000/file-000.mp4",
+          "videos/observation.images.right/chunk-000/file-000.mp4"
+        ]
+      },
+      "missing_capabilities": [
+        "content.checksum"
+      ],
+      "reason": "SHA-256 content checking was not requested.",
+      "reason_code": "option_not_enabled",
+      "rule_id": "duplicate.content"
+    }
+  ],
+  "summary": {
+    "error": 6,
+    "info": 0,
+    "videos": 2,
+    "warning": 0
+  }
+}

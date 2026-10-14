@@ -20,6 +20,66 @@ def contained(root, relative):
 
 
 def audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
+    """Return a report for malformed inputs as well as completed checks.
+
+    Caller errors (scope, tolerance, interrupted publication) remain exceptions.
+    A failed prerequisite never certifies unperformed downstream checks.
+    """
+    root = Path(root).resolve()
+    if (root / "INCOMPLETE").exists():
+        raise ValueError("Dataset publication is incomplete")
+    if not math.isfinite(tolerance) or tolerance <= 0:
+        raise ValueError("Tolerance must be finite and positive")
+    try:
+        return _audit_dataset(root, decode=decode, tolerance=tolerance, cameras=cameras)
+    except ImportError:
+        raise
+    except (OSError, KeyError, TypeError, ValueError) as exc:
+        if str(exc) in {"Selected camera is absent from info.features", "Dataset has no declared video features"}:
+            raise
+        unsupported = "supports LeRobot v3.0 only" in str(exc)
+        code = "UNSUPPORTED_DATASET" if unsupported else "DATASET_PREREQUISITE_INVALID"
+        return {
+            "schema_version": "boundary-audit.v0.2",
+            "tool_version": __version__,
+            "status": "partial" if unsupported else "fail",
+            "scope": "Dataset prerequisites failed; row/video checks were not completed",
+            "selection": {
+                "declared_cameras": [],
+                "checked_cameras": cameras or [],
+                "unselected_cameras": [],
+                "camera_scope": "unknown",
+            },
+            "dataset_coverage_status": "partial",
+            "fps": None,
+            "coverage": {
+                "metadata_episodes": 0,
+                "data_rows": 0,
+                "boundary_queries": 0,
+                "decoded_queries": 0,
+                "episode_camera_pairs_checked": 0,
+                "video_files_checked": 0,
+            },
+            "decoder": {"requested": decode, "status": "not_completed", "backend": "pyav"},
+            "limitations": ["Prerequisite failure prevented complete audit; no unperformed check passed"],
+            "findings": [
+                {
+                    "code": code,
+                    "severity": "unverified" if unsupported else "error",
+                    "message": f"{type(exc).__name__}: {str(exc).replace(str(root), '<dataset>')[:1200]}",
+                }
+            ],
+            "finding_counts": {code: 1},
+            "findings_truncated_count": 0,
+            "video_reports": [],
+            "boundary_queries": [],
+            "decode_evidence": [],
+            "timing_seconds": {},
+        }
+
+
+def _audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
+    import pyarrow as pa
     import pyarrow.parquet as pq
 
     root = Path(root).resolve()
@@ -34,6 +94,9 @@ def audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
     fps = Fraction(str(info["fps"]))
     if fps <= 0:
         raise ValueError("FPS must be positive")
+    for field in ("total_episodes", "total_frames"):
+        if type(info[field]) is not int or info[field] <= 0:
+            raise ValueError(f"{field} must be a positive integer")
     declared_cameras = [name for name, feature in info["features"].items() if feature["dtype"] == "video"]
     cameras = declared_cameras if cameras is None else list(dict.fromkeys(cameras))
     if set(cameras) - set(declared_cameras):
@@ -73,6 +136,9 @@ def audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
         add("FRAME_TOTAL_MISMATCH", "error", "Episode lengths differ from total_frames")
     row_cursor = 0
     for episode in episodes:
+        for field in ("episode_index", "length", "dataset_from_index", "dataset_to_index"):
+            if type(episode[field]) is not int:
+                raise ValueError(f"Episode {field} must be an integer")
         if episode["dataset_from_index"] != row_cursor or episode["dataset_to_index"] != row_cursor + episode["length"]:
             add(
                 "DATA_RANGE_MISMATCH",
@@ -190,49 +256,140 @@ def audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
     data_files = sorted((root / "data").glob("chunk-*/file-*.parquet"))
     seen_rows = 0
     counters = defaultdict(int)
+    last_frames = {}
+    ordinal_known = True
     query_keys = {(q["episode_index"], q["frame_index"]) for q in boundaries}
     query_timestamps = {}
     row_ends = [e["dataset_to_index"] for e in episodes]
     data_start_time = time.perf_counter()
+
+    def check_data_row(row, position):
+        ep, frame, ts = row["episode_index"], row["frame_index"], row["timestamp"]
+        range_index = bisect_right(row_ends, position)
+        if ordinal_known and (range_index >= len(episodes) or ep != episodes[range_index]["episode_index"]):
+            add(
+                "EPISODE_DATA_RANGE_MISMATCH",
+                "error",
+                "Stored row episode disagrees with declared global row range",
+                episode_index=ep,
+                frame_index=frame,
+            )
+        expected_frame = counters[ep] if ordinal_known else last_frames.get(ep, frame - 1) + 1
+        if frame != expected_frame:
+            add(
+                "FRAME_INDEX_DISCONTINUITY",
+                "error",
+                "Unexpected frame order",
+                episode_index=ep,
+                frame_index=frame,
+            )
+        counters[ep] += 1
+        last_frames[ep] = frame
+        if (ep, frame) in query_keys:
+            query_timestamps[(ep, frame)] = ts
+        if (
+            not isinstance(ts, (int, float))
+            or not math.isfinite(ts)
+            or frame < 0
+            or abs(ts - float(Fraction(frame, 1) / fps)) > tolerance
+        ):
+            add(
+                "DATA_TIMESTAMP_MISMATCH",
+                "error",
+                "Row timestamp differs from local frame_index/FPS",
+                episode_index=ep,
+                frame_index=frame,
+            )
+
+    episode_map = {e["episode_index"]: e for e in episodes}
+    for episode in episodes:
+        for field in ("data/chunk_index", "data/file_index"):
+            if field not in episode or type(episode[field]) is not int or episode[field] < 0:
+                add(
+                    "DATA_SHARD_REFERENCE_INVALID",
+                    "error",
+                    "Episode requires a nonnegative integer " + field,
+                    episode_index=episode["episode_index"],
+                )
+        if "data_path" not in info:
+            add("DATA_PATH_MISSING", "error", "info.json requires data_path")
     for path in data_files:
-        pf = pq.ParquetFile(contained(root, path.relative_to(root)))
-        for batch in pf.iter_batches(columns=["episode_index", "frame_index", "timestamp"], batch_size=4096):
-            for row in batch.to_pylist():
-                seen_rows += 1
-                ep, frame, ts = row["episode_index"], row["frame_index"], row["timestamp"]
-                range_index = bisect_right(row_ends, seen_rows - 1)
-                if range_index >= len(episodes) or ep != episodes[range_index]["episode_index"]:
-                    add(
-                        "EPISODE_DATA_RANGE_MISMATCH",
-                        "error",
-                        "Stored row episode disagrees with declared global row range",
-                        episode_index=ep,
-                        frame_index=frame,
+        relative_data = path.relative_to(root).as_posix()
+        try:
+            pf = pq.ParquetFile(contained(root, path.relative_to(root)))
+            required = ["index", "episode_index", "frame_index", "timestamp"]
+            missing = set(required) - set(pf.schema_arrow.names)
+            if missing:
+                add(
+                    "DATA_COLUMN_MISSING", "error", "Missing columns: " + ", ".join(sorted(missing)), path=relative_data
+                )
+                ordinal_known = False
+                continue
+            bad_types = [c for c in required[:3] if not pa.types.is_integer(pf.schema_arrow.field(c).type)]
+            if bad_types:
+                add(
+                    "DATA_INDEX_TYPE_INVALID",
+                    "error",
+                    "Index columns must have integer types: " + ", ".join(bad_types),
+                    path=relative_data,
+                )
+                ordinal_known = False
+                continue
+            batches = pf.iter_batches(columns=required, batch_size=4096)
+            for batch in batches:
+                # Keep global ordinal progress across shards, including defective rows.
+                for row in batch.to_pylist():
+                    position = seen_rows
+                    seen_rows += 1
+                    index, ep, frame = row["index"], row["episode_index"], row["frame_index"]
+                    if any(type(v) is not int or v < 0 for v in (index, ep, frame)):
+                        add(
+                            "DATA_INDEX_VALUE_INVALID",
+                            "error",
+                            "Index columns require nonnegative nonnull integers",
+                            path=relative_data,
+                            row_position=position,
+                        )
+                        if any(type(v) is not int or v < 0 for v in (ep, frame)):
+                            continue
+                    metadata = episode_map.get(ep)
+                    expected_index = (
+                        position if ordinal_known else metadata["dataset_from_index"] + frame if metadata else None
                     )
-                if frame != counters[ep]:
-                    add(
-                        "FRAME_INDEX_DISCONTINUITY",
-                        "error",
-                        "Unexpected frame order",
-                        episode_index=ep,
-                        frame_index=frame,
-                    )
-                counters[ep] += 1
-                if (ep, frame) in query_keys:
-                    query_timestamps[(ep, frame)] = ts
-                if (
-                    ts is None
-                    or not math.isfinite(ts)
-                    or frame < 0
-                    or abs(ts - float(Fraction(frame, 1) / fps)) > tolerance
-                ):
-                    add(
-                        "DATA_TIMESTAMP_MISMATCH",
-                        "error",
-                        "Row timestamp differs from local frame_index/FPS",
-                        episode_index=ep,
-                        frame_index=frame,
-                    )
+                    if type(index) is int and index >= 0 and expected_index is not None and index != expected_index:
+                        add(
+                            "GLOBAL_INDEX_MISMATCH",
+                            "error",
+                            "Global index differs from its row position or declared episode range",
+                            path=relative_data,
+                            episode_index=ep,
+                            frame_index=frame,
+                            declared_index=index,
+                            expected_index=expected_index,
+                            expected_from="row_position" if ordinal_known else "episode_range",
+                        )
+                    if (
+                        metadata
+                        and "data/chunk_index" in metadata
+                        and "data/file_index" in metadata
+                        and "data_path" in info
+                    ):
+                        expected_path = info["data_path"].format(
+                            chunk_index=metadata["data/chunk_index"], file_index=metadata["data/file_index"]
+                        )
+                        if expected_path != relative_data:
+                            add(
+                                "DATA_SHARD_REFERENCE_MISMATCH",
+                                "error",
+                                "Row is not in the episode's declared data shard",
+                                path=relative_data,
+                                episode_index=ep,
+                                expected_path=expected_path,
+                            )
+                    check_data_row(row, position)
+        except (OSError, ValueError) as exc:
+            add("DATA_SHARD_UNREADABLE", "error", f"{type(exc).__name__}: {exc}", path=relative_data)
+            ordinal_known = False
     for episode in episodes:
         if counters[episode["episode_index"]] != episode["length"]:
             add(

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lerobot-boundary-audit"
-version = "0.3.0"
+version = "0.4.0"
 description = "Episode boundary diagnostics and guarded repair for LeRobot datasets"
 readme = "README.md"
 license = "MIT"
@@ -20,6 +20,7 @@ Issues = "https://github.com/SimaQie/-lerobot-boundary-audit/issues"
 lerobot = ["pyarrow>=14,<24"]
 decode = ["av>=14,<17"]
 repair = ["pyarrow>=14,<24", "av>=14,<17"]
+fixtures = ["pyarrow>=14,<24", "av>=14,<17", "numpy>=1.26,<3"]
 dev = ["pytest>=8,<10", "ruff>=0.9", "numpy>=1.26,<3"]
 
 [project.scripts]
@@ -27,6 +28,9 @@ lerobot-boundary-audit = "boundary_audit.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+boundary_audit = ["resources/*.zip"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

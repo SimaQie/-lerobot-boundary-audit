@@ -1,0 +1,729 @@
+{
+  "schema_version": "boundary-comparison.v1",
+  "synthetic_only": true,
+  "cases": [
+    {
+      "name": "recorded-a",
+      "path": "recorded-a",
+      "expected": "pass",
+      "origin": "official LeRobot create/add_frame/save_episode/finalize"
+    },
+    {
+      "name": "recorded-b",
+      "path": "recorded-b",
+      "expected": "pass",
+      "origin": "official LeRobot create/add_frame/save_episode/finalize"
+    },
+    {
+      "name": "merged",
+      "path": "merged",
+      "expected": "pass",
+      "origin": "official merge_datasets with video/data concatenation"
+    },
+    {
+      "name": "offset-one-frame",
+      "path": "offset-one-frame",
+      "expected": "fail",
+      "origin": "controlled metadata injection",
+      "fault": "one camera, episode 1 shifted by one frame"
+    },
+    {
+      "name": "camera-swap",
+      "path": "camera-swap",
+      "expected": "fail",
+      "origin": "controlled payload injection",
+      "fault": "camera payloads swapped; timestamps stay valid"
+    },
+    {
+      "name": "repaired-offset",
+      "path": "repaired-offset",
+      "expected": "pass",
+      "origin": "guarded repair of controlled offset injection"
+    },
+    {
+      "name": "global-index-shift",
+      "path": "global-index-shift",
+      "expected": "fail",
+      "required_evidence": "row",
+      "origin": "derived original marker control",
+      "fault": "all global indices shifted by one"
+    },
+    {
+      "name": "duplicate-global-index",
+      "path": "duplicate-global-index",
+      "expected": "fail",
+      "required_evidence": "row",
+      "origin": "derived original marker control",
+      "fault": "duplicate index inside episode 1"
+    },
+    {
+      "name": "action-window-corrupt",
+      "path": "action-window-corrupt",
+      "expected": "fail",
+      "required_evidence": "row",
+      "origin": "derived original marker control",
+      "fault": "action at episode 1 start replaced"
+    },
+    {
+      "name": "multi-data-shard",
+      "path": "multi-data-shard",
+      "expected": "pass",
+      "required_evidence": "pixel",
+      "origin": "derived original marker control",
+      "fault": null
+    },
+    {
+      "name": "duplicate-pixel-frame",
+      "path": "duplicate-pixel-frame",
+      "expected": "fail",
+      "required_evidence": "pixel",
+      "origin": "derived original marker control",
+      "fault": "frame 1 of episode 1 repeats frame 0, PTS stays valid"
+    },
+    {
+      "name": "pixel-order-swap",
+      "path": "pixel-order-swap",
+      "expected": "fail",
+      "required_evidence": "pixel",
+      "origin": "derived original marker control",
+      "fault": "frames 1 and 2 of episode 1 exchanged, PTS stays valid"
+    },
+    {
+      "name": "no-b-frames",
+      "path": "no-b-frames",
+      "expected": "pass",
+      "required_evidence": "pixel",
+      "origin": "derived original marker control",
+      "fault": null
+    }
+  ],
+  "checks": [
+    {
+      "case": "recorded-a",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.5367547999994713,
+      "finding_codes": []
+    },
+    {
+      "case": "recorded-a",
+      "tool": "storage-v040",
+      "outcome": "pass",
+      "elapsed_seconds": 0.028798100000130944,
+      "finding_codes": []
+    },
+    {
+      "case": "recorded-a",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 4.4475568999987445,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "recorded-a",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 4,
+      "warnings": 0,
+      "elapsed_seconds": 1.2840291000029538,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH"
+      ],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "recorded-a",
+      "tool": "full-loader-pyav-window",
+      "outcome": "pass",
+      "identity_failures": 0,
+      "row_failures": 0,
+      "runtime_errors": 0
+    },
+    {
+      "case": "recorded-b",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.049825200003397185,
+      "finding_codes": []
+    },
+    {
+      "case": "recorded-b",
+      "tool": "storage-v040",
+      "outcome": "pass",
+      "elapsed_seconds": 0.05978070000128355,
+      "finding_codes": []
+    },
+    {
+      "case": "recorded-b",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 0.7156691999989562,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "recorded-b",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 4,
+      "warnings": 0,
+      "elapsed_seconds": 0.8586819999982254,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH"
+      ],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "recorded-b",
+      "tool": "full-loader-pyav-window",
+      "outcome": "pass",
+      "identity_failures": 0,
+      "row_failures": 0,
+      "runtime_errors": 0
+    },
+    {
+      "case": "merged",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.08668719999695895,
+      "finding_codes": []
+    },
+    {
+      "case": "merged",
+      "tool": "storage-v040",
+      "outcome": "pass",
+      "elapsed_seconds": 0.10144779999973252,
+      "finding_codes": []
+    },
+    {
+      "case": "merged",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 0.6409137999944505,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "merged",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 4,
+      "warnings": 0,
+      "elapsed_seconds": 0.894926699998905,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH"
+      ],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "merged",
+      "tool": "full-loader-pyav-window",
+      "outcome": "pass",
+      "identity_failures": 0,
+      "row_failures": 0,
+      "runtime_errors": 0
+    },
+    {
+      "case": "offset-one-frame",
+      "tool": "storage-v030",
+      "outcome": "fail",
+      "elapsed_seconds": 0.08092300000134856,
+      "finding_codes": [
+        "EPISODE_START_MISMATCH",
+        "EPISODE_END_MISMATCH",
+        "BOUNDARY_QUERY_MISMATCH",
+        "DECODE_BOUNDARY_MISMATCH"
+      ]
+    },
+    {
+      "case": "offset-one-frame",
+      "tool": "storage-v040",
+      "outcome": "fail",
+      "elapsed_seconds": 0.08120249999774387,
+      "finding_codes": [
+        "EPISODE_START_MISMATCH",
+        "EPISODE_END_MISMATCH",
+        "BOUNDARY_QUERY_MISMATCH",
+        "DECODE_BOUNDARY_MISMATCH"
+      ]
+    },
+    {
+      "case": "offset-one-frame",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 0.6887022000009893,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "offset-one-frame",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 5,
+      "warnings": 0,
+      "elapsed_seconds": 0.9059912000011536,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH",
+        "LEROBOT_VIDEO_SEGMENT_OVERLAP"
+      ],
+      "additional_codes_vs_merged": [
+        "LEROBOT_VIDEO_SEGMENT_OVERLAP"
+      ]
+    },
+    {
+      "case": "offset-one-frame",
+      "tool": "full-loader-pyav-window",
+      "outcome": "fail",
+      "identity_failures": 27,
+      "row_failures": 0,
+      "runtime_errors": 0
+    },
+    {
+      "case": "camera-swap",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.08296390000032261,
+      "finding_codes": []
+    },
+    {
+      "case": "camera-swap",
+      "tool": "storage-v040",
+      "outcome": "pass",
+      "elapsed_seconds": 0.0868451999995159,
+      "finding_codes": []
+    },
+    {
+      "case": "camera-swap",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 0.7885773000016343,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "camera-swap",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 4,
+      "warnings": 0,
+      "elapsed_seconds": 0.9364492000022437,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH"
+      ],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "camera-swap",
+      "tool": "full-loader-pyav-window",
+      "outcome": "fail",
+      "identity_failures": 210,
+      "row_failures": 0,
+      "runtime_errors": 0
+    },
+    {
+      "case": "repaired-offset",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.07680729999992764,
+      "finding_codes": []
+    },
+    {
+      "case": "repaired-offset",
+      "tool": "storage-v040",
+      "outcome": "pass",
+      "elapsed_seconds": 0.0893694999977015,
+      "finding_codes": []
+    },
+    {
+      "case": "repaired-offset",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 0.7048506999999518,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "repaired-offset",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 4,
+      "warnings": 0,
+      "elapsed_seconds": 0.8748812999983784,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH"
+      ],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "repaired-offset",
+      "tool": "full-loader-pyav-window",
+      "outcome": "pass",
+      "identity_failures": 0,
+      "row_failures": 0,
+      "runtime_errors": 0
+    },
+    {
+      "case": "global-index-shift",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.08194619999994757,
+      "finding_codes": []
+    },
+    {
+      "case": "global-index-shift",
+      "tool": "storage-v040",
+      "outcome": "fail",
+      "elapsed_seconds": 0.09533899999951245,
+      "finding_codes": [
+        "GLOBAL_INDEX_MISMATCH"
+      ]
+    },
+    {
+      "case": "global-index-shift",
+      "tool": "lerobot-doctor",
+      "outcome": "reported_warning",
+      "errors": 0,
+      "warnings": 1,
+      "elapsed_seconds": 0.808025499994983,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "global-index-shift",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 5,
+      "warnings": 0,
+      "elapsed_seconds": 0.962777200002165,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH",
+        "LEROBOT_GLOBAL_INDEX_NON_CONTIGUOUS"
+      ],
+      "additional_codes_vs_merged": [
+        "LEROBOT_GLOBAL_INDEX_NON_CONTIGUOUS"
+      ]
+    },
+    {
+      "case": "global-index-shift",
+      "tool": "full-loader-pyav-window",
+      "outcome": "fail",
+      "identity_failures": 170,
+      "row_failures": 115,
+      "runtime_errors": 0
+    },
+    {
+      "case": "duplicate-global-index",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.09542979999969248,
+      "finding_codes": []
+    },
+    {
+      "case": "duplicate-global-index",
+      "tool": "storage-v040",
+      "outcome": "fail",
+      "elapsed_seconds": 0.0942016999979387,
+      "finding_codes": [
+        "GLOBAL_INDEX_MISMATCH"
+      ]
+    },
+    {
+      "case": "duplicate-global-index",
+      "tool": "lerobot-doctor",
+      "outcome": "reported_warning",
+      "errors": 0,
+      "warnings": 1,
+      "elapsed_seconds": 0.7933720000000903,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "duplicate-global-index",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 6,
+      "warnings": 0,
+      "elapsed_seconds": 1.0066555000012158,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH",
+        "LEROBOT_GLOBAL_INDEX_DUPLICATE",
+        "LEROBOT_GLOBAL_INDEX_NON_CONTIGUOUS"
+      ],
+      "additional_codes_vs_merged": [
+        "LEROBOT_GLOBAL_INDEX_DUPLICATE",
+        "LEROBOT_GLOBAL_INDEX_NON_CONTIGUOUS"
+      ]
+    },
+    {
+      "case": "duplicate-global-index",
+      "tool": "full-loader-pyav-window",
+      "outcome": "fail",
+      "identity_failures": 4,
+      "row_failures": 5,
+      "runtime_errors": 0
+    },
+    {
+      "case": "action-window-corrupt",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.09500760000082664,
+      "finding_codes": []
+    },
+    {
+      "case": "action-window-corrupt",
+      "tool": "storage-v040",
+      "outcome": "pass",
+      "elapsed_seconds": 0.0881500000032247,
+      "finding_codes": []
+    },
+    {
+      "case": "action-window-corrupt",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 0.8265319999991334,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "action-window-corrupt",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 4,
+      "warnings": 0,
+      "elapsed_seconds": 0.9366730999972788,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH"
+      ],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "action-window-corrupt",
+      "tool": "full-loader-pyav-window",
+      "outcome": "fail",
+      "identity_failures": 0,
+      "row_failures": 2,
+      "runtime_errors": 0
+    },
+    {
+      "case": "multi-data-shard",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.09963509999943199,
+      "finding_codes": []
+    },
+    {
+      "case": "multi-data-shard",
+      "tool": "storage-v040",
+      "outcome": "pass",
+      "elapsed_seconds": 0.09467430000222521,
+      "finding_codes": []
+    },
+    {
+      "case": "multi-data-shard",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 0.7567749000008916,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "multi-data-shard",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 20,
+      "warnings": 0,
+      "elapsed_seconds": 1.0611573999995016,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH"
+      ],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "multi-data-shard",
+      "tool": "full-loader-pyav-window",
+      "outcome": "pass",
+      "identity_failures": 0,
+      "row_failures": 0,
+      "runtime_errors": 0
+    },
+    {
+      "case": "duplicate-pixel-frame",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.12844410000252537,
+      "finding_codes": []
+    },
+    {
+      "case": "duplicate-pixel-frame",
+      "tool": "storage-v040",
+      "outcome": "pass",
+      "elapsed_seconds": 0.12352559999999357,
+      "finding_codes": []
+    },
+    {
+      "case": "duplicate-pixel-frame",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 0.7065161999998963,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "duplicate-pixel-frame",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 4,
+      "warnings": 0,
+      "elapsed_seconds": 0.9305304000008618,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH"
+      ],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "duplicate-pixel-frame",
+      "tool": "full-loader-pyav-window",
+      "outcome": "fail",
+      "identity_failures": 6,
+      "row_failures": 0,
+      "runtime_errors": 0
+    },
+    {
+      "case": "pixel-order-swap",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.1417935999998008,
+      "finding_codes": []
+    },
+    {
+      "case": "pixel-order-swap",
+      "tool": "storage-v040",
+      "outcome": "pass",
+      "elapsed_seconds": 0.13858970000001136,
+      "finding_codes": []
+    },
+    {
+      "case": "pixel-order-swap",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 0.7492456999971182,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "pixel-order-swap",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 4,
+      "warnings": 0,
+      "elapsed_seconds": 1.262020999995002,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH"
+      ],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "pixel-order-swap",
+      "tool": "full-loader-pyav-window",
+      "outcome": "fail",
+      "identity_failures": 12,
+      "row_failures": 0,
+      "runtime_errors": 0
+    },
+    {
+      "case": "no-b-frames",
+      "tool": "storage-v030",
+      "outcome": "pass",
+      "elapsed_seconds": 0.1358706999963033,
+      "finding_codes": []
+    },
+    {
+      "case": "no-b-frames",
+      "tool": "storage-v040",
+      "outcome": "pass",
+      "elapsed_seconds": 0.14375319999817293,
+      "finding_codes": []
+    },
+    {
+      "case": "no-b-frames",
+      "tool": "lerobot-doctor",
+      "outcome": "no_blocking_error",
+      "errors": 0,
+      "warnings": 0,
+      "elapsed_seconds": 0.8269846000039252,
+      "finding_codes": [],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "no-b-frames",
+      "tool": "openbot-data",
+      "outcome": "reported_error",
+      "errors": 4,
+      "warnings": 0,
+      "elapsed_seconds": 0.9361865999962902,
+      "finding_codes": [
+        "LEROBOT_FEATURE_SHAPE_MISMATCH"
+      ],
+      "additional_codes_vs_merged": []
+    },
+    {
+      "case": "no-b-frames",
+      "tool": "full-loader-pyav-window",
+      "outcome": "pass",
+      "identity_failures": 0,
+      "row_failures": 0,
+      "runtime_errors": 0
+    }
+  ],
+  "competitor_commits": {
+    "lerobot-doctor": "38681941b6866c6d97d49502ab991c21dfbb9d9b",
+    "openbot-data": "cd7720d55503a58fbbabc1b3d3ce48d9279518d7"
+  },
+  "competitor_versions": {
+    "lerobot-doctor": "0.3.0",
+    "openbot-data": "0.0.3",
+    "pyarrow": "26.0.0",
+    "av": "19.0.1",
+    "numpy": "2.5.4",
+    "opencv-python": "5.0.0.93"
+  },
+  "baseline_commit": "29ac3baf211a26081dba69f150302d4ceaa4ff14",
+  "baseline_audit_sha256": "3f1405d9632608d2a6e1e406bf5e39d713d67d43127bac8782d58a95cbdfd846",
+  "source_unchanged": true,
+  "configuration": {
+    "doctor_checks": "metadata,temporal,videos",
+    "openbot_integrity": "full",
+    "own_storage_decode": true,
+    "full_loader_backend": "pyav",
+    "phase": "window"
+  },
+  "limits": [
+    "Source-pinned builds, not necessarily PyPI releases",
+    "CPU startup included in elapsed time; different media runtimes",
+    "Warnings and unavailable checks are retained, not counted as successful fault detections",
+    "Only 13 authored controls; no prevalence, training-benefit or universal-ranking claim",
+    "Action and pixel identity require external expectations; general validators may not assess them",
+    "OpenBot flags singleton scalar-storage shapes on the clean official fixture; overall errors alone cannot establish fault detection. Inspect incremental findings."
+  ]
+}

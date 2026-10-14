@@ -77,6 +77,43 @@ def test_expected_fault_requires_wrong_pixel_evidence(tmp_path, monkeypatch):
     assert not result["checks"][0]["matched_expectation"]
 
 
+def test_row_fault_requires_observed_row_evidence_not_exception(tmp_path, monkeypatch):
+    root = tmp_path / "suite"
+    write_json(
+        root / "suite.json",
+        {
+            "schema_version": "boundary-conformance-suite.v1",
+            "synthetic_only": True,
+            "producer": {},
+            "cases": [{"name": "fault", "path": "fault", "expected": "fail", "required_evidence": "row"}],
+        },
+    )
+    monkeypatch.setattr(
+        "boundary_audit.conformance.verify_loader",
+        lambda *a, **k: {
+            "status": "fail",
+            "source_unchanged": True,
+            "records": [],
+            "row_errors": [{"kind": "row_identity"}],
+            "errors": [{"type": "KeyError"}],
+        },
+    )
+    assert run_suite(root, tmp_path / "observed", "stub", backends=["pyav"], phases=["window"])["status"] == "pass"
+    monkeypatch.setattr(
+        "boundary_audit.conformance.verify_loader",
+        lambda *a, **k: {
+            "status": "fail",
+            "source_unchanged": True,
+            "records": [],
+            "row_errors": [],
+            "errors": [{"type": "KeyError"}],
+        },
+    )
+    assert (
+        run_suite(root, tmp_path / "exception-only", "stub", backends=["pyav"], phases=["window"])["status"] == "fail"
+    )
+
+
 def test_suite_html_escapes_untrusted_values(tmp_path):
     path = tmp_path / "report.html"
     write_suite_html({"status": "fail", "producer": {"version": "<script>"}, "checks": []}, path)

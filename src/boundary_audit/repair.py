@@ -54,6 +54,13 @@ def make_plan(root, *, cameras=None, assume_cfr=False):
         "refusals": [],
         "status": "no_changes",
     }
+    if audit.get("fps") is None:
+        plan["status"] = "blocked"
+        plan["refusals"].append("Dataset prerequisites are invalid; no timing changes can be proposed")
+        if files != fingerprint(root):
+            raise ValueError("Source changed during planning")
+        plan["fingerprint"] = document_hash(plan)
+        return plan
     if not assume_cfr:
         plan["status"] = "contract_required"
         plan["refusals"].append("Explicit --assume-cfr is required before proposing timing changes")

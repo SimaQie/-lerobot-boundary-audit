@@ -48,3 +48,18 @@ def write_reports(report, output):
 <details><summary>Boundary queries: first, second and last stored row</summary><div class="scroll"><table><tr><th>Camera</th><th>Episode</th><th>Frame</th><th>Stored request (s)</th><th>Expected PTS (s)</th><th>Distance (s)</th></tr>{evidence}</table></div></details>
 <script>document.getElementById('severity').addEventListener('change',function(){{document.querySelectorAll('#findings tbody tr').forEach(r=>{{r.hidden=this.value!=='all'&&r.dataset.severity!==this.value;}});}});</script></body></html>"""
     (output / "report.html").write_text(html, encoding="utf-8")
+
+
+def write_probe_html(report, path):
+    """Show the actual query evidence and ambiguity, without remote assets."""
+    rows = []
+    for record in report.get("records", []):
+        cells = [record.get(k, "") for k in ("index", "camera", "delta", "expected_sample", "matched_sample", "status", "reason")]
+        rows.append("<tr>" + "".join("<td>" + escape(str(v)) + "</td>" for v in cells) + "</tr>")
+    summary = {k: v for k, v in report.items() if k != "records"}
+    content = '<!doctype html><html lang="en"><meta charset="utf-8"><title>Real footage loader probe</title><style>body{font:15px system-ui;margin:32px;max-width:1200px}table{border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>'
+    content += "<h1>Real footage loader probe: " + escape(report["status"].upper()) + "</h1>"
+    content += "<p>Comparison against sequential ordinal decode. Repeated or indistinguishable frames are unverified. No original sensor identity or physical synchronization guarantee.</p>"
+    content += "<details><summary>Scope, budgets, versions and row evidence</summary><pre>" + escape(json.dumps(summary, indent=2, ensure_ascii=False)) + "</pre></details>"
+    content += "<table><tr><th>Row</th><th>Camera</th><th>Delta</th><th>Expected sample</th><th>Matched sample</th><th>Status</th><th>Reason</th></tr>" + "".join(rows) + "</table></html>"
+    Path(path).write_text(content, encoding="utf-8")

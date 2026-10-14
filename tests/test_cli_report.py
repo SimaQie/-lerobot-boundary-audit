@@ -21,8 +21,7 @@ def test_camera_scope_is_explicit_and_missing_streams_are_not_hidden(tmp_path):
     assert report["status"] == "pass"
     assert report["dataset_coverage_status"] == "partial"
     assert report["selection"]["unselected_cameras"] == ["other"]
-    with pytest.raises(KeyError):
-        audit_dataset(root)  # missing metadata for a declared stream
+    assert audit_dataset(root)["status"] == "fail"  # missing metadata for a declared stream
 
 
 def test_global_row_interleaving_is_detected(tmp_path):

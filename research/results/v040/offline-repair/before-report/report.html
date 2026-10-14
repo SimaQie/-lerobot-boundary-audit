@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>LeRobot boundary audit</title>
+<style>body{max-width:1180px;margin:32px auto;padding:0 22px;font:15px system-ui;color:#172a40;background:#f5f7fb}h1{font-size:30px}.cards{display:flex;flex-wrap:wrap;gap:14px}article,.card,details{background:white;border:1px solid #dce3ed;border-radius:10px;padding:18px;margin:16px 0}.card{min-width:180px}.card b{display:block;font-size:25px}table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:9px;border-bottom:1px solid #e2e8f0}pre{white-space:pre-wrap;overflow-wrap:anywhere}.scroll{overflow:auto}svg{width:100%;max-height:170px}select{padding:8px}summary{cursor:pointer;font-weight:600}h3{overflow-wrap:anywhere}</style></head><body>
+<h1>Episode boundary audit: REVIEW</h1><p>LeRobot v3 storage timeline; physical sensor/action synchronization is not assessed</p>
+<div class="cards"><div class="card"><b>1 / 1</b>camera streams checked</div><div class="card"><b>2</b>episodes</div><div class="card"><b>6</b>data rows scanned</div><div class="card"><b>6</b>boundary queries</div></div>
+<p><strong>PASS applies only to selected cameras.</strong> Unselected: none. Local PyAV: checked. Official consumer: not requested.</p>
+<details><summary>Source, scope and versions</summary><pre>{
+  &quot;source&quot;: {},
+  &quot;selection&quot;: {
+    &quot;declared_cameras&quot;: [
+      &quot;camera&quot;
+    ],
+    &quot;checked_cameras&quot;: [
+      &quot;camera&quot;
+    ],
+    &quot;camera_scope&quot;: &quot;all&quot;,
+    &quot;unselected_cameras&quot;: []
+  },
+  &quot;coverage&quot;: {
+    &quot;metadata_episodes&quot;: 2,
+    &quot;cameras&quot;: 1,
+    &quot;data_rows&quot;: 6,
+    &quot;video_files_total&quot;: 1,
+    &quot;video_files_checked&quot;: 1,
+    &quot;episode_camera_pairs_total&quot;: 2,
+    &quot;episode_camera_pairs_checked&quot;: 2,
+    &quot;boundary_queries&quot;: 6,
+    &quot;decoded_queries&quot;: 6
+  },
+  &quot;official_consumer&quot;: {}
+}</pre></details>
+<h2>Video timeline evidence</h2><article><h3>videos/camera/chunk-000/file-000.mp4</h3><p>6 samples · max deviation 6.510417e-05 s · first affected sample 2</p><svg viewBox='0 0 640 140' role='img' aria-label='PTS deviation in ticks'><path d='M20 70H620' stroke='#ccd5e2'/><polyline points='20.0,70.0 140.0,70.0 260.0,115.0 620.0,115.0' fill='none' stroke='#2376b7' stroke-width='2'/><text x='20' y='132' font-size='12'>Sample order → · deviation in ticks · up to 128 representative points</text></svg></article>
+<h2>Findings (1)</h2><label>Severity <select id="severity"><option value="all">All</option><option>error</option><option>review</option><option>unverified</option></select></label><p>Shown 1; omitted 0.</p><div class="scroll"><table id="findings"><thead><tr><th>Code</th><th>Severity</th><th>Episode</th><th>Detail</th></tr></thead><tbody><tr data-severity='review'><td>VIDEO_GRID_DEVIATION</td><td>review</td><td></td><td>PTS grid differs from the declared constant-FPS grid</td></tr></tbody></table></div>
+<h2>Limits</h2><ul><li>Fragmented MP4, trimming/multiple edits and large composition tables are unsupported</li><li>Official LeRobot decoder verification requires the separate verify command</li><li>mdhd versus stts duration equality is assessed only on tracks without composition offsets</li><li>Ordinal alignment assumes full ordered episode metadata within each video shard</li></ul>
+<details><summary>Boundary queries: first, second and last stored row</summary><div class="scroll"><table><tr><th>Camera</th><th>Episode</th><th>Frame</th><th>Stored request (s)</th><th>Expected PTS (s)</th><th>Distance (s)</th></tr><tr><td>camera</td><td>0</td><td>0</td><td>0.000000000</td><td>0.000000000</td><td>0</td></tr><tr><td>camera</td><td>0</td><td>1</td><td>0.033333333</td><td>0.033333333</td><td>0</td></tr><tr><td>camera</td><td>0</td><td>2</td><td>0.066666667</td><td>0.066601563</td><td>6.510417e-05</td></tr><tr><td>camera</td><td>1</td><td>0</td><td>0.100000000</td><td>0.099934896</td><td>6.510417e-05</td></tr><tr><td>camera</td><td>1</td><td>1</td><td>0.133333333</td><td>0.133268229</td><td>6.510417e-05</td></tr><tr><td>camera</td><td>1</td><td>2</td><td>0.166666667</td><td>0.166601562</td><td>6.510417e-05</td></tr></table></div></details>
+<script>document.getElementById('severity').addEventListener('change',function(){document.querySelectorAll('#findings tbody tr').forEach(r=>{r.hidden=this.value!=='all'&&r.dataset.severity!==this.value;});});</script></body></html>

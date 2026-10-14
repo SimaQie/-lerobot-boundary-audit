@@ -1,0 +1,26 @@
+{
+  "schema_version": "boundary-repair-plan.v1",
+  "source_files": {
+    "data/chunk-000/file-000.parquet": "9f50b502dd113f7f56a9812448cf4b7ed7d3e56ff445e22b7cdf1c9d6bf4434e",
+    "meta/episodes/chunk-000/file-000.parquet": "0f92ff0f3be0d54081d2e8238c62f28f598e01e09746306b046d7c72ab544c5f",
+    "meta/info.json": "7e3db8c565ca56db3c988de92462854210035e8ca41505b76065e8d21226c496",
+    "meta/stats.json": "99a64c5977db1553796e82be53557dcb58b02eaaf5d0b49ae929620c687a73fd",
+    "meta/tasks.parquet": "d2a6e66e2afd724c010563736e5b948c638180ca52eb3d5a4d6a993b7c465cb5",
+    "README.md": "29984660c6be9673cf82e84d93b3e88ed674b483ff977cf5708f6d13afb2fbdf",
+    "source_manifest.json": "b2e42abe1c90d595f520cdb08e451557e7a8056efaebbf05cb13395cb91cff92",
+    "videos/observation.images.hand_left/chunk-000/file-000.mp4": "27c00a10b25a67cac63427299bdbf70953ed178fbee541072c6d57ad588ab5d6",
+    "videos/observation.images.hand_right/chunk-000/file-000.mp4": "adf82b01bc3a9badcef5f6a4b3bbbe0dc7996ff527af283a9a0d6a2cdd4a5a30"
+  },
+  "cameras": [
+    "observation.images.hand_left",
+    "observation.images.hand_right"
+  ],
+  "assume_cfr": true,
+  "contract": "All referenced video frames are ordered, contiguous samples at declared FPS; this is a user-supplied recording contract, not inferred physical truth.",
+  "operations": [],
+  "refusals": [
+    "Non-repairable findings: GLOBAL_INDEX_MISMATCH"
+  ],
+  "status": "blocked",
+  "fingerprint": "81ab1ce63adce40baf56ed67fecf5e28448655ed2122bb27785004b163de08ae"
+}

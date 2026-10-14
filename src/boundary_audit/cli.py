@@ -22,6 +22,8 @@ def main(argv=None):
         "fixture-suite",
         "verify-loader",
         "conformance",
+        "probe-loader",
+        "demo",
     }
     if argv and argv[0] not in commands and not argv[0].startswith("-"):
         argv.insert(0, "audit")
@@ -44,7 +46,7 @@ def main(argv=None):
                 "--assume-cfr", action="store_true", help="Assert ordered contiguous frames at declared FPS"
             )
     cmd = sub.add_parser("download")
-    cmd.add_argument("sample", choices=["agibot2026", "pusht"])
+    cmd.add_argument("sample", choices=["agibot2026", "aloha_screw_driver", "pusht"])
     cmd.add_argument("--out", type=Path, required=True)
     cmd.add_argument("--max-bytes", type=int)
     cmd = sub.add_parser("apply")
@@ -54,6 +56,26 @@ def main(argv=None):
     cmd = sub.add_parser("restore")
     cmd.add_argument("root", type=Path)
     cmd.add_argument("--out", type=Path, required=True)
+    cmd = sub.add_parser("demo")
+    cmd.add_argument("--out", type=Path, required=True)
+    cmd = sub.add_parser("probe-loader")
+    cmd.add_argument("root", type=Path)
+    cmd.add_argument("--out", type=Path, required=True)
+    cmd.add_argument("--python", required=True)
+    cmd.add_argument("--camera", action="append", dest="cameras")
+    cmd.add_argument("--episode", type=int, action="append", dest="episodes")
+    cmd.add_argument("--backend", choices=["pyav", "torchcodec"], default="pyav")
+    cmd.add_argument(
+        "--phase", choices=["single", "window", "batch", "workers", "random", "persistent"], default="window"
+    )
+    cmd.add_argument("--max-rows", type=int, default=12)
+    cmd.add_argument("--radius", type=int, default=1)
+    cmd.add_argument("--seed", type=int, default=20261014)
+    cmd.add_argument("--max-decode-frames", type=int, default=50000)
+    cmd.add_argument("--max-reference-bytes", type=int, default=268435456)
+    cmd.add_argument("--max-view-bytes", type=int, default=314572800)
+    cmd.add_argument("--timeout", type=int, default=300)
+    cmd.add_argument("--ffmpeg-bin", type=Path)
     for name in ["fixture-suite", "verify-loader", "conformance"]:
         cmd = sub.add_parser(name)
         if name != "fixture-suite":
@@ -63,11 +85,19 @@ def main(argv=None):
         cmd.add_argument("--ffmpeg-bin", type=Path)
         if name == "verify-loader":
             cmd.add_argument("--backend", choices=["pyav", "torchcodec"], default="pyav")
-            cmd.add_argument("--phase", choices=["single", "window", "batch", "workers", "subset"], default="single")
+            cmd.add_argument(
+                "--phase",
+                choices=["single", "window", "batch", "workers", "subset", "long-window", "random", "persistent"],
+                default="single",
+            )
         elif name == "conformance":
+            cmd.add_argument("--jobs", type=int, default=1)
             cmd.add_argument("--backend", choices=["pyav", "torchcodec"], action="append", dest="backends")
             cmd.add_argument(
-                "--phase", choices=["single", "window", "batch", "workers", "subset"], action="append", dest="phases"
+                "--phase",
+                choices=["single", "window", "batch", "workers", "subset", "long-window", "random", "persistent"],
+                action="append",
+                dest="phases",
             )
     args = parser.parse_args(argv)
     if args.command in {
@@ -76,10 +106,43 @@ def main(argv=None):
         "repair-plan",
         "verify-loader",
         "conformance",
+        "probe-loader",
     } and args.out.resolve().is_relative_to(args.root.resolve()):
         parser.error("Output must be outside the source dataset")
     try:
-        if args.command in {"fixture-suite", "verify-loader", "conformance"}:
+        if args.command == "demo":
+            from .fixtures import export_demo
+
+            result = export_demo(args.out)
+            report = audit_dataset(args.out / "merged", decode=True)
+            write_reports(report, args.out / "demo-report")
+            result["status"] = report["status"]
+            summary = result
+        elif args.command == "probe-loader":
+            from .probe import probe_loader
+
+            result = probe_loader(
+                args.root,
+                args.python,
+                cameras=args.cameras,
+                episodes=args.episodes,
+                backend=args.backend,
+                phase=args.phase,
+                max_rows=args.max_rows,
+                radius=args.radius,
+                seed=args.seed,
+                max_decode_frames=args.max_decode_frames,
+                max_reference_bytes=args.max_reference_bytes,
+                max_view_bytes=args.max_view_bytes,
+                timeout=args.timeout,
+                ffmpeg_bin=args.ffmpeg_bin,
+            )
+            write_json(args.out / "probe-report.json", result)
+            from .report import write_probe_html
+
+            write_probe_html(result, args.out / "report.html")
+            summary = {k: v for k, v in result.items() if k not in {"records", "preflight"}}
+        elif args.command in {"fixture-suite", "verify-loader", "conformance"}:
             from .conformance import PHASES, generate_suite, run_suite, verify_loader
 
             if args.command == "fixture-suite":
@@ -98,6 +161,7 @@ def main(argv=None):
                     backends=args.backends or ("pyav", "torchcodec"),
                     phases=args.phases or PHASES,
                     ffmpeg_bin=args.ffmpeg_bin,
+                    jobs=args.jobs,
                 )
             summary = {k: v for k, v in result.items() if k != "records"}
         elif args.command == "download":

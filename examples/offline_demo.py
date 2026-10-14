@@ -31,6 +31,7 @@ def create_fixture(root):
             "fps": 30,
             "total_episodes": 2,
             "total_frames": 6,
+            "data_path": "data/chunk-{chunk_index:03d}/file-{file_index:03d}.parquet",
             "video_path": "videos/{video_key}/chunk-{chunk_index:03d}/file-{file_index:03d}.mp4",
             "features": {"camera": {"dtype": "video"}},
         },
@@ -39,6 +40,8 @@ def create_fixture(root):
         {
             "episode_index": ep,
             "length": 3,
+            "data/chunk_index": 0,
+            "data/file_index": 0,
             "dataset_from_index": ep * 3,
             "dataset_to_index": (ep + 1) * 3,
             "videos/camera/chunk_index": 0,
@@ -51,7 +54,11 @@ def create_fixture(root):
     pq.write_table(pa.Table.from_pylist(episodes), root / "meta/episodes/chunk-000/file-000.parquet")
     pq.write_table(
         pa.Table.from_pylist(
-            [{"episode_index": ep, "frame_index": i, "timestamp": i / 30} for ep in range(2) for i in range(3)]
+            [
+                {"index": ep * 3 + i, "episode_index": ep, "frame_index": i, "timestamp": i / 30}
+                for ep in range(2)
+                for i in range(3)
+            ]
         ),
         root / "data/chunk-000/file-000.parquet",
     )

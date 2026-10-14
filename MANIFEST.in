@@ -9,4 +9,8 @@ include research/validate_agibot2026.py
 include research/check_backup.py
 include research/CONFORMANCE.md
 include research/package_preview.py
+include research/compare_v040.py
+include research/V040.md
+include research/validate_real_sample.py
+recursive-include src/boundary_audit/resources *.zip
 exclude research/backup_fingerprint_before.json

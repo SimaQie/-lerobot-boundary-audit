@@ -1,0 +1,13 @@
+{
+  "synthetic_controlled_injection": true,
+  "before": "review",
+  "after": "pass",
+  "source_unchanged": true,
+  "restored_exactly": true,
+  "restore": {
+    "status": "restored",
+    "original_file_hashes_verified": true,
+    "files": 4,
+    "repair_receipt_fingerprint": "8aa861e14e80bfb364d98e7ee49dddd502b2c812b5dbd0ede9b3b47f157f7885"
+  }
+}

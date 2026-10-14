@@ -5,6 +5,7 @@ import hashlib
 import importlib.metadata
 import json
 import os
+import random
 import sys
 import types
 from pathlib import Path
@@ -37,8 +38,8 @@ def run(request):
     validate_oracle(oracle)
     phase = request["phase"]
     cameras = list(oracle["cameras"])
-    window = phase in {"window", "batch", "workers"}
-    offsets = [-1, 0, 1] if window else [0]
+    window = phase in {"window", "batch", "workers", "long-window", "random", "persistent"}
+    offsets = [-8, -4, -1, 0, 1, 4, 8] if phase == "long-window" else [-1, 0, 1] if window else [0]
     deltas = {key: [delta / oracle["fps"] for delta in offsets] for key in cameras + ["action"]} if window else None
     subset = [e["episode_index"] for e in oracle["episodes"] if e["episode_index"] % 2] if phase == "subset" else None
     if phase == "subset" and not subset:
@@ -118,20 +119,32 @@ def run(request):
             row_errors.append({"expected_index": index, "kind": "action_padding_mask"})
 
     checked_rows = 0
-    if phase in {"batch", "workers"}:
-        kwargs = {"batch_size": 4, "shuffle": False, "num_workers": 2 if phase == "workers" else 0}
-        if phase == "workers":
+    order = list(range(len(indexes)))
+    if phase == "random":
+        random.Random(20261014).shuffle(order)
+        order += order[: min(3, len(order))]  # repeat reads after cache reuse
+    epochs = 2 if phase == "persistent" else 1
+    requested_rows = len(order) * epochs
+    if phase in {"batch", "workers", "persistent"}:
+        kwargs = {"batch_size": 4, "shuffle": False, "num_workers": 2 if phase in {"workers", "persistent"} else 0}
+        if phase in {"workers", "persistent"}:
             kwargs.update({"multiprocessing_context": "spawn", "worker_init_fn": worker_setup, "timeout": 60})
+        if phase == "persistent":
+            kwargs["persistent_workers"] = True
         try:
-            for batch in DataLoader(dataset, **kwargs):
-                for i in range(len(batch["index"])):
-                    item = {key: value[i] for key, value in batch.items()}
-                    inspect(item, checked_rows)
-                    checked_rows += 1
+            loader = DataLoader(dataset, **kwargs)
+            for epoch in range(epochs):
+                relative = 0
+                for batch in loader:
+                    for i in range(len(batch["index"])):
+                        item = {key: value[i] for key, value in batch.items()}
+                        inspect(item, relative)
+                        relative += 1
+                        checked_rows += 1
         except Exception as exc:
             errors.append({"index": checked_rows, "type": type(exc).__name__, "message": str(exc)[:1200]})
     else:
-        for relative in range(len(indexes)):
+        for relative in order:
             try:
                 inspect(dataset[relative], relative)
                 checked_rows += 1
@@ -150,20 +163,23 @@ def run(request):
     return {
         "schema_version": "boundary-loader-check.v1",
         "status": "pass"
-        if not errors and not row_errors and passed == len(records) and checked_rows == len(indexes)
+        if not errors and not row_errors and passed == len(records) and checked_rows == requested_rows
         else "fail",
         "scope": "Full official LeRobotDataset against synthetic pre-encoding pixel/action oracle; no physical synchronization claim",
         "backend": request["backend"],
         "phase": phase,
         "versions": versions,
-        "requested_rows": len(indexes),
+        "requested_rows": requested_rows,
         "checked_rows": checked_rows,
         "frame_checks": len(records),
         "passed_frame_checks": passed,
         "records": records,
         "row_errors": row_errors,
         "errors": errors,
-        "expected_padding_checks": len(indexes) * (len(cameras) + 1) if window else 0,
+        "expected_padding_checks": requested_rows * (len(cameras) + 1) if window else 0,
+        "offsets": offsets,
+        "epochs": epochs,
+        "seed": 20261014 if phase == "random" else None,
     }
 
 

@@ -1,0 +1,90 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Real footage loader probe</title><style>body{font:15px system-ui;margin:32px;max-width:1200px}table{border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><h1>Real footage loader probe: PARTIAL</h1><p>Comparison against sequential ordinal decode. Repeated or indistinguishable frames are unverified. No original sensor identity or physical synchronization guarantee.</p><details><summary>Scope, budgets, versions and row evidence</summary><pre>{
+  &quot;status&quot;: &quot;partial&quot;,
+  &quot;backend&quot;: &quot;pyav&quot;,
+  &quot;phase&quot;: &quot;workers&quot;,
+  &quot;versions&quot;: {
+    &quot;lerobot&quot;: &quot;0.6.1&quot;,
+    &quot;torch&quot;: &quot;2.10.0+cpu&quot;,
+    &quot;av&quot;: &quot;15.1.0&quot;,
+    &quot;datasets&quot;: &quot;4.8.5&quot;,
+    &quot;python&quot;: &quot;3.12.14&quot;,
+    &quot;platform&quot;: &quot;win32&quot;,
+    &quot;torchcodec&quot;: &quot;0.10.0&quot;,
+    &quot;ffmpeg_libraries&quot;: {
+      &quot;libavutil&quot;: [
+        59,
+        39,
+        100
+      ],
+      &quot;libavcodec&quot;: [
+        61,
+        19,
+        101
+      ],
+      &quot;libavformat&quot;: [
+        61,
+        7,
+        100
+      ],
+      &quot;libavdevice&quot;: [
+        61,
+        3,
+        100
+      ],
+      &quot;libavfilter&quot;: [
+        10,
+        4,
+        100
+      ],
+      &quot;libswscale&quot;: [
+        8,
+        3,
+        100
+      ],
+      &quot;libswresample&quot;: [
+        5,
+        3,
+        100
+      ]
+    },
+    &quot;torch_cuda_build&quot;: null,
+    &quot;device_used&quot;: &quot;cpu&quot;,
+    &quot;official_reader_sha256&quot;: &quot;3a477dae6aa887449f09be25b385485b065861d13c5448b9369a0ba09f01bb5d&quot;,
+    &quot;official_video_utils_sha256&quot;: &quot;82d0ced8f3f9adc754d4388122b044d36f2feeadda28d4ddad933cead7cc54d1&quot;
+  },
+  &quot;requested_rows&quot;: 6,
+  &quot;checked_rows&quot;: 6,
+  &quot;frame_checks&quot;: 36,
+  &quot;passed_frame_checks&quot;: 31,
+  &quot;ambiguous_frame_checks&quot;: 5,
+  &quot;row_errors&quot;: [],
+  &quot;errors&quot;: [],
+  &quot;reference&quot;: {
+    &quot;backend&quot;: &quot;sequential-pyav&quot;,
+    &quot;decoded_frames&quot;: 47316,
+    &quot;image_bytes&quot;: 32440320,
+    &quot;projected_view_bytes&quot;: 217214934,
+    &quot;projected_cameras&quot;: [
+      &quot;observation.images.hand_left&quot;,
+      &quot;observation.images.hand_right&quot;
+    ],
+    &quot;shared_dependency&quot;: &quot;FFmpeg; PyAV matches share PyAV RGB conversion&quot;,
+    &quot;approximate_rgb_rule&quot;: &quot;uint8 MAE &lt;= 2 and &gt;= 0.25 separation; heuristic, not identity proof&quot;
+  },
+  &quot;schema_version&quot;: &quot;boundary-real-probe.v1&quot;,
+  &quot;source_unchanged&quot;: true,
+  &quot;cameras&quot;: [
+    &quot;observation.images.hand_left&quot;,
+    &quot;observation.images.hand_right&quot;
+  ],
+  &quot;episodes&quot;: null,
+  &quot;seed&quot;: 20261014,
+  &quot;offsets&quot;: [
+    -1,
+    0,
+    1
+  ],
+  &quot;scope&quot;: &quot;Relative to sequential PyAV ordinal reference; no pre-encoding identity or physical synchronization claim&quot;,
+  &quot;preflight_status&quot;: &quot;pass&quot;,
+  &quot;elapsed_seconds&quot;: 206.40387559999363
+}</pre></details><table><tr><th>Row</th><th>Camera</th><th>Delta</th><th>Expected sample</th><th>Matched sample</th><th>Status</th><th>Reason</th></tr><tr><td>0</td><td>observation.images.hand_left</td><td>-1</td><td>0</td><td>0</td><td>pass</td><td></td></tr><tr><td>0</td><td>observation.images.hand_left</td><td>0</td><td>0</td><td>0</td><td>pass</td><td></td></tr><tr><td>0</td><td>observation.images.hand_left</td><td>1</td><td>1</td><td>1</td><td>pass</td><td></td></tr><tr><td>0</td><td>observation.images.hand_right</td><td>-1</td><td>0</td><td>0</td><td>pass</td><td></td></tr><tr><td>0</td><td>observation.images.hand_right</td><td>0</td><td>0</td><td>0</td><td>pass</td><td></td></tr><tr><td>0</td><td>observation.images.hand_right</td><td>1</td><td>1</td><td>1</td><td>pass</td><td></td></tr><tr><td>21078</td><td>observation.images.hand_left</td><td>-1</td><td>21078</td><td>21078</td><td>pass</td><td></td></tr><tr><td>21078</td><td>observation.images.hand_left</td><td>0</td><td>21078</td><td>21078</td><td>pass</td><td></td></tr><tr><td>21078</td><td>observation.images.hand_left</td><td>1</td><td>21079</td><td>21079</td><td>pass</td><td></td></tr><tr><td>21078</td><td>observation.images.hand_right</td><td>-1</td><td>21078</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>21078</td><td>observation.images.hand_right</td><td>0</td><td>21078</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>21078</td><td>observation.images.hand_right</td><td>1</td><td>21079</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>1</td><td>observation.images.hand_left</td><td>-1</td><td>0</td><td>0</td><td>pass</td><td></td></tr><tr><td>1</td><td>observation.images.hand_left</td><td>0</td><td>1</td><td>1</td><td>pass</td><td></td></tr><tr><td>1</td><td>observation.images.hand_left</td><td>1</td><td>2</td><td>2</td><td>pass</td><td></td></tr><tr><td>1</td><td>observation.images.hand_right</td><td>-1</td><td>0</td><td>0</td><td>pass</td><td></td></tr><tr><td>1</td><td>observation.images.hand_right</td><td>0</td><td>1</td><td>1</td><td>pass</td><td></td></tr><tr><td>1</td><td>observation.images.hand_right</td><td>1</td><td>2</td><td>2</td><td>pass</td><td></td></tr><tr><td>21079</td><td>observation.images.hand_left</td><td>-1</td><td>21078</td><td>21078</td><td>pass</td><td></td></tr><tr><td>21079</td><td>observation.images.hand_left</td><td>0</td><td>21079</td><td>21079</td><td>pass</td><td></td></tr><tr><td>21079</td><td>observation.images.hand_left</td><td>1</td><td>21080</td><td>21080</td><td>pass</td><td></td></tr><tr><td>21079</td><td>observation.images.hand_right</td><td>-1</td><td>21078</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>21079</td><td>observation.images.hand_right</td><td>0</td><td>21079</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>21079</td><td>observation.images.hand_right</td><td>1</td><td>21080</td><td>21080</td><td>pass</td><td></td></tr><tr><td>2312</td><td>observation.images.hand_left</td><td>-1</td><td>2311</td><td>2311</td><td>pass</td><td></td></tr><tr><td>2312</td><td>observation.images.hand_left</td><td>0</td><td>2312</td><td>2312</td><td>pass</td><td></td></tr><tr><td>2312</td><td>observation.images.hand_left</td><td>1</td><td>2312</td><td>2312</td><td>pass</td><td></td></tr><tr><td>2312</td><td>observation.images.hand_right</td><td>-1</td><td>2311</td><td>2311</td><td>pass</td><td></td></tr><tr><td>2312</td><td>observation.images.hand_right</td><td>0</td><td>2312</td><td>2312</td><td>pass</td><td></td></tr><tr><td>2312</td><td>observation.images.hand_right</td><td>1</td><td>2312</td><td>2312</td><td>pass</td><td></td></tr><tr><td>23657</td><td>observation.images.hand_left</td><td>-1</td><td>23656</td><td>23656</td><td>pass</td><td></td></tr><tr><td>23657</td><td>observation.images.hand_left</td><td>0</td><td>23657</td><td>23657</td><td>pass</td><td></td></tr><tr><td>23657</td><td>observation.images.hand_left</td><td>1</td><td>23657</td><td>23657</td><td>pass</td><td></td></tr><tr><td>23657</td><td>observation.images.hand_right</td><td>-1</td><td>23656</td><td>23656</td><td>pass</td><td></td></tr><tr><td>23657</td><td>observation.images.hand_right</td><td>0</td><td>23657</td><td>23657</td><td>pass</td><td></td></tr><tr><td>23657</td><td>observation.images.hand_right</td><td>1</td><td>23657</td><td>23657</td><td>pass</td><td></td></tr></table></html>

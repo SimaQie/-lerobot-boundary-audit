@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Real footage loader probe</title><style>body{font:15px system-ui;margin:32px;max-width:1200px}table{border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><h1>Real footage loader probe: PARTIAL</h1><p>Comparison against sequential ordinal decode. Repeated or indistinguishable frames are unverified. No original sensor identity or physical synchronization guarantee.</p><details><summary>Scope, budgets, versions and row evidence</summary><pre>{
+  &quot;status&quot;: &quot;partial&quot;,
+  &quot;checked_rows&quot;: 0,
+  &quot;errors&quot;: [
+    {
+      &quot;type&quot;: &quot;BudgetExceeded&quot;,
+      &quot;message&quot;: &quot;Sequential reference decode frame budget exhausted&quot;
+    }
+  ],
+  &quot;schema_version&quot;: &quot;boundary-real-probe.v1&quot;,
+  &quot;source_unchanged&quot;: true,
+  &quot;cameras&quot;: [
+    &quot;observation.images.left&quot;,
+    &quot;observation.images.right&quot;
+  ],
+  &quot;episodes&quot;: null,
+  &quot;seed&quot;: 20261014,
+  &quot;offsets&quot;: [
+    0
+  ],
+  &quot;scope&quot;: &quot;Relative to sequential PyAV ordinal reference; no pre-encoding identity or physical synchronization claim&quot;,
+  &quot;preflight_status&quot;: &quot;pass&quot;,
+  &quot;elapsed_seconds&quot;: 11.91649260000122
+}</pre></details><table><tr><th>Row</th><th>Camera</th><th>Delta</th><th>Expected sample</th><th>Matched sample</th><th>Status</th><th>Reason</th></tr></table></html>

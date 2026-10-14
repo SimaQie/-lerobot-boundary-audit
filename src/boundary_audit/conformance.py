@@ -5,12 +5,14 @@ import json
 import os
 import subprocess
 import tempfile
+import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from .repair import apply_plan, fingerprint, make_plan, restore_copy
 from .storage import publish_new_directory, write_json
 
-PHASES = ("single", "window", "batch", "workers", "subset")
+PHASES = ("single", "window", "batch", "workers", "subset", "long-window", "random", "persistent")
 
 
 def invoke(driver, python, request, *, timeout=300):
@@ -47,6 +49,9 @@ def generate_suite(output, python, *, ffmpeg_bin=None):
         if result["status"] != "generated":
             raise ValueError("Official fixture generation failed: " + result.get("message", "unknown error"))
         add_repair_control(stage)
+        from .fixtures import extend_suite
+
+        extend_suite(stage)
         from .audit import audit_dataset
 
         write_json(
@@ -100,6 +105,7 @@ def add_repair_control(root):
 
 
 def verify_loader(root, python, *, backend="pyav", phase="single", ffmpeg_bin=None):
+    start = time.perf_counter()
     root = Path(root).resolve()
     if (root / "INCOMPLETE").exists():
         raise ValueError("Dataset publication is incomplete")
@@ -130,12 +136,13 @@ def verify_loader(root, python, *, backend="pyav", phase="single", ffmpeg_bin=No
                 "errors": [{"type": type(exc).__name__, "message": str(exc).replace(str(root), "<dataset>")[:1500]}],
             }
     report["source_unchanged"] = fingerprint(root) == before
+    report["elapsed_seconds"] = time.perf_counter() - start
     if not report["source_unchanged"]:
         report["status"] = "fail"
     return report
 
 
-def run_suite(root, output, python, *, backends=("pyav", "torchcodec"), phases=PHASES, ffmpeg_bin=None):
+def run_suite(root, output, python, *, backends=("pyav", "torchcodec"), phases=PHASES, ffmpeg_bin=None, jobs=1):
     root, output = Path(root).resolve(), Path(output).resolve()
     if output.exists() or output.is_relative_to(root) or root.is_relative_to(output):
         raise ValueError("Use a new results directory outside the suite")
@@ -153,6 +160,8 @@ def run_suite(root, output, python, *, backends=("pyav", "torchcodec"), phases=P
         or any(p not in PHASES for p in phases)
     ):
         raise ValueError("Select supported backends and phases")
+    if type(jobs) is not int or not 1 <= jobs <= 4:
+        raise ValueError("Choose 1..4 independent consumer jobs")
     names = set()
     for case in manifest["cases"]:
         if (
@@ -162,6 +171,7 @@ def run_suite(root, output, python, *, backends=("pyav", "torchcodec"), phases=P
             or case["name"] in {".", ".."}
             or case["name"] in names
             or case.get("expected") not in {"pass", "fail"}
+            or case.get("required_evidence", "pixel") not in {"pixel", "row"}
         ):
             raise ValueError("Invalid or duplicate case name/expectation")
         if not (root / case["path"]).resolve().is_relative_to(root):
@@ -169,36 +179,43 @@ def run_suite(root, output, python, *, backends=("pyav", "torchcodec"), phases=P
         names.add(case["name"])
     output.mkdir(parents=True)
     checks = []
-    for case in manifest["cases"]:
-        if Path(case["name"]).name != case["name"] or case["name"] in {".", ".."}:
-            raise ValueError("Invalid case name")
-        dataset = (root / case["path"]).resolve()
-        if not dataset.is_relative_to(root):
-            raise ValueError("Case path escapes suite")
-        for backend in backends:
-            for phase in phases:
-                report = verify_loader(dataset, python, backend=backend, phase=phase, ffmpeg_bin=ffmpeg_bin)
-                write_json(output / case["name"] / f"{backend}-{phase}.json", report)
-                check = {
-                    "case": case["name"],
-                    "expected": case["expected"],
-                    "backend": backend,
-                    "phase": phase,
-                    "actual": report["status"],
-                    "matched_expectation": report["status"] == case["expected"],
-                    "frame_checks": report.get("frame_checks", 0),
-                    "passed_frame_checks": report.get("passed_frame_checks", 0),
-                    "source_unchanged": report["source_unchanged"],
-                    "identity_failures": sum(r["status"] == "wrong_frame" for r in report.get("records", [])),
-                    "report": f"{case['name']}/{backend}-{phase}.json",
-                }
-                if case["expected"] == "fail" and not check["identity_failures"]:
-                    check["matched_expectation"] = False
-                checks.append(check)
-                print(
-                    f"{case['name']} / {backend} / {phase}: {report['status']} (expected {case['expected']})",
-                    flush=True,
+    tasks = [(case, backend, phase) for case in manifest["cases"] for backend in backends for phase in phases]
+
+    def execute(task):
+        case, backend, phase = task
+        return verify_loader(
+            (root / case["path"]).resolve(), python, backend=backend, phase=phase, ffmpeg_bin=ffmpeg_bin
+        )
+
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        for (case, backend, phase), report in zip(tasks, pool.map(execute, tasks), strict=True):
+            write_json(output / case["name"] / f"{backend}-{phase}.json", report)
+            check = {
+                "case": case["name"],
+                "expected": case["expected"],
+                "backend": backend,
+                "phase": phase,
+                "actual": report["status"],
+                "matched_expectation": report["status"] == case["expected"],
+                "frame_checks": report.get("frame_checks", 0),
+                "passed_frame_checks": report.get("passed_frame_checks", 0),
+                "source_unchanged": report["source_unchanged"],
+                "elapsed_seconds": report.get("elapsed_seconds"),
+                "identity_failures": sum(r["status"] == "wrong_frame" for r in report.get("records", [])),
+                "row_failures": len(report.get("row_errors", [])),
+                "report": f"{case['name']}/{backend}-{phase}.json",
+            }
+            if case["expected"] == "fail":
+                evidence = case.get("required_evidence", "pixel")
+                check["required_evidence"] = evidence
+                check["matched_expectation"] &= bool(
+                    check["row_failures"] if evidence == "row" else check["identity_failures"]
                 )
+            checks.append(check)
+            print(
+                f"{case['name']} / {backend} / {phase}: {report['status']} (expected {case['expected']})",
+                flush=True,
+            )
     summary = {
         "schema_version": "boundary-conformance-summary.v1",
         "status": "pass"
