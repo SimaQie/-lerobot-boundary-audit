@@ -260,7 +260,18 @@ def run(request):
 
     versions["ffmpeg_libraries"] = av.library_versions
     versions["torch_cuda_build"] = torch.version.cuda
+    versions["torch_cuda_available"] = bool(torch.cuda.is_available())
+    # The stock LeRobot reader exposes no decode-device selector.  Record the
+    # requested device separately so a CUDA build is not mistaken for GPU decode.
+    versions["requested_decode_device"] = "cpu"
+    versions["observed_decode_device"] = "cpu"
+    versions["observed_output_device"] = "cpu"
     versions["device_used"] = "cpu"
+    versions["decode_device_evidence"] = (
+        "Stock LeRobot 0.6.1 reader; probe inputs carry no device argument and rows are consumed on CPU"
+    )
+    if versions["torch_cuda_available"]:
+        versions["torch_device_name"] = torch.cuda.get_device_name(0)
     versions["official_reader_sha256"] = hashlib.sha256(Path(reader.__file__).read_bytes()).hexdigest()
     versions["official_video_utils_sha256"] = hashlib.sha256(Path(video_utils.__file__).read_bytes()).hexdigest()
     wrong = any(r["status"] in {"wrong_frame", "wrong_shape"} for r in records)

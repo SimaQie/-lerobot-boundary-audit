@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from boundary_audit.download import SAMPLES, sha256
+from boundary_audit.environment import collect_environment, decode_environment, source_provenance
 from boundary_audit.probe import probe_loader
 from boundary_audit.repair import fingerprint
 from boundary_audit.report import write_probe_html
@@ -20,6 +21,7 @@ def main():
     parser.add_argument("--ffmpeg-bin", type=Path)
     args = parser.parse_args()
     samples, output = args.samples.resolve(), args.out.resolve()
+    project = Path(__file__).resolve().parents[1]
     if output.exists() or output.is_relative_to(samples) or samples.is_relative_to(output):
         raise ValueError("Use a fresh output directory outside the input samples")
     before, sources = {}, {}
@@ -58,8 +60,7 @@ def main():
         # The consumer already redacts its inputs. Also remove the auditor's
         # absolute workspace prefix from errors or future provenance fields.
         text = json.dumps(result, allow_nan=False)
-        project = str(Path(__file__).resolve().parents[1])
-        for prefix in (project, project.replace("\\", "/")):
+        for prefix in (str(project), str(project).replace("\\", "/")):
             text = text.replace(json.dumps(prefix)[1:-1], "<project>")
         result = json.loads(text)
         target = output / sample / f"{backend}-{sampling}"
@@ -89,6 +90,7 @@ def main():
                     "coverage",
                     "source_unchanged",
                     "elapsed_seconds",
+                    "versions",
                 )
             },
         }
@@ -105,10 +107,24 @@ def main():
         and c["status"] in {"pass", "partial"}
         for c in checks
     ) and all(unchanged.values())
+    environment = collect_environment()
+    consumer_versions = next((c.get("versions") for c in checks if c.get("versions")), {})
+    try:
+        consumer_python = str(Path(args.python).resolve().relative_to(project))
+    except ValueError:
+        consumer_python = Path(args.python).name
     summary = {
         "schema_version": "boundary-probe-review.v1",
-        "measurement_date": "2026-10-20",
-        "platform": "Windows CPU",
+        "measurement_date": environment["measurement_date"],
+        "measurement_time": environment["measurement_time"],
+        "platform": environment["platform"],
+        "environment": environment,
+        "source": source_provenance(project),
+        "consumer": {
+            "python": consumer_python,
+            "versions": consumer_versions,
+            "decode": decode_environment(consumer_versions),
+        },
         "sources": sources,
         "checks": checks,
         "source_hashes_unchanged": unchanged,
