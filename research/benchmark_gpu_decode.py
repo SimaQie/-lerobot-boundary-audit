@@ -28,7 +28,7 @@ import zipfile
 from collections import Counter
 from pathlib import Path
 
-from boundary_audit.environment import collect_environment
+from boundary_audit.environment import collect_environment, source_provenance
 from boundary_audit.gpu_metrics import (
     chunked,
     compare_frame,
@@ -408,6 +408,7 @@ def run_correctness(spec, device, config, controls):
     decoder = VideoDecoder(str(spec["path"]), device=device, seek_mode="exact")
     metadata = decoder.metadata
     frame_count, fps = int(metadata.num_frames), float(metadata.average_fps)
+    spec["frame_count"] = frame_count
     plan = plan_requests(spec, frame_count, fps, seed)
     # FFmpeg CUDA reports fallback status only after the first frame is decoded.
     probe = decoder.get_frames_at(indices=[0])
@@ -646,7 +647,11 @@ def run_performance(spec, device, batch_size, config, timings):
     start = time.perf_counter()
     decoder = VideoDecoder(str(spec["path"]), device=device, seek_mode="exact")
     create_seconds = time.perf_counter() - start
+    first_start = time.perf_counter()
     first = decoder.get_frames_at(indices=indices[:1])
+    if device == "cuda":
+        torch.cuda.synchronize()
+    first_decode_seconds = time.perf_counter() - first_start
     require_tensor_device(first.data[0], device)
     fallback = fallback_state(decoder)
     native_seconds, transfer_seconds, common_seconds, end_to_end_seconds = [], [], [], []
@@ -700,6 +705,7 @@ def run_performance(spec, device, batch_size, config, timings):
         "n_frames": frames,
         "indices": indices,
         "decoder_create_seconds": create_seconds,
+        "first_decode_seconds": first_decode_seconds,
         "warmup": warmup,
         "repeats": repeats,
         "fallback": fallback,
@@ -827,6 +833,7 @@ def main(argv=None):
 
     environment = collect_environment()
     environment["libraries"] = library_versions()
+    source = source_provenance(PROJECT)
     write_json(out / "environment.json", environment)
     device_status = {"cpu": {"status": "available"}}
     if "cuda" in devices:
@@ -905,6 +912,7 @@ def main(argv=None):
     summary = {
         "schema_version": "boundary-gpu-benchmark-summary.v1",
         "measurement_time": environment["measurement_time"],
+        "source": source,
         "environment": environment,
         "device_status": device_status,
         "input_hashes": sources,
