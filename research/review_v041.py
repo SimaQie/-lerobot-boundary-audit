@@ -6,7 +6,12 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from boundary_audit.download import SAMPLES, sha256
-from boundary_audit.environment import collect_environment, decode_environment, source_provenance
+from boundary_audit.environment import (
+    collect_environment,
+    decode_environment,
+    interpreter_path,
+    source_provenance,
+)
 from boundary_audit.probe import probe_loader
 from boundary_audit.repair import fingerprint
 from boundary_audit.report import write_probe_html
@@ -110,9 +115,9 @@ def main():
     environment = collect_environment()
     consumer_versions = next((c.get("versions") for c in checks if c.get("versions")), {})
     try:
-        consumer_python = str(Path(args.python).resolve().relative_to(project))
+        consumer_python = str(interpreter_path(args.python).relative_to(project))
     except ValueError:
-        consumer_python = Path(args.python).name
+        consumer_python = interpreter_path(args.python).name
     summary = {
         "schema_version": "boundary-probe-review.v1",
         "measurement_date": environment["measurement_date"],

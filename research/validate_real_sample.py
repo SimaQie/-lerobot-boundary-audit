@@ -16,6 +16,7 @@ import pyarrow.parquet as pq
 
 from boundary_audit.audit import audit_dataset
 from boundary_audit.download import SAMPLES, sha256
+from boundary_audit.environment import collect_environment, interpreter_path, source_provenance
 from boundary_audit.probe import probe_loader
 from boundary_audit.repair import apply_plan, fingerprint, make_plan, restore_copy
 from boundary_audit.report import write_probe_html, write_reports
@@ -38,9 +39,19 @@ def run(sample, source, output, python, ffmpeg_bin):
     before = fingerprint(source)
     cameras = spec["cameras"]
     info = json.loads((source / "meta/info.json").read_text())
+    environment = collect_environment()
+    project = Path(__file__).resolve().parents[1]
+    try:
+        consumer_python = str(Path(python).relative_to(project))
+    except ValueError:
+        consumer_python = Path(python).name
     summary = {
         "schema_version": "boundary-real-validation.v1",
         "sample": sample,
+        "measurement_time": environment["measurement_time"],
+        "environment": environment,
+        "code": source_provenance(project),
+        "consumer_python": consumer_python,
         "source": {k: manifest[k] for k in ("repository", "revision", "license", "total_bytes")},
         "dataset": {
             "episodes": info["total_episodes"],
@@ -246,7 +257,7 @@ def main():
         args.sample,
         args.source,
         args.out,
-        args.consumer_python.resolve(),
+        interpreter_path(args.consumer_python),
         args.ffmpeg_bin.resolve() if args.ffmpeg_bin else None,
     )
     print(json.dumps(result, indent=2))

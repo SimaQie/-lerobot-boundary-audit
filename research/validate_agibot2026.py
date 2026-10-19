@@ -13,6 +13,7 @@ import pyarrow.parquet as pq
 
 from boundary_audit.audit import audit_dataset
 from boundary_audit.download import SAMPLES, sha256
+from boundary_audit.environment import interpreter_path
 from boundary_audit.repair import apply_plan, fingerprint, make_plan, restore_copy
 from boundary_audit.report import write_reports
 from boundary_audit.storage import write_json
@@ -50,7 +51,7 @@ def main():
         for backend in ["pyav", "torchcodec"]:
             report = verify_consumer(
                 source,
-                str(args.consumer_python.resolve()),
+                str(interpreter_path(args.consumer_python)),
                 cameras=cameras,
                 backend=backend,
                 ffmpeg_bin=args.ffmpeg_bin.resolve() if args.ffmpeg_bin else None,

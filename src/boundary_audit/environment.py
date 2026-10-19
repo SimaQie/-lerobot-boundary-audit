@@ -30,6 +30,15 @@ def _system_timezone() -> str:
     return datetime.now().astimezone().tzname() or "unknown"
 
 
+def interpreter_path(value) -> Path:
+    """Make an interpreter path absolute without resolving a venv symlink.
+
+    On POSIX, a venv interpreter is commonly a symlink to the base interpreter;
+    Path.resolve() would select the base interpreter without the venv packages.
+    """
+    return Path(value).absolute()
+
+
 def gpu_inventory() -> dict:
     """Best-effort host GPU description; a missing driver never fails a report."""
     executable = shutil.which("nvidia-smi")

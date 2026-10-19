@@ -4,7 +4,12 @@ from datetime import datetime
 
 import pytest
 
-from boundary_audit.environment import collect_environment, decode_environment, source_provenance
+from boundary_audit.environment import (
+    collect_environment,
+    decode_environment,
+    interpreter_path,
+    source_provenance,
+)
 
 
 def test_environment_is_measured_not_hardcoded():
@@ -52,3 +57,17 @@ def test_source_provenance_records_commit_and_dirty_state(tmp_path):
     assert clean["dirty"] is False
     (tmp_path / "tracked.txt").write_text("changed", encoding="utf-8")
     assert source_provenance(tmp_path)["dirty"] is True
+
+
+def test_interpreter_path_keeps_a_venv_symlink(tmp_path):
+    import os
+    import sys
+
+    link = tmp_path / "python"
+    try:
+        os.symlink(sys.executable, link)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks are not available")
+    candidate = interpreter_path(link)
+    assert candidate == link.absolute()
+    assert candidate.name == "python"
