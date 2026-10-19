@@ -364,14 +364,18 @@ def check_real(actual, ordinal, cpu_refs, pyav_refs, allow_range):
     cpu_result = compare_frame(actual, cpu_refs, ordinal, allow_limited_range=allow_range)
     pyav_result = compare_frame(actual, pyav_refs, ordinal, allow_limited_range=allow_range)
     status, reason = combine_references(cpu_result, pyav_result)
+    raw_metrics = cpu_result.get("raw") or {}
+    if "against_expected" in raw_metrics:
+        raw_metrics = raw_metrics["against_expected"]
+    adjusted_metrics = (cpu_result.get("limited_range_adjusted") or {}).get("against_expected")
     return {
         "status": status,
         "reason": reason,
         "cpu_reference": cpu_result,
         "pyav_reference": pyav_result,
         "color_range_adjustment": bool(cpu_result.get("color_range_adjustment")),
-        "raw": cpu_result.get("raw", {}).get("against_expected"),
-        "limited_range_adjusted": (cpu_result.get("limited_range_adjusted") or {}).get("against_expected"),
+        "raw": raw_metrics or None,
+        "limited_range_adjusted": adjusted_metrics,
     }
 
 
