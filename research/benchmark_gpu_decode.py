@@ -746,9 +746,18 @@ def evaluate(summary, config, devices):
             elif result["status"] in {"partial", "unavailable"}:
                 notes.append(f"{spec['id']}/{device}: {result['status']}")
             if spec["kind"] == "fixture" and spec["expected"] == "fault":
-                controls = result.get("counts", {})
-                if controls.get("pass", 0):
+                prefix = f"{spec['id']}|{device}|fault|"
+                entries = summary.get("controls", {}).get("counts", {})
+                detected = sum(
+                    value for key, value in entries.items() if key.startswith(prefix) and key.endswith("|detected")
+                )
+                unknown = sum(
+                    value for key, value in entries.items() if key.startswith(prefix) and key.endswith("|unknown")
+                )
+                if not detected:
                     issues.append(f"{spec['id']}/{device}: a faulty fixture was not detected")
+                elif unknown:
+                    notes.append(f"{spec['id']}/{device}: some faulty identities were unknown")
     if unavailable:
         issues.append("CUDA was requested but unavailable")
     for input_id, devices in summary.get("performance", {}).items():
@@ -776,7 +785,8 @@ def write_html(summary, path):
         for device, result in devices.items():
             rows.append(
                 f"<tr><td>{html.escape(input_id)}</td><td>{html.escape(device)}</td>"
-                f"<td>{html.escape(result['status'])}</td><td>{html.escape(json.dumps(result['counts'], sort_keys=True))}</td></tr>"
+                f"<td>{html.escape(str(result.get('status', 'unknown')))}</td>"
+                f"<td>{html.escape(json.dumps(result.get('counts', {}), sort_keys=True))}</td></tr>"
             )
     performance = summary.get("performance", {})
     perf_rows = []
