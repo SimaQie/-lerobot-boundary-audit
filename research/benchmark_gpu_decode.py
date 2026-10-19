@@ -28,7 +28,7 @@ import zipfile
 from collections import Counter
 from pathlib import Path
 
-from boundary_audit.environment import collect_environment, source_provenance
+from boundary_audit.environment import collect_environment, nvidia_smi_path, source_provenance
 from boundary_audit.gpu_metrics import (
     chunked,
     compare_frame,
@@ -88,7 +88,7 @@ def peak_rss_kib():
 
 
 def nvidia_utilization():
-    executable = shutil.which("nvidia-smi")
+    executable = nvidia_smi_path()
     if not executable:
         return None
     try:

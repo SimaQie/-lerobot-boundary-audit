@@ -39,9 +39,20 @@ def interpreter_path(value) -> Path:
     return Path(value).absolute()
 
 
+def nvidia_smi_path() -> str | None:
+    """Locate nvidia-smi, including the WSL driver-library directory."""
+    executable = shutil.which("nvidia-smi")
+    if executable:
+        return executable
+    for candidate in ("/usr/lib/wsl/lib/nvidia-smi", "/usr/bin/nvidia-smi"):
+        if Path(candidate).is_file():
+            return candidate
+    return None
+
+
 def gpu_inventory() -> dict:
     """Best-effort host GPU description; a missing driver never fails a report."""
-    executable = shutil.which("nvidia-smi")
+    executable = nvidia_smi_path()
     if not executable:
         return {"available": False, "reason": "nvidia-smi not found"}
     try:
