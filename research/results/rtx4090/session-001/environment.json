@@ -1,0 +1,138 @@
+{
+  "schema_version": "boundary-rtx4090-environment.v1",
+  "measurement_time": "2026-10-20T03:26:53+08:00",
+  "system_timezone": "Asia/Shanghai",
+  "platform": "Linux",
+  "platform_release": "6.18.54.1-microsoft-standard-WSL2",
+  "machine": "x86_64",
+  "os_release": [
+    "PRETTY_NAME=\"Ubuntu 26.04.1 LTS\"",
+    "VERSION_ID=\"26.04\"",
+    "VERSION_CODENAME=resolute"
+  ],
+  "cpu": [
+    "CPU(s):                                  24",
+    "Model name:                              13th Gen Intel(R) Core(TM) i7-13700KF",
+    "Thread(s) per core:                      2",
+    "Core(s) per socket:                      12"
+  ],
+  "memory": [
+    "               total        used        free      shared  buff/cache   available",
+    "Mem:            15Gi       840Mi       2.7Gi       4.1Mi        12Gi        14Gi",
+    "Swap:          4.0Gi       8.0Ki       4.0Gi"
+  ],
+  "host_gpu": {
+    "available": true,
+    "devices": [
+      {
+        "name": "NVIDIA GeForce RTX 4090",
+        "driver_version": "610.88",
+        "memory_mib": "24564",
+        "compute_capability": "8.9"
+      }
+    ]
+  },
+  "nvidia_smi": "see nvidia-smi.txt",
+  "python": "3.12.15",
+  "software": {
+    "python": "3.12.15",
+    "platform": "linux",
+    "torch": "2.10.0+cu128",
+    "torch_cuda_build": "12.8",
+    "torch_cuda_available": true,
+    "torch_device": "NVIDIA GeForce RTX 4090",
+    "torch_num_threads": 12,
+    "torch_num_interop_threads": 12,
+    "torchcodec": "0.10.0+cu128",
+    "torchcodec_file": "torchcodec/__init__.py",
+    "torchcodec_cuda_backend": "ffmpeg (VideoDecoder default)",
+    "av": "15.1.0",
+    "av_library_versions": {
+      "libavutil": [
+        59,
+        39,
+        100
+      ],
+      "libavcodec": [
+        61,
+        19,
+        101
+      ],
+      "libavformat": [
+        61,
+        7,
+        100
+      ],
+      "libavdevice": [
+        61,
+        3,
+        100
+      ],
+      "libavfilter": [
+        10,
+        4,
+        100
+      ],
+      "libswscale": [
+        8,
+        3,
+        100
+      ],
+      "libswresample": [
+        5,
+        3,
+        100
+      ]
+    },
+    "ffmpeg_cli": {
+      "available": true,
+      "cuvid_decoders": [
+        "V..... av1_cuvid            Nvidia CUVID AV1 decoder (codec av1)",
+        "V..... h264_cuvid           Nvidia CUVID H264 decoder (codec h264)",
+        "V..... hevc_cuvid           Nvidia CUVID HEVC decoder (codec hevc)",
+        "V..... mjpeg_cuvid          Nvidia CUVID MJPEG decoder (codec mjpeg)",
+        "V..... mpeg1_cuvid          Nvidia CUVID MPEG1VIDEO decoder (codec mpeg1video)",
+        "V..... mpeg2_cuvid          Nvidia CUVID MPEG2VIDEO decoder (codec mpeg2video)",
+        "V..... mpeg4_cuvid          Nvidia CUVID MPEG4 decoder (codec mpeg4)",
+        "V..... vc1_cuvid            Nvidia CUVID VC1 decoder (codec vc1)",
+        "V..... vp8_cuvid            Nvidia CUVID VP8 decoder (codec vp8)",
+        "V..... vp9_cuvid            Nvidia CUVID VP9 decoder (codec vp9)"
+      ]
+    },
+    "omp_num_threads": null,
+    "ld_library_path_entries": 4
+  },
+  "freezes": {
+    "auditor": "freezes/auditor-freeze.txt",
+    "consumer_cpu": "freezes/consumer-cpu-freeze.txt",
+    "consumer_gpu": "freezes/consumer-gpu-freeze.txt",
+    "wheel_check": "freezes/wheel-check-freeze.txt",
+    "note": "The auditor freeze line is the install-time VCS pin c428c12. The editable .venv imports the tested working tree; see source.files_sha256 and each phase summary."
+  },
+  "ffmpeg": {
+    "version": "ffmpeg version 7.1.1 Copyright (c) 2000-2025 the FFmpeg developers",
+    "probe": "ffprobe version 7.1.1 Copyright (c) 2007-2025 the FFmpeg developers"
+  },
+  "data": {
+    "agibot2026": {
+      "repository": "Voxel51/AgiBotWorld2026-sample-10ep",
+      "revision": "caa5bf1b0b5be48ed52d158ff0d66af40b0f9258",
+      "license": "cc-by-nc-sa-4.0",
+      "total_bytes": 217227601,
+      "selected_cameras": [
+        "observation.images.hand_left",
+        "observation.images.hand_right"
+      ]
+    },
+    "aloha_screw_driver": {
+      "repository": "lerobot/aloha_static_screw_driver",
+      "revision": "21eead16760a8d94d449cadf4bc438b322ab528d",
+      "license": "mit",
+      "total_bytes": 258967368,
+      "selected_cameras": [
+        "observation.images.cam_left_wrist",
+        "observation.images.cam_right_wrist"
+      ]
+    }
+  }
+}

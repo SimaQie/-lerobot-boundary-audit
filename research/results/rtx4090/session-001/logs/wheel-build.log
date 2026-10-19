@@ -1,0 +1,122 @@
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools>=77
+* Getting build dependencies for wheel...
+running egg_info
+writing src/lerobot_boundary_audit.egg-info/PKG-INFO
+writing dependency_links to src/lerobot_boundary_audit.egg-info/dependency_links.txt
+writing entry points to src/lerobot_boundary_audit.egg-info/entry_points.txt
+writing requirements to src/lerobot_boundary_audit.egg-info/requires.txt
+writing top-level names to src/lerobot_boundary_audit.egg-info/top_level.txt
+reading manifest file 'src/lerobot_boundary_audit.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'research/backup_fingerprint_before.json'
+adding license file 'LICENSE'
+adding license file 'NOTICE.md'
+writing manifest file 'src/lerobot_boundary_audit.egg-info/SOURCES.txt'
+* Installed build dependency versions:
+  - setuptools==84.0.0
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build/lib/boundary_audit
+copying src/boundary_audit/probe.py -> build/lib/boundary_audit
+copying src/boundary_audit/identity.py -> build/lib/boundary_audit
+copying src/boundary_audit/repair.py -> build/lib/boundary_audit
+copying src/boundary_audit/environment.py -> build/lib/boundary_audit
+copying src/boundary_audit/audit.py -> build/lib/boundary_audit
+copying src/boundary_audit/verify.py -> build/lib/boundary_audit
+copying src/boundary_audit/probe_evidence.py -> build/lib/boundary_audit
+copying src/boundary_audit/probe_driver.py -> build/lib/boundary_audit
+copying src/boundary_audit/gpu_metrics.py -> build/lib/boundary_audit
+copying src/boundary_audit/suite_driver.py -> build/lib/boundary_audit
+copying src/boundary_audit/download.py -> build/lib/boundary_audit
+copying src/boundary_audit/row_contract.py -> build/lib/boundary_audit
+copying src/boundary_audit/__init__.py -> build/lib/boundary_audit
+copying src/boundary_audit/cli.py -> build/lib/boundary_audit
+copying src/boundary_audit/conformance.py -> build/lib/boundary_audit
+copying src/boundary_audit/mp4.py -> build/lib/boundary_audit
+copying src/boundary_audit/report.py -> build/lib/boundary_audit
+copying src/boundary_audit/loader_driver.py -> build/lib/boundary_audit
+copying src/boundary_audit/fixtures.py -> build/lib/boundary_audit
+copying src/boundary_audit/consumer_driver.py -> build/lib/boundary_audit
+copying src/boundary_audit/storage.py -> build/lib/boundary_audit
+running egg_info
+writing src/lerobot_boundary_audit.egg-info/PKG-INFO
+writing dependency_links to src/lerobot_boundary_audit.egg-info/dependency_links.txt
+writing entry points to src/lerobot_boundary_audit.egg-info/entry_points.txt
+writing requirements to src/lerobot_boundary_audit.egg-info/requires.txt
+writing top-level names to src/lerobot_boundary_audit.egg-info/top_level.txt
+reading manifest file 'src/lerobot_boundary_audit.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'research/backup_fingerprint_before.json'
+adding license file 'LICENSE'
+adding license file 'NOTICE.md'
+writing manifest file 'src/lerobot_boundary_audit.egg-info/SOURCES.txt'
+creating build/lib/boundary_audit/resources
+copying src/boundary_audit/resources/frame-suite-v040.zip -> build/lib/boundary_audit/resources
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/boundary_audit
+copying build/lib/boundary_audit/probe.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/identity.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/repair.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/environment.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/audit.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+creating build/bdist.linux-x86_64/wheel/boundary_audit/resources
+copying build/lib/boundary_audit/resources/frame-suite-v040.zip -> build/bdist.linux-x86_64/wheel/./boundary_audit/resources
+copying build/lib/boundary_audit/verify.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/probe_evidence.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/probe_driver.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/gpu_metrics.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/suite_driver.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/download.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/row_contract.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/__init__.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/cli.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/conformance.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/mp4.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/report.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/loader_driver.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/fixtures.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/consumer_driver.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+copying build/lib/boundary_audit/storage.py -> build/bdist.linux-x86_64/wheel/./boundary_audit
+running install_egg_info
+Copying src/lerobot_boundary_audit.egg-info to build/bdist.linux-x86_64/wheel/./lerobot_boundary_audit-0.4.1-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/lerobot_boundary_audit-0.4.1.dist-info/WHEEL
+creating '<project>/dist/.tmp-58y287w9/lerobot_boundary_audit-0.4.1-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'boundary_audit/__init__.py'
+adding 'boundary_audit/audit.py'
+adding 'boundary_audit/cli.py'
+adding 'boundary_audit/conformance.py'
+adding 'boundary_audit/consumer_driver.py'
+adding 'boundary_audit/download.py'
+adding 'boundary_audit/environment.py'
+adding 'boundary_audit/fixtures.py'
+adding 'boundary_audit/gpu_metrics.py'
+adding 'boundary_audit/identity.py'
+adding 'boundary_audit/loader_driver.py'
+adding 'boundary_audit/mp4.py'
+adding 'boundary_audit/probe.py'
+adding 'boundary_audit/probe_driver.py'
+adding 'boundary_audit/probe_evidence.py'
+adding 'boundary_audit/repair.py'
+adding 'boundary_audit/report.py'
+adding 'boundary_audit/row_contract.py'
+adding 'boundary_audit/storage.py'
+adding 'boundary_audit/suite_driver.py'
+adding 'boundary_audit/verify.py'
+adding 'boundary_audit/resources/frame-suite-v040.zip'
+adding 'lerobot_boundary_audit-0.4.1.dist-info/licenses/LICENSE'
+adding 'lerobot_boundary_audit-0.4.1.dist-info/licenses/NOTICE.md'
+adding 'lerobot_boundary_audit-0.4.1.dist-info/METADATA'
+adding 'lerobot_boundary_audit-0.4.1.dist-info/WHEEL'
+adding 'lerobot_boundary_audit-0.4.1.dist-info/entry_points.txt'
+adding 'lerobot_boundary_audit-0.4.1.dist-info/top_level.txt'
+adding 'lerobot_boundary_audit-0.4.1.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+Successfully built lerobot_boundary_audit-0.4.1-py3-none-any.whl

@@ -1,0 +1,8 @@
+{
+  "baseline": "c428c12d869e30805e514758f9ea2ae408310daf",
+  "remote_main": "c428c12d869e30805e514758f9ea2ae408310daf",
+  "branch": "experiment/rtx4090-validation",
+  "head": "c0e21c124e14fa8cc4cb59be8f30040de7aa866c",
+  "log": "c0e21c1 (HEAD -> experiment/rtx4090-validation) Keep numpy optional in packaged benchmark metrics\n88ae99b Find nvidia-smi in the WSL driver directory\n612990a Judge fault fixtures by detected identities, not unrelated passes\nafe0127 Report raw and adjusted RGB metrics consistently\nd0aa5ec Sanitize benchmark library provenance and add device comparison\nd1eb625 Record benchmark source provenance and first-decode timing\n4aee263 Add standalone TorchCodec CPU/CUDA decode benchmark\n8bfe83e Preserve venv interpreter paths and record validation environment\n5da5384 Record measured host and decode provenance in reproducible reports\nc428c12 (origin/main, origin/HEAD, main) Harden reader evidence checks and add stratified real-data validation (0.4.1)\n971043a Add 0.4.0 index guards and real ALOHA comparison evidence\n29ac3ba Isolate official environments when running installed wheel drivers",
+  "status": "?? research/RTX4090_2026-10-20.md\n?? research/results/rtx4090/"
+}

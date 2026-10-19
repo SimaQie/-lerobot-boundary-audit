@@ -1,0 +1,93 @@
+{
+  "schema_version": "boundary-environment.v1",
+  "measurement_time": "2026-10-20T03:26:53+08:00",
+  "measurement_date": "2026-10-20",
+  "system_timezone": "Asia/Shanghai",
+  "display_timezone": "Asia/Shanghai",
+  "utc_offset_seconds": 28800,
+  "platform": "Linux",
+  "platform_release": "6.18.54.1-microsoft-standard-WSL2",
+  "platform_version": "#1 SMP PREEMPT_DYNAMIC Tue Oct  6 19:13:07 UTC 2026",
+  "machine": "x86_64",
+  "python": "3.12.15",
+  "cpu_count": 24,
+  "host_gpu": {
+    "available": true,
+    "devices": [
+      {
+        "name": "NVIDIA GeForce RTX 4090",
+        "driver_version": "610.88",
+        "memory_mib": "24564",
+        "compute_capability": "8.9"
+      }
+    ]
+  },
+  "libraries": {
+    "python": "3.12.15",
+    "platform": "linux",
+    "torch": "2.10.0+cu128",
+    "torch_cuda_build": "12.8",
+    "torch_cuda_available": true,
+    "torch_device": "NVIDIA GeForce RTX 4090",
+    "torch_num_threads": 12,
+    "torch_num_interop_threads": 12,
+    "torchcodec": "0.10.0+cu128",
+    "torchcodec_file": "torchcodec/__init__.py",
+    "torchcodec_cuda_backend": "ffmpeg (VideoDecoder default)",
+    "av": "15.1.0",
+    "av_library_versions": {
+      "libavutil": [
+        59,
+        39,
+        100
+      ],
+      "libavcodec": [
+        61,
+        19,
+        101
+      ],
+      "libavformat": [
+        61,
+        7,
+        100
+      ],
+      "libavdevice": [
+        61,
+        3,
+        100
+      ],
+      "libavfilter": [
+        10,
+        4,
+        100
+      ],
+      "libswscale": [
+        8,
+        3,
+        100
+      ],
+      "libswresample": [
+        5,
+        3,
+        100
+      ]
+    },
+    "ffmpeg_cli": {
+      "available": true,
+      "cuvid_decoders": [
+        "V..... av1_cuvid            Nvidia CUVID AV1 decoder (codec av1)",
+        "V..... h264_cuvid           Nvidia CUVID H264 decoder (codec h264)",
+        "V..... hevc_cuvid           Nvidia CUVID HEVC decoder (codec hevc)",
+        "V..... mjpeg_cuvid          Nvidia CUVID MJPEG decoder (codec mjpeg)",
+        "V..... mpeg1_cuvid          Nvidia CUVID MPEG1VIDEO decoder (codec mpeg1video)",
+        "V..... mpeg2_cuvid          Nvidia CUVID MPEG2VIDEO decoder (codec mpeg2video)",
+        "V..... mpeg4_cuvid          Nvidia CUVID MPEG4 decoder (codec mpeg4)",
+        "V..... vc1_cuvid            Nvidia CUVID VC1 decoder (codec vc1)",
+        "V..... vp8_cuvid            Nvidia CUVID VP8 decoder (codec vp8)",
+        "V..... vp9_cuvid            Nvidia CUVID VP9 decoder (codec vp9)"
+      ]
+    },
+    "omp_num_threads": null,
+    "ld_library_path_entries": 4
+  }
+}

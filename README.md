@@ -79,7 +79,9 @@ sequential reference; it cannot certify original camera labels, arbitrary droppe
 frames before encoding, physical synchronization, or training benefit. PyAV and
 the reference share PyAV RGB conversion; both backends share FFmpeg ancestry.
 
-Main installation and the older 0.3 protocol follow. GPU hardware remains untested.
+Main installation and the older 0.3 protocol follow. The stock reader stays
+CPU-only; see "RTX 4090 / TorchCodec research" below for the separate GPU
+experiment.
 
 ## Second real-robot sample: ALOHA
 
@@ -112,6 +114,24 @@ AV1; the existing synthetic fixture tests H.264. This comparison adds platform,
 FPS and action-vector diversity, not an additional real-data codec family.
 Repeated neighbouring frames remain explicitly unresolved; a protocol's expected
 outcomes do not mean complete frame identity has been certified.
+
+## RTX 4090 / TorchCodec research (2026-10-20)
+
+The default audit and `probe-loader` remain CPU-only: there is no `--device`
+switch, and a CUDA build of Torch does not change the stock LeRobot 0.6.1
+reader's decode device. `research/benchmark_gpu_decode.py` is a separate
+research tool; it compares explicit `VideoDecoder(..., device="cpu"/"cuda")`
+calls with marker identities and sequential PyAV references.
+
+On the tested WSL2/RTX 4090 host the existing CPU workflow passed 208/208
+conformance checks and both pinned real-data validations. The CUDA build passed
+78/78 CPU-path checks and produced `cuda:0` tensors with no fallback. After
+decoder warm-up, 32-frame AV1 requests were 1.53-2.15x faster end-to-end on CUDA,
+but CUDA RGB is TV-range-like and not pixel-identical to CPU; real-frame identity
+coverage remained PARTIAL (0 wrong frames, many ambiguous). GPU decoding is
+therefore not enabled by default and is not a stable full-reader feature.
+See [the session evidence](research/results/rtx4090/session-001/README.md) and
+[the full report](research/RTX4090_2026-10-20.md).
 
 Lightweight episode-boundary diagnostics, **independent pixel identity conformance**,
 and guarded repair for **LeRobot v3**.

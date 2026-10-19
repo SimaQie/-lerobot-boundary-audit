@@ -129,7 +129,7 @@ PyAV 参考与 PyAV 被测路径共享颜色转换，两个后端也有 FFmpeg �
 
 默认预算：12 个查询行、累计解码 50,000 帧、参考图像 256 MiB、临时输入副本 300 MiB、
 消费者 300 秒。支持选择不连续的 episode、调整窗口半径和这些预算。
-参考图像预算不等于整个进程的内存上限。GPU 服务器实测仍待补充。
+参考图像预算不等于整个进程的内存上限。RTX 4090 上的 CPU 路径与独立 CUDA 实验见下文。
 
 详细实验、比较配置和局限见 [0.4.0 实验说明](research/V040.md)。
 
@@ -152,3 +152,18 @@ Windows 的 TorchCodec 可追加 `--ffmpeg-bin` 指向已安装的共享 FFmpeg 
 两份真实样本均为 AV1；AgiBot 样本存储动作实际为 44 维、30 FPS。
 重复邻近画面会保留“无法判定”，不会强行显示全部通过。
 详细对比见 [两份真实数据的实验结果](research/results/v040-real-comparison/README.md)。
+
+## RTX 4090 / TorchCodec 实验（2026-10-20）
+
+默认审计与 `probe-loader` 仍是 CPU 路径：没有 `--device` 参数，安装 CUDA 版 Torch
+不会改变官方 LeRobot 0.6.1 读取器的解码设备。独立的
+`research/benchmark_gpu_decode.py` 显式比较 `device="cpu"` 与 `device="cuda"`，
+并用 marker 身份和顺序 PyAV 参考核对。
+
+在本机 WSL2 + RTX 4090 上，现有 CPU 流程 208/208 通过，两份真实数据验证均为
+`expected_outcomes_met`；CUDA 构建下 CPU 路径 78/78 通过。显式 CUDA 调用输出在
+`cuda:0`、无 CPU fallback；解码器预热后，32 帧 AV1 请求端到端加速 1.53–2.15×。
+但 CUDA RGB 与 CPU 不一致（TV range 类），真实画面身份仍有大量“无法判定”
+（0 个明确错帧），因此没有把 GPU 接入默认读取流程，也不宣称稳定 GPU 支持。
+证据见 [session-001](research/results/rtx4090/session-001/README.md) 与
+[完整报告](research/RTX4090_2026-10-20.md)。

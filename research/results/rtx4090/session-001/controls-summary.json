@@ -1,0 +1,24 @@
+{
+  "counts": {
+    "demo-clean|cpu|clean|pass": 14,
+    "demo-clean|cpu|clean|expected_boundary_error": 2,
+    "demo-duplicate-pixel|cpu|fault|unchanged": 23,
+    "demo-duplicate-pixel|cpu|fault|detected": 3,
+    "demo-duplicate-pixel|cpu|fault|expected_boundary_error": 2,
+    "demo-camera-swap|cpu|fault|detected": 14,
+    "demo-camera-swap|cpu|fault|expected_boundary_error": 2,
+    "demo-pixel-order-swap|cpu|fault|unchanged": 20,
+    "demo-pixel-order-swap|cpu|fault|detected": 6,
+    "demo-pixel-order-swap|cpu|fault|expected_boundary_error": 2,
+    "demo-clean|cuda|clean|pass": 14,
+    "demo-clean|cuda|clean|expected_boundary_error": 2,
+    "demo-duplicate-pixel|cuda|fault|unchanged": 23,
+    "demo-duplicate-pixel|cuda|fault|detected": 3,
+    "demo-duplicate-pixel|cuda|fault|expected_boundary_error": 2,
+    "demo-camera-swap|cuda|fault|detected": 14,
+    "demo-camera-swap|cuda|fault|expected_boundary_error": 2,
+    "demo-pixel-order-swap|cuda|fault|unchanged": 20,
+    "demo-pixel-order-swap|cuda|fault|detected": 6,
+    "demo-pixel-order-swap|cuda|fault|expected_boundary_error": 2
+  }
+}

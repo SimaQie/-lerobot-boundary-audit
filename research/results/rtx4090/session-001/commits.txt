@@ -1,0 +1,12 @@
+c0e21c1 (HEAD -> experiment/rtx4090-validation) Keep numpy optional in packaged benchmark metrics
+88ae99b Find nvidia-smi in the WSL driver directory
+612990a Judge fault fixtures by detected identities, not unrelated passes
+afe0127 Report raw and adjusted RGB metrics consistently
+d0aa5ec Sanitize benchmark library provenance and add device comparison
+d1eb625 Record benchmark source provenance and first-decode timing
+4aee263 Add standalone TorchCodec CPU/CUDA decode benchmark
+8bfe83e Preserve venv interpreter paths and record validation environment
+5da5384 Record measured host and decode provenance in reproducible reports
+c428c12 (origin/main, origin/HEAD, main) Harden reader evidence checks and add stratified real-data validation (0.4.1)
+971043a Add 0.4.0 index guards and real ALOHA comparison evidence
+29ac3ba Isolate official environments when running installed wheel drivers

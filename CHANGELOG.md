@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased — 2026-10-20
+
+- Record measured host/timezone, source commit, consumer versions and separate
+  requested/observed decode devices in real-data and sampling reports.
+- Preserve venv interpreter symlinks in validation scripts; on POSIX the old
+  `resolve()` selected the base interpreter and lost the venv's packages.
+- Add a standalone TorchCodec CPU/CUDA research benchmark with explicit
+  unavailable/fallback handling, marker identity, two real-video references,
+  raw and TV-range-adjusted RGB metrics, and native/common-endpoint/end-to-end
+  timings. This is not a default GPU reader or a stable GPU release.
+- RTX 4090/WSL2 validation: 208/208 CPU conformance, 78/78 CUDA-build CPU-path
+  conformance, both real-data validations `expected_outcomes_met`; explicit
+  NVDEC produced `cuda:0` tensors and 1.53-2.15x end-to-end gains after warm-up,
+  while real-frame identity coverage remained partial and RGB differed.
+  Evidence: `research/results/rtx4090/session-001/`.
+
 ## 0.4.1 — research preview, 2026-10-20
 
 - Reject fractional, floating, boolean and other noninteger reader labels instead
