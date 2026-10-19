@@ -152,7 +152,8 @@ def library_versions():
         "torch_num_threads": torch.get_num_threads(),
         "torch_num_interop_threads": torch.get_num_interop_threads(),
         "torchcodec": torchcodec.__version__,
-        "torchcodec_file": relative_path(torchcodec.__file__),
+        "torchcodec_file": "torchcodec/__init__.py",
+        "torchcodec_cuda_backend": "ffmpeg (VideoDecoder default)",
         "av": av.__version__,
         "av_library_versions": av.library_versions,
         "ffmpeg_cli": ffmpeg_decoders(),
@@ -909,6 +910,28 @@ def main(argv=None):
     after = {spec["id"]: sha256(spec["path"]) for spec in inputs}
     unchanged = all(after[input_id] == before[input_id] for input_id in before)
     controls_summary = {"counts": {f"{a}|{b}|{c}|{d}": value for (a, b, c, d), value in controls.items()}}
+    comparison = {}
+    for input_id, device_results in performance.items():
+        cpu_batches = device_results.get("cpu", {})
+        cuda_batches = device_results.get("cuda", {})
+        for batch, cpu_result in cpu_batches.items():
+            cuda_result = cuda_batches.get(batch)
+            if not isinstance(cuda_result, dict) or "native" not in cuda_result:
+                continue
+            cpu_native = cpu_result["native"].get("median")
+            cuda_native = cuda_result["native"].get("median")
+            cpu_e2e = cpu_result["end_to_end"].get("median")
+            cuda_e2e = cuda_result["end_to_end"].get("median")
+            if not cpu_native or not cuda_native or not cpu_e2e or not cuda_e2e:
+                continue
+            comparison[f"{input_id}|batch{batch}"] = {
+                "cpu_native_seconds": cpu_native,
+                "cuda_native_seconds": cuda_native,
+                "cpu_end_to_end_seconds": cpu_e2e,
+                "cuda_end_to_end_seconds": cuda_e2e,
+                "native_cpu_over_cuda": cpu_native / cuda_native,
+                "end_to_end_cpu_over_cuda": cpu_e2e / cuda_e2e,
+            }
     summary = {
         "schema_version": "boundary-gpu-benchmark-summary.v1",
         "measurement_time": environment["measurement_time"],
@@ -921,6 +944,7 @@ def main(argv=None):
         "correctness": correctness,
         "controls": controls_summary,
         "performance": performance,
+        "performance_comparison": comparison,
         "limitations": (
             "Fixture markers are synthetic ground truth; real RGB is compared with an independent sequential "
             "PyAV reference and a same-environment CPU TorchCodec reference. CUDA output observed in this "
