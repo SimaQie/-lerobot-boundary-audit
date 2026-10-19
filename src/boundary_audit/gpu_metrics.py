@@ -10,16 +10,23 @@ from __future__ import annotations
 
 import math
 
-import numpy as np
-
 APPROXIMATE_MAX_MAE = 2.0
 APPROXIMATE_MIN_SEPARATION = 0.25
 LIMITED_RANGE_OFFSET = 16.0
 LIMITED_RANGE_SCALE = 255.0 / 219.0
 
 
-def to_hwc_uint8(frame) -> np.ndarray:
+def _numpy():
+    try:
+        import numpy
+    except ImportError as exc:
+        raise ImportError("GPU benchmark metrics need numpy in the consumer environment") from exc
+    return numpy
+
+
+def to_hwc_uint8(frame):
     """Normalise a decoded frame to contiguous HWC uint8 RGB."""
+    np = _numpy()
     array = np.asarray(frame)
     if array.ndim != 3:
         raise ValueError("A frame must be a 3-dimensional array")
@@ -36,12 +43,14 @@ def to_hwc_uint8(frame) -> np.ndarray:
     return np.ascontiguousarray(array)
 
 
-def limited_to_full(frame) -> np.ndarray:
+def limited_to_full(frame):
     """Map TV-range RGB (16..235) to full range without hiding raw differences."""
+    np = _numpy()
     return np.clip((to_hwc_uint8(frame).astype(np.float32) - LIMITED_RANGE_OFFSET) * LIMITED_RANGE_SCALE, 0, 255)
 
 
 def rgb_difference(actual, reference) -> dict:
+    np = _numpy()
     actual_u8, reference_u8 = to_hwc_uint8(actual), to_hwc_uint8(reference)
     if actual_u8.shape != reference_u8.shape:
         return {"shape_mismatch": [list(actual_u8.shape), list(reference_u8.shape)]}
@@ -56,7 +65,8 @@ def rgb_difference(actual, reference) -> dict:
     }
 
 
-def _distances(actual: np.ndarray, references: dict[int, np.ndarray]) -> dict[int, float]:
+def _distances(actual, references):
+    np = _numpy()
     result = {}
     for index, reference in references.items():
         candidate = to_hwc_uint8(reference)
@@ -79,7 +89,7 @@ def _decision(distances: dict[int, float], expected_index: int) -> tuple[str, in
 
 def compare_frame(
     actual,
-    references: dict[int, np.ndarray],
+    references: dict,
     expected_index: int,
     *,
     allow_limited_range: bool = False,
@@ -90,6 +100,7 @@ def compare_frame(
     caller may allow the documented limited-to-full conversion; both raw and
     adjusted metrics are always returned, and the successful rule is named.
     """
+    np = _numpy()
     actual_u8 = to_hwc_uint8(actual)
     comparable = {
         index: to_hwc_uint8(frame)
@@ -177,6 +188,7 @@ def compare_frame(
 
 
 def summarize_values(values: list[float]) -> dict:
+    np = _numpy()
     if not values:
         return {"count": 0}
     return {
