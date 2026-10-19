@@ -1,0 +1,466 @@
+{
+  "status": "partial",
+  "backend": "torchcodec",
+  "phase": "workers",
+  "versions": {
+    "lerobot": "0.6.1",
+    "torch": "2.10.0+cpu",
+    "av": "15.1.0",
+    "datasets": "4.8.5",
+    "python": "3.12.14",
+    "platform": "win32",
+    "torchcodec": "0.10.0",
+    "ffmpeg_libraries": {
+      "libavutil": [
+        59,
+        39,
+        100
+      ],
+      "libavcodec": [
+        61,
+        19,
+        101
+      ],
+      "libavformat": [
+        61,
+        7,
+        100
+      ],
+      "libavdevice": [
+        61,
+        3,
+        100
+      ],
+      "libavfilter": [
+        10,
+        4,
+        100
+      ],
+      "libswscale": [
+        8,
+        3,
+        100
+      ],
+      "libswresample": [
+        5,
+        3,
+        100
+      ]
+    },
+    "torch_cuda_build": null,
+    "device_used": "cpu",
+    "official_reader_sha256": "3a477dae6aa887449f09be25b385485b065861d13c5448b9369a0ba09f01bb5d",
+    "official_video_utils_sha256": "82d0ced8f3f9adc754d4388122b044d36f2feeadda28d4ddad933cead7cc54d1"
+  },
+  "requested_rows": 6,
+  "checked_rows": 6,
+  "frame_checks": 36,
+  "passed_frame_checks": 35,
+  "ambiguous_frame_checks": 1,
+  "records": [
+    {
+      "index": 693,
+      "camera": "observation.images.hand_left",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 692,
+      "matched_sample": 692
+    },
+    {
+      "index": 693,
+      "camera": "observation.images.hand_left",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 693,
+      "matched_sample": 693
+    },
+    {
+      "index": 693,
+      "camera": "observation.images.hand_left",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 694,
+      "matched_sample": 694
+    },
+    {
+      "index": 693,
+      "camera": "observation.images.hand_right",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 692,
+      "matched_sample": 692
+    },
+    {
+      "index": 693,
+      "camera": "observation.images.hand_right",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 693,
+      "matched_sample": 693
+    },
+    {
+      "index": 693,
+      "camera": "observation.images.hand_right",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 694,
+      "matched_sample": 694
+    },
+    {
+      "index": 21683,
+      "camera": "observation.images.hand_left",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 21682,
+      "matched_sample": 21682
+    },
+    {
+      "index": 21683,
+      "camera": "observation.images.hand_left",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 21683,
+      "matched_sample": 21683
+    },
+    {
+      "index": 21683,
+      "camera": "observation.images.hand_left",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 21684,
+      "matched_sample": 21684
+    },
+    {
+      "index": 21683,
+      "camera": "observation.images.hand_right",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 21682,
+      "matched_sample": 21682
+    },
+    {
+      "index": 21683,
+      "camera": "observation.images.hand_right",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 21683,
+      "matched_sample": 21683
+    },
+    {
+      "index": 21683,
+      "camera": "observation.images.hand_right",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 21684,
+      "matched_sample": 21684
+    },
+    {
+      "index": 924,
+      "camera": "observation.images.hand_left",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 923,
+      "matched_sample": 923
+    },
+    {
+      "index": 924,
+      "camera": "observation.images.hand_left",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 924,
+      "matched_sample": 924
+    },
+    {
+      "index": 924,
+      "camera": "observation.images.hand_left",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 925,
+      "matched_sample": 925
+    },
+    {
+      "index": 924,
+      "camera": "observation.images.hand_right",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 923,
+      "matched_sample": 923
+    },
+    {
+      "index": 924,
+      "camera": "observation.images.hand_right",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 924,
+      "matched_sample": 924
+    },
+    {
+      "index": 924,
+      "camera": "observation.images.hand_right",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 925,
+      "matched_sample": 925
+    },
+    {
+      "index": 22458,
+      "camera": "observation.images.hand_left",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 22457,
+      "matched_sample": 22457
+    },
+    {
+      "index": 22458,
+      "camera": "observation.images.hand_left",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 22458,
+      "matched_sample": 22458
+    },
+    {
+      "index": 22458,
+      "camera": "observation.images.hand_left",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 22459,
+      "matched_sample": 22459
+    },
+    {
+      "index": 22458,
+      "camera": "observation.images.hand_right",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 22457,
+      "matched_sample": 22457
+    },
+    {
+      "index": 22458,
+      "camera": "observation.images.hand_right",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 22458,
+      "matched_sample": 22458
+    },
+    {
+      "index": 22458,
+      "camera": "observation.images.hand_right",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 22459,
+      "matched_sample": 22459
+    },
+    {
+      "index": 2035,
+      "camera": "observation.images.hand_left",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 2034,
+      "matched_sample": 2034
+    },
+    {
+      "index": 2035,
+      "camera": "observation.images.hand_left",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 2035,
+      "matched_sample": 2035
+    },
+    {
+      "index": 2035,
+      "camera": "observation.images.hand_left",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 2036,
+      "matched_sample": 2036
+    },
+    {
+      "index": 2035,
+      "camera": "observation.images.hand_right",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 2034,
+      "matched_sample": 2034
+    },
+    {
+      "index": 2035,
+      "camera": "observation.images.hand_right",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 2035,
+      "matched_sample": 2035
+    },
+    {
+      "index": 2035,
+      "camera": "observation.images.hand_right",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 2036,
+      "matched_sample": 2036
+    },
+    {
+      "index": 23136,
+      "camera": "observation.images.hand_left",
+      "delta": -1,
+      "status": "ambiguous",
+      "reason": "identical neighbouring frames",
+      "expected_sample": 23135
+    },
+    {
+      "index": 23136,
+      "camera": "observation.images.hand_left",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 23136,
+      "matched_sample": 23136
+    },
+    {
+      "index": 23136,
+      "camera": "observation.images.hand_left",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 23137,
+      "matched_sample": 23137
+    },
+    {
+      "index": 23136,
+      "camera": "observation.images.hand_right",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 23135,
+      "matched_sample": 23135
+    },
+    {
+      "index": 23136,
+      "camera": "observation.images.hand_right",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 23136,
+      "matched_sample": 23136
+    },
+    {
+      "index": 23136,
+      "camera": "observation.images.hand_right",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 23137,
+      "matched_sample": 23137
+    }
+  ],
+  "row_errors": [],
+  "errors": [],
+  "reference": {
+    "backend": "sequential-pyav",
+    "decoded_frames": 46278,
+    "image_bytes": 60825600,
+    "projected_view_bytes": 217214934,
+    "projected_cameras": [
+      "observation.images.hand_left",
+      "observation.images.hand_right"
+    ],
+    "shared_dependency": "FFmpeg; PyAV matches share PyAV RGB conversion",
+    "approximate_rgb_rule": "uint8 MAE <= 2 and >= 0.25 separation; heuristic, not identity proof"
+  },
+  "coverage": {
+    "requested_rows": 6,
+    "checked_rows": 6,
+    "requested_frame_checks": 36,
+    "observed_frame_checks": 36,
+    "missing_query_slots": 0,
+    "unexpected_query_slots": 0,
+    "query_slots_complete": true,
+    "dataset_rows": 23658,
+    "selected_episode_rows": 23658,
+    "unique_query_rows": 6,
+    "unique_window_rows": 18,
+    "sampled_episode_ids": [
+      0,
+      9
+    ],
+    "statuses": {
+      "pass": 35,
+      "ambiguous": 1
+    },
+    "per_camera": {
+      "observation.images.hand_left": {
+        "requested_checks": 18,
+        "observed_checks": 18,
+        "statuses": {
+          "pass": 17,
+          "ambiguous": 1
+        },
+        "match_rules": {
+          "exact": 17,
+          "unresolved": 1
+        },
+        "ambiguous_reasons": {
+          "identical neighbouring frames": 1
+        }
+      },
+      "observation.images.hand_right": {
+        "requested_checks": 18,
+        "observed_checks": 18,
+        "statuses": {
+          "pass": 18
+        },
+        "match_rules": {
+          "exact": 18
+        },
+        "ambiguous_reasons": {}
+      }
+    },
+    "note": "Counts describe requested query slots, including repeats/padding; not whole-dataset correctness."
+  },
+  "schema_version": "boundary-real-probe.v1",
+  "source_unchanged": true,
+  "cameras": [
+    "observation.images.hand_left",
+    "observation.images.hand_right"
+  ],
+  "episodes": null,
+  "seed": 20261014,
+  "sampling": "stratified",
+  "offsets": [
+    -1,
+    0,
+    1
+  ],
+  "scope": "Relative to sequential PyAV ordinal reference; no pre-encoding identity or physical synchronization claim",
+  "preflight_status": "pass",
+  "elapsed_seconds": 73.73435490002157
+}

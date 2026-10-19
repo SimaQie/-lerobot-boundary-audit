@@ -8,7 +8,14 @@ import os
 import random
 import shutil
 import sys
+import types
 from pathlib import Path
+
+if not __package__:
+    owned_package = types.ModuleType("boundary_audit")
+    owned_package.__path__ = [str(Path(__file__).resolve().parent)]
+    sys.modules["boundary_audit"] = owned_package
+from boundary_audit.row_contract import row_label_errors  # noqa: E402
 
 HANDLES = []
 
@@ -88,6 +95,15 @@ def compare_pixels(actual, frames, expected):
         return {"status": "wrong_shape", "expected_sample": expected}
     candidates = [n for n in (expected - 1, expected, expected + 1) if n in frames]
     exact = [n for n in candidates if np.array_equal(actual, frames[n])]
+    if exact and expected not in exact:
+        return {
+            "status": "wrong_frame",
+            "match": "exact",
+            "expected_sample": expected,
+            "matched_samples": exact,
+            "reason": "exact matches exclude expected frame",
+            **({"matched_sample": exact[0]} if len(exact) == 1 else {}),
+        }
     if len(exact) > 1:
         return {"status": "ambiguous", "reason": "identical neighbouring frames", "expected_sample": expected}
     if exact:
@@ -115,6 +131,17 @@ def compare_pixels(actual, frames, expected):
         "matched_sample": best,
         "mean_absolute_rgb_errors": distances,
     }
+
+
+def compare_actions(actual, expected):
+    """At-rest row shape and values are independent reader requirements."""
+    import numpy as np
+
+    if actual.shape != expected.shape:
+        return [{"kind": "action_shape", "expected": list(expected.shape), "actual": list(actual.shape)}]
+    if not np.isfinite(actual).all() or not np.allclose(actual, expected, rtol=0, atol=1e-6):
+        return [{"kind": "action_window"}]
+    return []
 
 
 def run(request):
@@ -160,13 +187,14 @@ def run(request):
 
     def inspect(item, query):
         expected = request["rows"][str(query["index"])]
-        for key in ("index", "episode_index", "frame_index"):
-            if int(item[key].item()) != expected[key]:
-                row_errors.append({"index": query["index"], "kind": "row_identity", "field": key})
+        labels = {key: item[key].item() for key in ("index", "episode_index", "frame_index")}
+        row_errors.extend({"index": query["index"], **error} for error in row_label_errors(labels, expected))
         actions = np.array([request["rows"][str(i)]["action"] for i in query["indices"]])
-        actual_actions = item["action"].cpu().numpy().reshape(actions.shape)
-        if not np.isfinite(actual_actions).all() or not np.allclose(actual_actions, actions, rtol=0, atol=1e-6):
-            row_errors.append({"index": query["index"], "kind": "action_window"})
+        expected_actions = actions if window else actions[0]
+        actual_actions = item["action"].cpu().numpy()
+        row_errors.extend(
+            {"index": query["index"], **error} for error in compare_actions(actual_actions, expected_actions)
+        )
         for camera in cameras:
             frames = item[camera] if item[camera].ndim == 4 else item[camera].unsqueeze(0)
             if len(frames) != len(offsets):

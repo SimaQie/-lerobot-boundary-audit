@@ -1,0 +1,145 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Real footage loader probe</title><style>body{font:15px system-ui;margin:32px;max-width:1200px}table{border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><h1>Real footage loader probe: PARTIAL</h1><p>Comparison against sequential ordinal decode. Repeated or indistinguishable frames are unverified. No original sensor identity or physical synchronization guarantee.</p><h2>Requested query coverage</h2><p>36 / 36 frame checks observed; 0 missing, 0 unexpected. 6 unique query rows in a 20000-row dataset. Repeats and padding count as query slots; this is not whole-dataset coverage.</p><table><tr><th>Camera</th><th>Requested</th><th>Observed</th><th>Matches</th><th>Ambiguous</th><th>Wrong</th></tr><tr><td>observation.images.cam_left_wrist</td><td>18</td><td>18</td><td>12</td><td>6</td><td>0</td></tr><tr><td>observation.images.cam_right_wrist</td><td>18</td><td>18</td><td>17</td><td>1</td><td>0</td></tr></table><details><summary>Scope, budgets, versions and row evidence</summary><pre>{
+  &quot;status&quot;: &quot;partial&quot;,
+  &quot;backend&quot;: &quot;torchcodec&quot;,
+  &quot;phase&quot;: &quot;workers&quot;,
+  &quot;versions&quot;: {
+    &quot;lerobot&quot;: &quot;0.6.1&quot;,
+    &quot;torch&quot;: &quot;2.10.0+cpu&quot;,
+    &quot;av&quot;: &quot;15.1.0&quot;,
+    &quot;datasets&quot;: &quot;4.8.5&quot;,
+    &quot;python&quot;: &quot;3.12.14&quot;,
+    &quot;platform&quot;: &quot;win32&quot;,
+    &quot;torchcodec&quot;: &quot;0.10.0&quot;,
+    &quot;ffmpeg_libraries&quot;: {
+      &quot;libavutil&quot;: [
+        59,
+        39,
+        100
+      ],
+      &quot;libavcodec&quot;: [
+        61,
+        19,
+        101
+      ],
+      &quot;libavformat&quot;: [
+        61,
+        7,
+        100
+      ],
+      &quot;libavdevice&quot;: [
+        61,
+        3,
+        100
+      ],
+      &quot;libavfilter&quot;: [
+        10,
+        4,
+        100
+      ],
+      &quot;libswscale&quot;: [
+        8,
+        3,
+        100
+      ],
+      &quot;libswresample&quot;: [
+        5,
+        3,
+        100
+      ]
+    },
+    &quot;torch_cuda_build&quot;: null,
+    &quot;device_used&quot;: &quot;cpu&quot;,
+    &quot;official_reader_sha256&quot;: &quot;3a477dae6aa887449f09be25b385485b065861d13c5448b9369a0ba09f01bb5d&quot;,
+    &quot;official_video_utils_sha256&quot;: &quot;82d0ced8f3f9adc754d4388122b044d36f2feeadda28d4ddad933cead7cc54d1&quot;
+  },
+  &quot;requested_rows&quot;: 6,
+  &quot;checked_rows&quot;: 6,
+  &quot;frame_checks&quot;: 36,
+  &quot;passed_frame_checks&quot;: 29,
+  &quot;ambiguous_frame_checks&quot;: 7,
+  &quot;row_errors&quot;: [],
+  &quot;errors&quot;: [],
+  &quot;reference&quot;: {
+    &quot;backend&quot;: &quot;sequential-pyav&quot;,
+    &quot;decoded_frames&quot;: 39920,
+    &quot;image_bytes&quot;: 55296000,
+    &quot;projected_view_bytes&quot;: 258960863,
+    &quot;projected_cameras&quot;: [
+      &quot;observation.images.cam_left_wrist&quot;,
+      &quot;observation.images.cam_right_wrist&quot;
+    ],
+    &quot;shared_dependency&quot;: &quot;FFmpeg; PyAV matches share PyAV RGB conversion&quot;,
+    &quot;approximate_rgb_rule&quot;: &quot;uint8 MAE &lt;= 2 and &gt;= 0.25 separation; heuristic, not identity proof&quot;
+  },
+  &quot;coverage&quot;: {
+    &quot;requested_rows&quot;: 6,
+    &quot;checked_rows&quot;: 6,
+    &quot;requested_frame_checks&quot;: 36,
+    &quot;observed_frame_checks&quot;: 36,
+    &quot;missing_query_slots&quot;: 0,
+    &quot;unexpected_query_slots&quot;: 0,
+    &quot;query_slots_complete&quot;: true,
+    &quot;dataset_rows&quot;: 20000,
+    &quot;selected_episode_rows&quot;: 20000,
+    &quot;unique_query_rows&quot;: 6,
+    &quot;unique_window_rows&quot;: 18,
+    &quot;sampled_episode_ids&quot;: [
+      0,
+      49
+    ],
+    &quot;statuses&quot;: {
+      &quot;pass&quot;: 29,
+      &quot;ambiguous&quot;: 7
+    },
+    &quot;per_camera&quot;: {
+      &quot;observation.images.cam_left_wrist&quot;: {
+        &quot;requested_checks&quot;: 18,
+        &quot;observed_checks&quot;: 18,
+        &quot;statuses&quot;: {
+          &quot;pass&quot;: 12,
+          &quot;ambiguous&quot;: 6
+        },
+        &quot;match_rules&quot;: {
+          &quot;exact&quot;: 12,
+          &quot;unresolved&quot;: 6
+        },
+        &quot;ambiguous_reasons&quot;: {
+          &quot;identical neighbouring frames&quot;: 6
+        }
+      },
+      &quot;observation.images.cam_right_wrist&quot;: {
+        &quot;requested_checks&quot;: 18,
+        &quot;observed_checks&quot;: 18,
+        &quot;statuses&quot;: {
+          &quot;pass&quot;: 17,
+          &quot;ambiguous&quot;: 1
+        },
+        &quot;match_rules&quot;: {
+          &quot;exact&quot;: 17,
+          &quot;unresolved&quot;: 1
+        },
+        &quot;ambiguous_reasons&quot;: {
+          &quot;identical neighbouring frames&quot;: 1
+        }
+      }
+    },
+    &quot;note&quot;: &quot;Counts describe requested query slots, including repeats/padding; not whole-dataset correctness.&quot;
+  },
+  &quot;schema_version&quot;: &quot;boundary-real-probe.v1&quot;,
+  &quot;source_unchanged&quot;: true,
+  &quot;cameras&quot;: [
+    &quot;observation.images.cam_left_wrist&quot;,
+    &quot;observation.images.cam_right_wrist&quot;
+  ],
+  &quot;episodes&quot;: null,
+  &quot;seed&quot;: 20261014,
+  &quot;sampling&quot;: &quot;stratified&quot;,
+  &quot;offsets&quot;: [
+    -1,
+    0,
+    1
+  ],
+  &quot;scope&quot;: &quot;Relative to sequential PyAV ordinal reference; no pre-encoding identity or physical synchronization claim&quot;,
+  &quot;preflight_status&quot;: &quot;pass&quot;,
+  &quot;elapsed_seconds&quot;: 158.99685339996358
+}</pre></details><table><tr><th>Row</th><th>Camera</th><th>Delta</th><th>Expected sample</th><th>Matched sample</th><th>Status</th><th>Reason</th></tr><tr><td>44</td><td>observation.images.cam_left_wrist</td><td>-1</td><td>43</td><td>43</td><td>pass</td><td></td></tr><tr><td>44</td><td>observation.images.cam_left_wrist</td><td>0</td><td>44</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>44</td><td>observation.images.cam_left_wrist</td><td>1</td><td>45</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>44</td><td>observation.images.cam_right_wrist</td><td>-1</td><td>43</td><td>43</td><td>pass</td><td></td></tr><tr><td>44</td><td>observation.images.cam_right_wrist</td><td>0</td><td>44</td><td>44</td><td>pass</td><td></td></tr><tr><td>44</td><td>observation.images.cam_right_wrist</td><td>1</td><td>45</td><td>45</td><td>pass</td><td></td></tr><tr><td>19730</td><td>observation.images.cam_left_wrist</td><td>-1</td><td>19729</td><td>19729</td><td>pass</td><td></td></tr><tr><td>19730</td><td>observation.images.cam_left_wrist</td><td>0</td><td>19730</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>19730</td><td>observation.images.cam_left_wrist</td><td>1</td><td>19731</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>19730</td><td>observation.images.cam_right_wrist</td><td>-1</td><td>19729</td><td>19729</td><td>pass</td><td></td></tr><tr><td>19730</td><td>observation.images.cam_right_wrist</td><td>0</td><td>19730</td><td>19730</td><td>pass</td><td></td></tr><tr><td>19730</td><td>observation.images.cam_right_wrist</td><td>1</td><td>19731</td><td>19731</td><td>pass</td><td></td></tr><tr><td>171</td><td>observation.images.cam_left_wrist</td><td>-1</td><td>170</td><td>170</td><td>pass</td><td></td></tr><tr><td>171</td><td>observation.images.cam_left_wrist</td><td>0</td><td>171</td><td>171</td><td>pass</td><td></td></tr><tr><td>171</td><td>observation.images.cam_left_wrist</td><td>1</td><td>172</td><td>172</td><td>pass</td><td></td></tr><tr><td>171</td><td>observation.images.cam_right_wrist</td><td>-1</td><td>170</td><td>170</td><td>pass</td><td></td></tr><tr><td>171</td><td>observation.images.cam_right_wrist</td><td>0</td><td>171</td><td>171</td><td>pass</td><td></td></tr><tr><td>171</td><td>observation.images.cam_right_wrist</td><td>1</td><td>172</td><td>172</td><td>pass</td><td></td></tr><tr><td>19817</td><td>observation.images.cam_left_wrist</td><td>-1</td><td>19816</td><td>19816</td><td>pass</td><td></td></tr><tr><td>19817</td><td>observation.images.cam_left_wrist</td><td>0</td><td>19817</td><td>19817</td><td>pass</td><td></td></tr><tr><td>19817</td><td>observation.images.cam_left_wrist</td><td>1</td><td>19818</td><td>19818</td><td>pass</td><td></td></tr><tr><td>19817</td><td>observation.images.cam_right_wrist</td><td>-1</td><td>19816</td><td>19816</td><td>pass</td><td></td></tr><tr><td>19817</td><td>observation.images.cam_right_wrist</td><td>0</td><td>19817</td><td>19817</td><td>pass</td><td></td></tr><tr><td>19817</td><td>observation.images.cam_right_wrist</td><td>1</td><td>19818</td><td>19818</td><td>pass</td><td></td></tr><tr><td>389</td><td>observation.images.cam_left_wrist</td><td>-1</td><td>388</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>389</td><td>observation.images.cam_left_wrist</td><td>0</td><td>389</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr><tr><td>389</td><td>observation.images.cam_left_wrist</td><td>1</td><td>390</td><td>390</td><td>pass</td><td></td></tr><tr><td>389</td><td>observation.images.cam_right_wrist</td><td>-1</td><td>388</td><td>388</td><td>pass</td><td></td></tr><tr><td>389</td><td>observation.images.cam_right_wrist</td><td>0</td><td>389</td><td>389</td><td>pass</td><td></td></tr><tr><td>389</td><td>observation.images.cam_right_wrist</td><td>1</td><td>390</td><td>390</td><td>pass</td><td></td></tr><tr><td>19957</td><td>observation.images.cam_left_wrist</td><td>-1</td><td>19956</td><td>19956</td><td>pass</td><td></td></tr><tr><td>19957</td><td>observation.images.cam_left_wrist</td><td>0</td><td>19957</td><td>19957</td><td>pass</td><td></td></tr><tr><td>19957</td><td>observation.images.cam_left_wrist</td><td>1</td><td>19958</td><td>19958</td><td>pass</td><td></td></tr><tr><td>19957</td><td>observation.images.cam_right_wrist</td><td>-1</td><td>19956</td><td>19956</td><td>pass</td><td></td></tr><tr><td>19957</td><td>observation.images.cam_right_wrist</td><td>0</td><td>19957</td><td>19957</td><td>pass</td><td></td></tr><tr><td>19957</td><td>observation.images.cam_right_wrist</td><td>1</td><td>19958</td><td></td><td>ambiguous</td><td>identical neighbouring frames</td></tr></table></html>

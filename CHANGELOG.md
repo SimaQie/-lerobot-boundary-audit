@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.1 — research preview, 2026-10-20
+
+- Reject fractional, floating, boolean and other noninteger reader labels instead
+  of truncating them before comparison with the independent row reference.
+- Detect exact matches to repeated wrong neighbours when the expected frame is
+  excluded; retain ambiguity when the expected frame is one of the matches.
+- Check action array shapes before values; equal flattened values cannot hide
+  transposed axes. Shape expectations come from stored rows, not feature declarations.
+- Independently account for every requested real-probe query slot, including
+  repeated reads, epochs and padding; incomplete or duplicate evidence cannot PASS.
+- Expose per-camera outcomes/ambiguity reasons, sample scope, and exact/heuristic
+  match counts. Add seeded time-stratified sampling with no image-based selection.
+- Add a dated primary-source research review and reproducible AgiBot/ALOHA
+  mixed-versus-stratified experiments. Preserve historical 0.4.0 evidence.
+
 ## 0.4.0 — research preview, 2026-10-14
 
 - Verify integer, nonnull global row indices against ordinal position across shards;

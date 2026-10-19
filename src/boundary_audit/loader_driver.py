@@ -10,10 +10,12 @@ import sys
 import types
 from pathlib import Path
 
-owned_package = types.ModuleType("boundary_audit")
-owned_package.__path__ = [str(Path(__file__).resolve().parent)]
-sys.modules["boundary_audit"] = owned_package
+if not __package__:
+    owned_package = types.ModuleType("boundary_audit")
+    owned_package.__path__ = [str(Path(__file__).resolve().parent)]
+    sys.modules["boundary_audit"] = owned_package
 from boundary_audit.identity import decode_identity, validate_oracle  # noqa: E402
+from boundary_audit.row_contract import row_label_errors  # noqa: E402
 
 DLL_HANDLES = []
 
@@ -63,20 +65,10 @@ def run(request):
     def inspect(item, relative):
         index = indexes[relative]
         expected = rows[index]
-        loaded_index = int(item["index"].item())
-        if (
-            loaded_index != index
-            or int(item["episode_index"].item()) != expected["episode_index"]
-            or int(item["frame_index"].item()) != expected["frame_index"]
-        ):
-            row_errors.append(
-                {
-                    "relative_index": relative,
-                    "expected_index": index,
-                    "actual_index": loaded_index,
-                    "kind": "row_identity",
-                }
-            )
+        labels = {key: item[key].item() for key in ("index", "episode_index", "frame_index")}
+        row_errors.extend(
+            {"relative_index": relative, **error} for error in row_label_errors(labels, {"index": index, **expected})
+        )
         episode = episodes[expected["episode_index"]]
         expected_indexes = [
             max(episode["start"], min(episode["start"] + episode["length"] - 1, index + d)) for d in offsets
@@ -106,6 +98,16 @@ def run(request):
                 row_errors.append({"expected_index": index, "camera": camera, "kind": "padding_mask"})
         actual_actions = item["action"].reshape(-1).tolist()
         expected_actions = [rows[i]["action"] for i in expected_indexes]
+        expected_shape = [len(expected_actions)] if window else []
+        if list(item["action"].shape) != expected_shape:
+            row_errors.append(
+                {
+                    "expected_index": index,
+                    "kind": "action_shape",
+                    "expected": expected_shape,
+                    "actual": list(item["action"].shape),
+                }
+            )
         if actual_actions != expected_actions:
             row_errors.append(
                 {

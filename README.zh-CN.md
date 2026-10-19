@@ -1,11 +1,20 @@
 # LeRobot Boundary Audit
 
 一个可在 CPU 上运行的 LeRobot v3 视频时间轴与轨迹边界检查工具。
-当前版本为 0.4.0 研究预览；原 `robot_data_engineering_saved` 保留原样。
+当前版本为 0.4.1 研究预览；原 `robot_data_engineering_saved` 保留原样。
 
 它检查视频帧的实际展示时间、轨迹视频起止偏移，以及数据表中的时间戳
 是否一致。输出可离线打开的 HTML 报告和 JSON 证据。日常使用只需要
 Python、PyArrow 和 PyAV，无需训练模型、GPU、数据库或服务器。
+
+本轮修复非整数行号被截断后接受、重复错误邻帧被归为无法判定的问题，
+并在比较动作值之前检查实际数组形状。报告逐项核对请求与返回的查询，
+列出每路相机的匹配、错帧、无法判定及其原因，避免把少量抽样写成全量验证。
+
+新增 `probe-loader --sampling stratified`，按固定种子在所选轨迹的时间区间
+内分层抽样；先选时间再解码，不按画面是否容易匹配挑选样本。默认 `mixed`
+仍保留原有边界抽样。查看 [本轮代码与研究审查](research/REVIEW_2026-10-20.md)
+和 [AgiBot / ALOHA 重跑结果](research/results/v041/README.md)。
 
 ## 开始使用
 

@@ -11,13 +11,13 @@ from boundary_audit.conformance import add_repair_control, generate_suite, run_s
 from boundary_audit.storage import write_json
 
 
-@pytest.mark.parametrize("driver", ["suite_driver.py", "loader_driver.py"])
+@pytest.mark.parametrize("driver", ["suite_driver.py", "loader_driver.py", "probe_driver.py"])
 def test_installed_driver_cannot_import_parent_environment_dependencies(tmp_path, driver):
     # Simulate the wheel installation layout with a conflicting dependency next to it.
     owned = tmp_path / "site-packages/boundary_audit"
     owned.mkdir(parents=True)
     original = Path(__file__).resolve().parents[1] / "src/boundary_audit"
-    for name in [driver, "identity.py", "storage.py"]:
+    for name in [driver, "identity.py", "storage.py", "row_contract.py"]:
         shutil.copyfile(original / name, owned / name)
     (owned.parent / "boundary_poison.py").write_text("raise RuntimeError('parent environment leaked')")
     script = "import runpy, sys, importlib.util; before=list(sys.path); runpy.run_path(sys.argv[1], run_name='driver_only'); assert sys.path == before; assert importlib.util.find_spec('boundary_poison') is None"

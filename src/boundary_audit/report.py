@@ -54,12 +54,48 @@ def write_probe_html(report, path):
     """Show the actual query evidence and ambiguity, without remote assets."""
     rows = []
     for record in report.get("records", []):
-        cells = [record.get(k, "") for k in ("index", "camera", "delta", "expected_sample", "matched_sample", "status", "reason")]
+        cells = [
+            record.get(k, "")
+            for k in ("index", "camera", "delta", "expected_sample", "matched_sample", "status", "reason")
+        ]
+        cells[4] = record.get("matched_sample", record.get("matched_samples", ""))
         rows.append("<tr>" + "".join("<td>" + escape(str(v)) + "</td>" for v in cells) + "</tr>")
     summary = {k: v for k, v in report.items() if k != "records"}
     content = '<!doctype html><html lang="en"><meta charset="utf-8"><title>Real footage loader probe</title><style>body{font:15px system-ui;margin:32px;max-width:1200px}table{border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>'
     content += "<h1>Real footage loader probe: " + escape(report["status"].upper()) + "</h1>"
     content += "<p>Comparison against sequential ordinal decode. Repeated or indistinguishable frames are unverified. No original sensor identity or physical synchronization guarantee.</p>"
-    content += "<details><summary>Scope, budgets, versions and row evidence</summary><pre>" + escape(json.dumps(summary, indent=2, ensure_ascii=False)) + "</pre></details>"
-    content += "<table><tr><th>Row</th><th>Camera</th><th>Delta</th><th>Expected sample</th><th>Matched sample</th><th>Status</th><th>Reason</th></tr>" + "".join(rows) + "</table></html>"
+    coverage = report.get("coverage")
+    if coverage:
+        content += (
+            "<h2>Requested query coverage</h2><p>"
+            + escape(
+                f"{coverage['observed_frame_checks']} / {coverage['requested_frame_checks']} frame checks observed; "
+                f"{coverage['missing_query_slots']} missing, {coverage['unexpected_query_slots']} unexpected. "
+                f"{coverage['unique_query_rows']} unique query rows in a {coverage['dataset_rows']}-row dataset."
+            )
+            + " Repeats and padding count as query slots; this is not whole-dataset coverage.</p>"
+        )
+        content += "<table><tr><th>Camera</th><th>Requested</th><th>Observed</th><th>Matches</th><th>Ambiguous</th><th>Wrong</th></tr>"
+        for camera, values in coverage["per_camera"].items():
+            statuses = values["statuses"]
+            cells = [
+                camera,
+                values["requested_checks"],
+                values["observed_checks"],
+                statuses.get("pass", 0),
+                statuses.get("ambiguous", 0),
+                statuses.get("wrong_frame", 0) + statuses.get("wrong_shape", 0),
+            ]
+            content += "<tr>" + "".join("<td>" + escape(str(v)) + "</td>" for v in cells) + "</tr>"
+        content += "</table>"
+    content += (
+        "<details><summary>Scope, budgets, versions and row evidence</summary><pre>"
+        + escape(json.dumps(summary, indent=2, ensure_ascii=False))
+        + "</pre></details>"
+    )
+    content += (
+        "<table><tr><th>Row</th><th>Camera</th><th>Delta</th><th>Expected sample</th><th>Matched sample</th><th>Status</th><th>Reason</th></tr>"
+        + "".join(rows)
+        + "</table></html>"
+    )
     Path(path).write_text(content, encoding="utf-8")

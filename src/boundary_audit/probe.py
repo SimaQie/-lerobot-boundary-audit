@@ -9,14 +9,17 @@ from pathlib import Path
 
 from .audit import audit_dataset
 from .conformance import invoke
+from .probe_evidence import summarize_probe
 from .repair import fingerprint
 
 
-def prepare_probe(root, *, cameras, episodes=None, max_rows=12, radius=1, seed=20261014):
+def prepare_probe(root, *, cameras, episodes=None, max_rows=12, radius=1, seed=20261014, sampling="mixed"):
     import pyarrow.parquet as pq
 
     if type(max_rows) is not int or type(radius) is not int or not 1 <= max_rows <= 1000 or not 0 <= radius <= 32:
         raise ValueError("Probe needs 1..1000 rows and window radius 0..32")
+    if sampling not in {"mixed", "stratified"}:
+        raise ValueError("Sampling must be mixed or stratified")
     root = Path(root).resolve()
     info = json.loads((root / "meta/info.json").read_text())
     metadata = []
@@ -61,6 +64,20 @@ def prepare_probe(root, *, cameras, episodes=None, max_rows=12, radius=1, seed=2
             seen.add(index)
             candidates.append(index)
     queries = list(dict.fromkeys(candidates))[:max_rows]
+    if sampling == "stratified":
+        # Time strata are chosen before decoding: never select frames by their
+        # apparent match quality or discard ambiguous observations afterwards.
+        groups = []
+        for ordinal, ep in enumerate(sampled):
+            slots = min(ep["length"], max_rows // len(sampled) + (ordinal < max_rows % len(sampled)))
+            groups.append(
+                [
+                    ep["dataset_from_index"]
+                    + rng.randrange(slot * ep["length"] // slots, (slot + 1) * ep["length"] // slots)
+                    for slot in range(slots)
+                ]
+            )
+        queries = [group[slot] for slot in range(max(map(len, groups))) for group in groups if slot < len(group)]
     offsets = list(range(-radius, radius + 1))
     ranges = {e["episode_index"]: e for e in metadata}
     required = set()
@@ -109,6 +126,7 @@ def prepare_probe(root, *, cameras, episodes=None, max_rows=12, radius=1, seed=2
         "rows": rows,
         "videos": videos,
         "seed": seed,
+        "sampling": sampling,
         "episode_ranges": {str(k): [e["dataset_from_index"], e["dataset_to_index"]] for k, e in ranges.items()},
     }
 
@@ -124,6 +142,7 @@ def probe_loader(
     max_rows=12,
     radius=1,
     seed=20261014,
+    sampling="mixed",
     max_decode_frames=50000,
     max_reference_bytes=268435456,
     max_view_bytes=314572800,
@@ -164,6 +183,7 @@ def probe_loader(
         max_rows=max_rows,
         radius=0 if phase == "single" else radius,
         seed=seed,
+        sampling=sampling,
     )
     request.update(
         backend=backend,
@@ -189,6 +209,7 @@ def probe_loader(
                 "checked_rows": 0,
                 "errors": [{"type": "TimeoutExpired", "message": str(exc)[:1200]}],
             }
+    report = summarize_probe(report, request)
     report.update(
         backend=backend,
         phase=phase,
@@ -197,6 +218,7 @@ def probe_loader(
         cameras=request["cameras"],
         episodes=episodes,
         seed=seed,
+        sampling=sampling,
         offsets=request["offsets"],
         scope="Relative to sequential PyAV ordinal reference; no pre-encoding identity or physical synchronization claim",
         preflight_status=audit["status"],

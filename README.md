@@ -1,5 +1,25 @@
 # LeRobot Boundary Audit
 
+## 0.4.1 reader evidence review
+
+Fractional/noninteger reader labels are rejected, action array shape is checked
+before values, and repeated wrong neighbours can no longer hide a definite frame
+error as ambiguity. Real-probe reports independently count every requested query
+slot and show camera-specific ambiguity reasons and exact/heuristic match rules.
+
+Optional time-stratified sampling spreads a fixed query budget within selected
+episodes. The seed selects timestamps before any image is decoded; all ambiguity
+is retained. The default `mixed` boundary-oriented sample is unchanged.
+
+```sh
+lerobot-boundary-audit probe-loader DATASET --python PATH_TO_OFFICIAL_PYTHON --sampling stratified --max-rows 6 --phase workers --out reports/stratified
+```
+
+See the [dated research/code review](research/REVIEW_2026-10-20.md) and
+[new experiment evidence](research/results/v041/README.md). This remains a source
+research preview, not a PyPI release. A probe PASS concerns sampled reader
+consistency only, not dataset quality, sensor synchronization or training benefit.
+
 ## 0.4.0 research preview
 
 This checkout adds global-index/shard validation, **ordinary-footage full-loader

@@ -1,0 +1,563 @@
+{
+  "schema_version": "boundary-probe-review.v1",
+  "measurement_date": "2026-10-20",
+  "platform": "Windows CPU",
+  "sources": {
+    "agibot2026": {
+      "repository": "Voxel51/AgiBotWorld2026-sample-10ep",
+      "revision": "caa5bf1b0b5be48ed52d158ff0d66af40b0f9258",
+      "license": "cc-by-nc-sa-4.0",
+      "total_bytes": 217227601
+    },
+    "aloha_screw_driver": {
+      "repository": "lerobot/aloha_static_screw_driver",
+      "revision": "21eead16760a8d94d449cadf4bc438b322ab528d",
+      "license": "mit",
+      "total_bytes": 258967368
+    }
+  },
+  "checks": [
+    {
+      "sample": "agibot2026",
+      "backend": "pyav",
+      "sampling": "mixed",
+      "report": "agibot2026/pyav-mixed/probe-report.json",
+      "status": "partial",
+      "checked_rows": 6,
+      "frame_checks": 36,
+      "passed_frame_checks": 31,
+      "ambiguous_frame_checks": 5,
+      "row_errors": [],
+      "errors": [],
+      "coverage": {
+        "requested_rows": 6,
+        "checked_rows": 6,
+        "requested_frame_checks": 36,
+        "observed_frame_checks": 36,
+        "missing_query_slots": 0,
+        "unexpected_query_slots": 0,
+        "query_slots_complete": true,
+        "dataset_rows": 23658,
+        "selected_episode_rows": 23658,
+        "unique_query_rows": 6,
+        "unique_window_rows": 10,
+        "sampled_episode_ids": [
+          0,
+          9
+        ],
+        "statuses": {
+          "pass": 31,
+          "ambiguous": 5
+        },
+        "per_camera": {
+          "observation.images.hand_left": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 18
+            },
+            "match_rules": {
+              "exact": 18
+            },
+            "ambiguous_reasons": {}
+          },
+          "observation.images.hand_right": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 13,
+              "ambiguous": 5
+            },
+            "match_rules": {
+              "exact": 13,
+              "unresolved": 5
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 5
+            }
+          }
+        },
+        "note": "Counts describe requested query slots, including repeats/padding; not whole-dataset correctness."
+      },
+      "source_unchanged": true,
+      "elapsed_seconds": 99.87107600003947
+    },
+    {
+      "sample": "agibot2026",
+      "backend": "pyav",
+      "sampling": "stratified",
+      "report": "agibot2026/pyav-stratified/probe-report.json",
+      "status": "partial",
+      "checked_rows": 6,
+      "frame_checks": 36,
+      "passed_frame_checks": 35,
+      "ambiguous_frame_checks": 1,
+      "row_errors": [],
+      "errors": [],
+      "coverage": {
+        "requested_rows": 6,
+        "checked_rows": 6,
+        "requested_frame_checks": 36,
+        "observed_frame_checks": 36,
+        "missing_query_slots": 0,
+        "unexpected_query_slots": 0,
+        "query_slots_complete": true,
+        "dataset_rows": 23658,
+        "selected_episode_rows": 23658,
+        "unique_query_rows": 6,
+        "unique_window_rows": 18,
+        "sampled_episode_ids": [
+          0,
+          9
+        ],
+        "statuses": {
+          "pass": 35,
+          "ambiguous": 1
+        },
+        "per_camera": {
+          "observation.images.hand_left": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 17,
+              "ambiguous": 1
+            },
+            "match_rules": {
+              "exact": 17,
+              "unresolved": 1
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 1
+            }
+          },
+          "observation.images.hand_right": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 18
+            },
+            "match_rules": {
+              "exact": 18
+            },
+            "ambiguous_reasons": {}
+          }
+        },
+        "note": "Counts describe requested query slots, including repeats/padding; not whole-dataset correctness."
+      },
+      "source_unchanged": true,
+      "elapsed_seconds": 98.85499520000303
+    },
+    {
+      "sample": "agibot2026",
+      "backend": "torchcodec",
+      "sampling": "mixed",
+      "report": "agibot2026/torchcodec-mixed/probe-report.json",
+      "status": "partial",
+      "checked_rows": 6,
+      "frame_checks": 36,
+      "passed_frame_checks": 31,
+      "ambiguous_frame_checks": 5,
+      "row_errors": [],
+      "errors": [],
+      "coverage": {
+        "requested_rows": 6,
+        "checked_rows": 6,
+        "requested_frame_checks": 36,
+        "observed_frame_checks": 36,
+        "missing_query_slots": 0,
+        "unexpected_query_slots": 0,
+        "query_slots_complete": true,
+        "dataset_rows": 23658,
+        "selected_episode_rows": 23658,
+        "unique_query_rows": 6,
+        "unique_window_rows": 10,
+        "sampled_episode_ids": [
+          0,
+          9
+        ],
+        "statuses": {
+          "pass": 31,
+          "ambiguous": 5
+        },
+        "per_camera": {
+          "observation.images.hand_left": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 18
+            },
+            "match_rules": {
+              "exact": 18
+            },
+            "ambiguous_reasons": {}
+          },
+          "observation.images.hand_right": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 13,
+              "ambiguous": 5
+            },
+            "match_rules": {
+              "exact": 13,
+              "unresolved": 5
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 5
+            }
+          }
+        },
+        "note": "Counts describe requested query slots, including repeats/padding; not whole-dataset correctness."
+      },
+      "source_unchanged": true,
+      "elapsed_seconds": 74.90289480000501
+    },
+    {
+      "sample": "agibot2026",
+      "backend": "torchcodec",
+      "sampling": "stratified",
+      "report": "agibot2026/torchcodec-stratified/probe-report.json",
+      "status": "partial",
+      "checked_rows": 6,
+      "frame_checks": 36,
+      "passed_frame_checks": 35,
+      "ambiguous_frame_checks": 1,
+      "row_errors": [],
+      "errors": [],
+      "coverage": {
+        "requested_rows": 6,
+        "checked_rows": 6,
+        "requested_frame_checks": 36,
+        "observed_frame_checks": 36,
+        "missing_query_slots": 0,
+        "unexpected_query_slots": 0,
+        "query_slots_complete": true,
+        "dataset_rows": 23658,
+        "selected_episode_rows": 23658,
+        "unique_query_rows": 6,
+        "unique_window_rows": 18,
+        "sampled_episode_ids": [
+          0,
+          9
+        ],
+        "statuses": {
+          "pass": 35,
+          "ambiguous": 1
+        },
+        "per_camera": {
+          "observation.images.hand_left": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 17,
+              "ambiguous": 1
+            },
+            "match_rules": {
+              "exact": 17,
+              "unresolved": 1
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 1
+            }
+          },
+          "observation.images.hand_right": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 18
+            },
+            "match_rules": {
+              "exact": 18
+            },
+            "ambiguous_reasons": {}
+          }
+        },
+        "note": "Counts describe requested query slots, including repeats/padding; not whole-dataset correctness."
+      },
+      "source_unchanged": true,
+      "elapsed_seconds": 73.73435490002157
+    },
+    {
+      "sample": "aloha_screw_driver",
+      "backend": "pyav",
+      "sampling": "mixed",
+      "report": "aloha_screw_driver/pyav-mixed/probe-report.json",
+      "status": "partial",
+      "checked_rows": 6,
+      "frame_checks": 36,
+      "passed_frame_checks": 12,
+      "ambiguous_frame_checks": 24,
+      "row_errors": [],
+      "errors": [],
+      "coverage": {
+        "requested_rows": 6,
+        "checked_rows": 6,
+        "requested_frame_checks": 36,
+        "observed_frame_checks": 36,
+        "missing_query_slots": 0,
+        "unexpected_query_slots": 0,
+        "query_slots_complete": true,
+        "dataset_rows": 20000,
+        "selected_episode_rows": 20000,
+        "unique_query_rows": 6,
+        "unique_window_rows": 10,
+        "sampled_episode_ids": [
+          0,
+          49
+        ],
+        "statuses": {
+          "ambiguous": 24,
+          "pass": 12
+        },
+        "per_camera": {
+          "observation.images.cam_left_wrist": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "ambiguous": 11,
+              "pass": 7
+            },
+            "match_rules": {
+              "unresolved": 11,
+              "exact": 7
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 11
+            }
+          },
+          "observation.images.cam_right_wrist": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "ambiguous": 13,
+              "pass": 5
+            },
+            "match_rules": {
+              "unresolved": 13,
+              "exact": 5
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 13
+            }
+          }
+        },
+        "note": "Counts describe requested query slots, including repeats/padding; not whole-dataset correctness."
+      },
+      "source_unchanged": true,
+      "elapsed_seconds": 139.63199249998434
+    },
+    {
+      "sample": "aloha_screw_driver",
+      "backend": "pyav",
+      "sampling": "stratified",
+      "report": "aloha_screw_driver/pyav-stratified/probe-report.json",
+      "status": "partial",
+      "checked_rows": 6,
+      "frame_checks": 36,
+      "passed_frame_checks": 29,
+      "ambiguous_frame_checks": 7,
+      "row_errors": [],
+      "errors": [],
+      "coverage": {
+        "requested_rows": 6,
+        "checked_rows": 6,
+        "requested_frame_checks": 36,
+        "observed_frame_checks": 36,
+        "missing_query_slots": 0,
+        "unexpected_query_slots": 0,
+        "query_slots_complete": true,
+        "dataset_rows": 20000,
+        "selected_episode_rows": 20000,
+        "unique_query_rows": 6,
+        "unique_window_rows": 18,
+        "sampled_episode_ids": [
+          0,
+          49
+        ],
+        "statuses": {
+          "pass": 29,
+          "ambiguous": 7
+        },
+        "per_camera": {
+          "observation.images.cam_left_wrist": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 12,
+              "ambiguous": 6
+            },
+            "match_rules": {
+              "exact": 12,
+              "unresolved": 6
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 6
+            }
+          },
+          "observation.images.cam_right_wrist": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 17,
+              "ambiguous": 1
+            },
+            "match_rules": {
+              "exact": 17,
+              "unresolved": 1
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 1
+            }
+          }
+        },
+        "note": "Counts describe requested query slots, including repeats/padding; not whole-dataset correctness."
+      },
+      "source_unchanged": true,
+      "elapsed_seconds": 141.37583370000357
+    },
+    {
+      "sample": "aloha_screw_driver",
+      "backend": "torchcodec",
+      "sampling": "mixed",
+      "report": "aloha_screw_driver/torchcodec-mixed/probe-report.json",
+      "status": "partial",
+      "checked_rows": 6,
+      "frame_checks": 36,
+      "passed_frame_checks": 12,
+      "ambiguous_frame_checks": 24,
+      "row_errors": [],
+      "errors": [],
+      "coverage": {
+        "requested_rows": 6,
+        "checked_rows": 6,
+        "requested_frame_checks": 36,
+        "observed_frame_checks": 36,
+        "missing_query_slots": 0,
+        "unexpected_query_slots": 0,
+        "query_slots_complete": true,
+        "dataset_rows": 20000,
+        "selected_episode_rows": 20000,
+        "unique_query_rows": 6,
+        "unique_window_rows": 10,
+        "sampled_episode_ids": [
+          0,
+          49
+        ],
+        "statuses": {
+          "ambiguous": 24,
+          "pass": 12
+        },
+        "per_camera": {
+          "observation.images.cam_left_wrist": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "ambiguous": 11,
+              "pass": 7
+            },
+            "match_rules": {
+              "unresolved": 11,
+              "exact": 7
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 11
+            }
+          },
+          "observation.images.cam_right_wrist": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "ambiguous": 13,
+              "pass": 5
+            },
+            "match_rules": {
+              "unresolved": 13,
+              "exact": 5
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 13
+            }
+          }
+        },
+        "note": "Counts describe requested query slots, including repeats/padding; not whole-dataset correctness."
+      },
+      "source_unchanged": true,
+      "elapsed_seconds": 160.9109432999976
+    },
+    {
+      "sample": "aloha_screw_driver",
+      "backend": "torchcodec",
+      "sampling": "stratified",
+      "report": "aloha_screw_driver/torchcodec-stratified/probe-report.json",
+      "status": "partial",
+      "checked_rows": 6,
+      "frame_checks": 36,
+      "passed_frame_checks": 29,
+      "ambiguous_frame_checks": 7,
+      "row_errors": [],
+      "errors": [],
+      "coverage": {
+        "requested_rows": 6,
+        "checked_rows": 6,
+        "requested_frame_checks": 36,
+        "observed_frame_checks": 36,
+        "missing_query_slots": 0,
+        "unexpected_query_slots": 0,
+        "query_slots_complete": true,
+        "dataset_rows": 20000,
+        "selected_episode_rows": 20000,
+        "unique_query_rows": 6,
+        "unique_window_rows": 18,
+        "sampled_episode_ids": [
+          0,
+          49
+        ],
+        "statuses": {
+          "pass": 29,
+          "ambiguous": 7
+        },
+        "per_camera": {
+          "observation.images.cam_left_wrist": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 12,
+              "ambiguous": 6
+            },
+            "match_rules": {
+              "exact": 12,
+              "unresolved": 6
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 6
+            }
+          },
+          "observation.images.cam_right_wrist": {
+            "requested_checks": 18,
+            "observed_checks": 18,
+            "statuses": {
+              "pass": 17,
+              "ambiguous": 1
+            },
+            "match_rules": {
+              "exact": 17,
+              "unresolved": 1
+            },
+            "ambiguous_reasons": {
+              "identical neighbouring frames": 1
+            }
+          }
+        },
+        "note": "Counts describe requested query slots, including repeats/padding; not whole-dataset correctness."
+      },
+      "source_unchanged": true,
+      "elapsed_seconds": 158.99685339996358
+    }
+  ],
+  "source_hashes_unchanged": {
+    "agibot2026": true,
+    "aloha_screw_driver": true
+  },
+  "status": "completed_with_ambiguity",
+  "note": "No image-based query selection, no discarded ambiguity, no natural defect or GPU claim."
+}

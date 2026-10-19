@@ -71,6 +71,7 @@ def main(argv=None):
     cmd.add_argument("--max-rows", type=int, default=12)
     cmd.add_argument("--radius", type=int, default=1)
     cmd.add_argument("--seed", type=int, default=20261014)
+    cmd.add_argument("--sampling", choices=["mixed", "stratified"], default="mixed")
     cmd.add_argument("--max-decode-frames", type=int, default=50000)
     cmd.add_argument("--max-reference-bytes", type=int, default=268435456)
     cmd.add_argument("--max-view-bytes", type=int, default=314572800)
@@ -131,6 +132,7 @@ def main(argv=None):
                 max_rows=args.max_rows,
                 radius=args.radius,
                 seed=args.seed,
+                sampling=args.sampling,
                 max_decode_frames=args.max_decode_frames,
                 max_reference_bytes=args.max_reference_bytes,
                 max_view_bytes=args.max_view_bytes,

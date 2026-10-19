@@ -1,0 +1,76 @@
+{
+  "measurement_date": "2026-10-20",
+  "version": "0.4.1",
+  "platform": "Windows CPU",
+  "pytest": {
+    "python_3_11": {
+      "passed": 106
+    },
+    "python_3_12": {
+      "passed": 106
+    }
+  },
+  "lint": "passed",
+  "synthetic_suite": {
+    "checks": 78,
+    "matched_expectations": 78,
+    "phases": [
+      "single",
+      "window",
+      "workers"
+    ],
+    "backends": [
+      "pyav",
+      "torchcodec"
+    ],
+    "frame_checks": 11760,
+    "correct_frame_checks": 9874
+  },
+  "real_probe_matrix": {
+    "checks": 8,
+    "query_slots": 288,
+    "observed_query_slots": 288,
+    "source_hashes_unchanged": {
+      "agibot2026": true,
+      "aloha_screw_driver": true
+    }
+  },
+  "installed_wheel": {
+    "bytes": 325407,
+    "sha256": "c3ee0aadddcd0d57abab6fe5ecbcb049edb067039845bada6f5950f85dc807e0",
+    "package_files_match_source": 20,
+    "audit_environment_torch": false,
+    "audit_environment_numpy": false,
+    "demo": "pass",
+    "ordinary_probe": "pass",
+    "frame_checks": 12,
+    "passed_frame_checks": 12
+  },
+  "source_git_blobs": {
+    "src/boundary_audit/audit.py": "3d7cd999c0d05a2d326fc1a3582f7b482e983c6e",
+    "src/boundary_audit/cli.py": "9ed3207e76bfd8f34785633e219b5212a2d1f074",
+    "src/boundary_audit/conformance.py": "b98fc56957150be9b2c1c3a1b62389fdca899843",
+    "src/boundary_audit/consumer_driver.py": "d7dfdb45f1aefcc31f8f7691811d947bb1440707",
+    "src/boundary_audit/download.py": "0d02663e695a8144beb56a6a508ec2268df8dd54",
+    "src/boundary_audit/fixtures.py": "cf526298ec467c77b12ef12a59ff53219e2a63ca",
+    "src/boundary_audit/identity.py": "fb77fe102015c65e6846670f40e43f873f01be1a",
+    "src/boundary_audit/loader_driver.py": "e543e3255f81931d4435dbdab7bd6b84cc4e40f3",
+    "src/boundary_audit/mp4.py": "1ca3cab7d4f163220cd959ebb5c736cdd048a703",
+    "src/boundary_audit/probe.py": "79c0ffebea15e99c9dc2ea4a4478379ad589417c",
+    "src/boundary_audit/probe_driver.py": "94a5bb513ad8ac5006dbb0835f5025753631e31b",
+    "src/boundary_audit/probe_evidence.py": "7985f80b0c9b36df037a0dc77718f2987ed691e5",
+    "src/boundary_audit/repair.py": "72ec343c927e378979268d7f76a18db8acebd962",
+    "src/boundary_audit/report.py": "bbfee1aa6ad86c8e543fa9d53528ace13b69b622",
+    "src/boundary_audit/row_contract.py": "d40bbaae51477e8f307d6c1008ad25599ff47753",
+    "src/boundary_audit/storage.py": "f2de5132c49b9d1a831ccf974eaf8b3e975e2b11",
+    "src/boundary_audit/suite_driver.py": "f51b9de4cdaaa52094d2d60975f4901524c77fa7",
+    "src/boundary_audit/verify.py": "f1f76a4ffd78cd45464eaebd57c23157f44fefad",
+    "src/boundary_audit/__init__.py": "77a6409800114943009f1bb1d4976052970b333b",
+    "research/review_v041.py": "f2de682cb611ece19081966e5d2f9ca33deef173"
+  },
+  "limitations": [
+    "No GPU measurement",
+    "Real probes retain ambiguity; no natural upstream defect claim",
+    "Only three of eight synthetic reader phases rerun locally for this patch; historical full CI passed"
+  ]
+}

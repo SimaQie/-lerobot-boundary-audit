@@ -12,5 +12,7 @@ include research/package_preview.py
 include research/compare_v040.py
 include research/V040.md
 include research/validate_real_sample.py
+include research/review_v041.py
+include research/REVIEW_2026-10-20.md
 recursive-include src/boundary_audit/resources *.zip
 exclude research/backup_fingerprint_before.json
