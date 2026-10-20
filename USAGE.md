@@ -296,8 +296,8 @@ Use `probe-loader` instead when you need windows, actions, padding or workers.
 | Download the pinned real samples | `download aloha_screw_driver` / `download agibot2026` |
 
 The GPU benchmark is separate and experimental: see
-[`research/benchmark_gpu_decode.py`](../research/benchmark_gpu_decode.py) and the
-[RTX 4090 evidence](../research/results/rtx4090/session-001/README.md). It is not
+[`research/benchmark_gpu_decode.py`](research/benchmark_gpu_decode.py) and the
+[RTX 4090 evidence](research/results/rtx4090/session-001/README.md). It is not
 required for any command above and is not a stable GPU reader.
 
 ## 7. Common problems

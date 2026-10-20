@@ -278,8 +278,8 @@ lerobot-boundary-audit verify samples/aloha \
 | 下载固定真实样本 | `download aloha_screw_driver` / `download agibot2026` |
 
 GPU benchmark 是独立实验工具，不属于日常使用路径；见
-[`research/benchmark_gpu_decode.py`](../research/benchmark_gpu_decode.py) 和
-[RTX 4090 证据](../research/results/rtx4090/session-001/README.md)。它不是稳定
+[`research/benchmark_gpu_decode.py`](research/benchmark_gpu_decode.py) 和
+[RTX 4090 证据](research/results/rtx4090/session-001/README.md)。它不是稳定
 GPU reader。
 
 ## 7. 常见问题
