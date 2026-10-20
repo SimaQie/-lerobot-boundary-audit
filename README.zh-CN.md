@@ -163,7 +163,7 @@ Windows 的 TorchCodec 可追加 `--ffmpeg-bin` 指向已安装的共享 FFmpeg 
 在本机 WSL2 + RTX 4090 上，现有 CPU 流程 208/208 通过，两份真实数据验证均为
 `expected_outcomes_met`；CUDA 构建下 CPU 路径 78/78 通过。显式 CUDA 调用输出在
 `cuda:0`、无 CPU fallback；解码器预热后，32 帧单视频“解码 + H2D + checksum”
-微基准快 1.53–2.15×。这不是完整审计/窗口/动作/DataLoader 的加速，也不代表 RGB
+微基准快 1.37–2.34×。这不是完整审计/窗口/动作/DataLoader 的加速，也不代表 RGB
 输出等价；CUDA RGB 与 CPU 不一致（TV range 类），真实画面身份仍有大量“无法判定”
 （0 个明确错帧），因此没有把 GPU 接入默认读取流程，也不宣称稳定 GPU 支持。
 证据见 [session-001](research/results/rtx4090/session-001/README.md) 与

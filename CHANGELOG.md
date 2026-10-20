@@ -20,7 +20,7 @@
 - Keep raw tensors out of report payloads; one-sided time errors are JSON-safe.
 - RTX 4090/WSL2 validation: 208/208 CPU conformance, 78/78 CUDA-build CPU-path
   conformance, both real-data validations `expected_outcomes_met`; explicit
-  NVDEC produced `cuda:0` tensors. The measured 1.53-2.15x gain applies only to
+  NVDEC produced `cuda:0` tensors. The measured 1.37-2.34x gain applies only to
   the 32-frame single-video decode + H2D + checksum microbenchmark with a reused
   decoder; it is not a full-tool or RGB-equivalent speedup. Real-frame identity
   coverage remained partial and RGB differed.

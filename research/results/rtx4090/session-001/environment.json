@@ -1,6 +1,6 @@
 {
   "schema_version": "boundary-rtx4090-environment.v1",
-  "measurement_time": "2026-10-20T03:26:53+08:00",
+  "measurement_time": "2026-10-20T10:08:11+08:00",
   "system_timezone": "Asia/Shanghai",
   "platform": "Linux",
   "platform_release": "6.18.54.1-microsoft-standard-WSL2",

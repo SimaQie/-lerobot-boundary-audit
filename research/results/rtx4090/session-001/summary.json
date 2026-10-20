@@ -9,7 +9,7 @@
     "validation_aloha": "d1eb625054decac1c3d520421a1002b889ff75f1",
     "sampling_cpu": "d1eb625054decac1c3d520421a1002b889ff75f1",
     "sampling_cuda_build_cpu": "d1eb625054decac1c3d520421a1002b889ff75f1",
-    "gpu_benchmark": "88ae99b9ac8eef11b1e657d0baa8a626fdab1c4a"
+    "gpu_benchmark": "152cb2ca3be39304ea27c38e78932cac609ab1f9"
   },
   "phases": {
     "cpu_conformance": {
@@ -677,6 +677,7 @@
       }
     },
     "gpu_decode": {
+      "tool_version": "0.4.2rc1",
       "smoke": {
         "schema_version": "boundary-cuda-smoke.v1",
         "results": [
@@ -729,13 +730,154 @@
       "benchmark_status": "partial",
       "benchmark_source": {
         "root": ".",
-        "commit": "88ae99b9ac8eef11b1e657d0baa8a626fdab1c4a",
+        "commit": "152cb2ca3be39304ea27c38e78932cac609ab1f9",
         "dirty": false,
         "files_sha256": {
           "research/review_v041.py": "1d6c4e3ebc39d6cad67ea6c5b5773555628cca74c2e2b255684826d4d9f2e460",
           "src/boundary_audit/environment.py": "33ef8e334a0f19a89436de25c93bc173670ef6437af7323efaac5d3b310407d5",
           "src/boundary_audit/probe_driver.py": "fd1b8b79ad0bdcb371c44769d715f9ff0405166e489489135f8ff87f453a0558"
         }
+      },
+      "evaluation": {
+        "status": "partial",
+        "correctness": {
+          "expected": 12,
+          "completed": 12,
+          "missing": [],
+          "incomplete": [],
+          "status": "partial"
+        },
+        "performance": {
+          "expected": 12,
+          "completed": 12,
+          "missing": [],
+          "incomplete": [],
+          "status": "pass"
+        },
+        "integrity": {
+          "status": "pass"
+        },
+        "missing": [],
+        "incomplete": [],
+        "issues": [],
+        "notes": [
+          "correctness aloha-left/cpu: partial",
+          "correctness aloha-left/cuda: partial",
+          "correctness agibot-left/cpu: partial",
+          "correctness agibot-left/cuda: partial"
+        ]
+      },
+      "integrity": {
+        "status": "pass",
+        "before": {
+          "demo-clean": {
+            "path": "research/runs/rtx4090/session-001/demo/merged/videos/observation.images.left/chunk-000/file-000.mp4",
+            "kind": "fixture",
+            "sha256": "d5801f47cf95b0c63948e14c4b0266e861ed0d60992301ce2dfaead1a45bdb13",
+            "bytes": 8390,
+            "oracle": {
+              "path": "research/runs/rtx4090/session-001/demo/merged/frame_oracle.json",
+              "sha256": "32c0f64d2c60b5d1c9528e2cf932331fb1a0b908f9d868a47b285228ffd24def"
+            }
+          },
+          "demo-duplicate-pixel": {
+            "path": "research/runs/rtx4090/session-001/demo/duplicate-pixel-frame/videos/observation.images.left/chunk-000/file-000.mp4",
+            "kind": "fixture",
+            "sha256": "2c5b82c5efae21a2e3a51c20bfde414bba3bb547380ea02e4a61f1b96ff0891b",
+            "bytes": 6603,
+            "oracle": {
+              "path": "research/runs/rtx4090/session-001/demo/duplicate-pixel-frame/frame_oracle.json",
+              "sha256": "32c0f64d2c60b5d1c9528e2cf932331fb1a0b908f9d868a47b285228ffd24def"
+            }
+          },
+          "demo-camera-swap": {
+            "path": "research/runs/rtx4090/session-001/demo/camera-swap/videos/observation.images.left/chunk-000/file-000.mp4",
+            "kind": "fixture",
+            "sha256": "df42f8485f7a4f975f2dba51fc7218e3f5123ac4cb25eb3eb1fa608e162667c2",
+            "bytes": 8570,
+            "oracle": {
+              "path": "research/runs/rtx4090/session-001/demo/camera-swap/frame_oracle.json",
+              "sha256": "32c0f64d2c60b5d1c9528e2cf932331fb1a0b908f9d868a47b285228ffd24def"
+            }
+          },
+          "demo-pixel-order-swap": {
+            "path": "research/runs/rtx4090/session-001/demo/pixel-order-swap/videos/observation.images.left/chunk-000/file-000.mp4",
+            "kind": "fixture",
+            "sha256": "7d7cc63d904ba40f880769141dc4bd1e2a887f89b0f2553946f4151f31bb10bc",
+            "bytes": 6752,
+            "oracle": {
+              "path": "research/runs/rtx4090/session-001/demo/pixel-order-swap/frame_oracle.json",
+              "sha256": "32c0f64d2c60b5d1c9528e2cf932331fb1a0b908f9d868a47b285228ffd24def"
+            }
+          },
+          "aloha-left": {
+            "path": "samples/aloha_screw_driver/videos/observation.images.cam_left_wrist/chunk-000/file-000.mp4",
+            "kind": "real",
+            "sha256": "aabbc4ab572f97bf368226db78d3a89b4e8669d42004ed81fe97ee9663b8e9af",
+            "bytes": 128320004
+          },
+          "agibot-left": {
+            "path": "samples/agibot2026/videos/observation.images.hand_left/chunk-000/file-000.mp4",
+            "kind": "real",
+            "sha256": "27c00a10b25a67cac63427299bdbf70953ed178fbee541072c6d57ad588ab5d6",
+            "bytes": 99687972
+          }
+        },
+        "after": {
+          "demo-clean": {
+            "path": "research/runs/rtx4090/session-001/demo/merged/videos/observation.images.left/chunk-000/file-000.mp4",
+            "kind": "fixture",
+            "sha256": "d5801f47cf95b0c63948e14c4b0266e861ed0d60992301ce2dfaead1a45bdb13",
+            "bytes": 8390,
+            "oracle": {
+              "path": "research/runs/rtx4090/session-001/demo/merged/frame_oracle.json",
+              "sha256": "32c0f64d2c60b5d1c9528e2cf932331fb1a0b908f9d868a47b285228ffd24def"
+            }
+          },
+          "demo-duplicate-pixel": {
+            "path": "research/runs/rtx4090/session-001/demo/duplicate-pixel-frame/videos/observation.images.left/chunk-000/file-000.mp4",
+            "kind": "fixture",
+            "sha256": "2c5b82c5efae21a2e3a51c20bfde414bba3bb547380ea02e4a61f1b96ff0891b",
+            "bytes": 6603,
+            "oracle": {
+              "path": "research/runs/rtx4090/session-001/demo/duplicate-pixel-frame/frame_oracle.json",
+              "sha256": "32c0f64d2c60b5d1c9528e2cf932331fb1a0b908f9d868a47b285228ffd24def"
+            }
+          },
+          "demo-camera-swap": {
+            "path": "research/runs/rtx4090/session-001/demo/camera-swap/videos/observation.images.left/chunk-000/file-000.mp4",
+            "kind": "fixture",
+            "sha256": "df42f8485f7a4f975f2dba51fc7218e3f5123ac4cb25eb3eb1fa608e162667c2",
+            "bytes": 8570,
+            "oracle": {
+              "path": "research/runs/rtx4090/session-001/demo/camera-swap/frame_oracle.json",
+              "sha256": "32c0f64d2c60b5d1c9528e2cf932331fb1a0b908f9d868a47b285228ffd24def"
+            }
+          },
+          "demo-pixel-order-swap": {
+            "path": "research/runs/rtx4090/session-001/demo/pixel-order-swap/videos/observation.images.left/chunk-000/file-000.mp4",
+            "kind": "fixture",
+            "sha256": "7d7cc63d904ba40f880769141dc4bd1e2a887f89b0f2553946f4151f31bb10bc",
+            "bytes": 6752,
+            "oracle": {
+              "path": "research/runs/rtx4090/session-001/demo/pixel-order-swap/frame_oracle.json",
+              "sha256": "32c0f64d2c60b5d1c9528e2cf932331fb1a0b908f9d868a47b285228ffd24def"
+            }
+          },
+          "aloha-left": {
+            "path": "samples/aloha_screw_driver/videos/observation.images.cam_left_wrist/chunk-000/file-000.mp4",
+            "kind": "real",
+            "sha256": "aabbc4ab572f97bf368226db78d3a89b4e8669d42004ed81fe97ee9663b8e9af",
+            "bytes": 128320004
+          },
+          "agibot-left": {
+            "path": "samples/agibot2026/videos/observation.images.hand_left/chunk-000/file-000.mp4",
+            "kind": "real",
+            "sha256": "27c00a10b25a67cac63427299bdbf70953ed178fbee541072c6d57ad588ab5d6",
+            "bytes": 99687972
+          }
+        },
+        "unchanged": true
       },
       "device_status": {
         "cpu": {
@@ -941,7 +1083,7 @@
       "colour": {
         "aloha-left|cpu": {
           "checks": 166,
-          "exact_equals": 89,
+          "exact_equals": 87,
           "raw_mae_median": 0.0,
           "raw_mae_max": 0.0,
           "adjusted_mae_median": null,
@@ -950,14 +1092,14 @@
         "aloha-left|cuda": {
           "checks": 166,
           "exact_equals": 0,
-          "raw_mae_median": 9.747316837310791,
+          "raw_mae_median": 9.750612735748291,
           "raw_mae_max": 10.430719375610352,
-          "adjusted_mae_median": 0.6327994763851166,
+          "adjusted_mae_median": 0.6296592950820923,
           "adjusted_mae_max": 0.7343424558639526
         },
         "agibot-left|cpu": {
           "checks": 46,
-          "exact_equals": 38,
+          "exact_equals": 30,
           "raw_mae_median": 0.0,
           "raw_mae_max": 0.0,
           "adjusted_mae_median": null,
@@ -967,64 +1109,70 @@
           "checks": 46,
           "exact_equals": 0,
           "raw_mae_median": 8.738680839538574,
-          "raw_mae_max": 10.275754928588867,
-          "adjusted_mae_median": 2.496122360229492,
+          "raw_mae_max": 10.126952171325684,
+          "adjusted_mae_median": 2.496501088142395,
           "adjusted_mae_max": 2.601271390914917
         }
       },
       "performance_comparison": {
         "aloha-left|batch1": {
-          "cpu_native_seconds": 0.05001244900131496,
-          "cuda_native_seconds": 0.041483542001060414,
-          "cpu_end_to_end_seconds": 0.09972098600246682,
-          "cuda_end_to_end_seconds": 0.046443452001312835,
-          "native_cpu_over_cuda": 1.2055973667831095,
-          "end_to_end_cpu_over_cuda": 2.147148450542564
+          "cpu_native_seconds": 0.05416848400011531,
+          "cuda_native_seconds": 0.0366374409996979,
+          "cpu_end_to_end_seconds": 0.09751473399990118,
+          "cuda_end_to_end_seconds": 0.04170404099954794,
+          "native_cpu_over_cuda": 1.4785007501086653,
+          "end_to_end_cpu_over_cuda": 2.3382562375899787,
+          "scope": "32-frame single-video microbenchmark; decoder reused; CPU e2e includes H2D; no full LeRobot window/action/padding processing or RGB-equivalence claim"
         },
         "aloha-left|batch8": {
-          "cpu_native_seconds": 0.045882456000072125,
-          "cuda_native_seconds": 0.030493694999677246,
-          "cpu_end_to_end_seconds": 0.063480152000011,
-          "cuda_end_to_end_seconds": 0.034573916999306675,
-          "native_cpu_over_cuda": 1.5046538637104412,
-          "end_to_end_cpu_over_cuda": 1.8360705846920382
+          "cpu_native_seconds": 0.051933005999785564,
+          "cuda_native_seconds": 0.03356643400002213,
+          "cpu_end_to_end_seconds": 0.0666683809999995,
+          "cuda_end_to_end_seconds": 0.03767560699998285,
+          "native_cpu_over_cuda": 1.5471707837583024,
+          "end_to_end_cpu_over_cuda": 1.7695370110435076,
+          "scope": "32-frame single-video microbenchmark; decoder reused; CPU e2e includes H2D; no full LeRobot window/action/padding processing or RGB-equivalence claim"
         },
         "aloha-left|batch32": {
-          "cpu_native_seconds": 0.04736895900032323,
-          "cuda_native_seconds": 0.03149419300007139,
-          "cpu_end_to_end_seconds": 0.06212360700010322,
-          "cuda_end_to_end_seconds": 0.035556840999561246,
-          "native_cpu_over_cuda": 1.5040537473119522,
-          "end_to_end_cpu_over_cuda": 1.747163281486952
+          "cpu_native_seconds": 0.05183117800004311,
+          "cuda_native_seconds": 0.03347669299989775,
+          "cpu_end_to_end_seconds": 0.0663130990000127,
+          "cuda_end_to_end_seconds": 0.037477750999869386,
+          "native_cpu_over_cuda": 1.5482765277980541,
+          "end_to_end_cpu_over_cuda": 1.7693991029569465,
+          "scope": "32-frame single-video microbenchmark; decoder reused; CPU e2e includes H2D; no full LeRobot window/action/padding processing or RGB-equivalence claim"
         },
         "agibot-left|batch1": {
-          "cpu_native_seconds": 0.10861449300000459,
-          "cuda_native_seconds": 0.08899454300035359,
-          "cpu_end_to_end_seconds": 0.15242945399995733,
-          "cuda_end_to_end_seconds": 0.09341483400157813,
-          "native_cpu_over_cuda": 1.2204623939646844,
-          "end_to_end_cpu_over_cuda": 1.6317478442169284
+          "cpu_native_seconds": 0.09951195599990115,
+          "cuda_native_seconds": 0.08174156899985974,
+          "cpu_end_to_end_seconds": 0.14557372400008717,
+          "cuda_end_to_end_seconds": 0.08623484999975517,
+          "native_cpu_over_cuda": 1.2173971850243284,
+          "end_to_end_cpu_over_cuda": 1.6881078125665026,
+          "scope": "32-frame single-video microbenchmark; decoder reused; CPU e2e includes H2D; no full LeRobot window/action/padding processing or RGB-equivalence claim"
         },
         "agibot-left|batch8": {
-          "cpu_native_seconds": 0.10076949299946136,
-          "cuda_native_seconds": 0.07364207499995246,
-          "cpu_end_to_end_seconds": 0.11962650799978292,
-          "cuda_end_to_end_seconds": 0.07826216799958274,
-          "native_cpu_over_cuda": 1.3683684632667727,
-          "end_to_end_cpu_over_cuda": 1.5285355754573615
+          "cpu_native_seconds": 0.09895050400007221,
+          "cuda_native_seconds": 0.07979393200014329,
+          "cpu_end_to_end_seconds": 0.11794203300007666,
+          "cuda_end_to_end_seconds": 0.08401108900022791,
+          "native_cpu_over_cuda": 1.2400755486005444,
+          "end_to_end_cpu_over_cuda": 1.4038864916958367,
+          "scope": "32-frame single-video microbenchmark; decoder reused; CPU e2e includes H2D; no full LeRobot window/action/padding processing or RGB-equivalence claim"
         },
         "agibot-left|batch32": {
-          "cpu_native_seconds": 0.113164536000113,
-          "cuda_native_seconds": 0.06684343000006265,
-          "cpu_end_to_end_seconds": 0.12975573999938206,
-          "cuda_end_to_end_seconds": 0.0712153260001287,
-          "native_cpu_over_cuda": 1.6929791903259144,
-          "end_to_end_cpu_over_cuda": 1.8220198837417043
+          "cpu_native_seconds": 0.09770969099997728,
+          "cuda_native_seconds": 0.07887429499999143,
+          "cpu_end_to_end_seconds": 0.1133672180000076,
+          "cuda_end_to_end_seconds": 0.08298977100002958,
+          "native_cpu_over_cuda": 1.238802717665976,
+          "end_to_end_cpu_over_cuda": 1.3660384482801766,
+          "scope": "32-frame single-video microbenchmark; decoder reused; CPU e2e includes H2D; no full LeRobot window/action/padding processing or RGB-equivalence claim"
         }
       },
       "environment": {
         "schema_version": "boundary-environment.v1",
-        "measurement_time": "2026-10-20T03:26:53+08:00",
+        "measurement_time": "2026-10-20T10:08:11+08:00",
         "measurement_date": "2026-10-20",
         "system_timezone": "Asia/Shanghai",
         "display_timezone": "Asia/Shanghai",
@@ -1118,8 +1266,8 @@
       "source_unchanged": true
     },
     "packaging": {
-      "wheel": "fa7c8a85fd972bc0102098ab3ba98f38b0cdbe9cc25adc1f3856b2894463f163  lerobot_boundary_audit-0.4.1-py3-none-any.whl",
-      "wheel_files": 29,
+      "wheel": "05464c3588c0d08746bf6a6b4fb8461a927b3f1589203fe1a6f012c9726b99b2  lerobot_boundary_audit-0.4.2rc1-py3-none-any.whl",
+      "wheel_files": 30,
       "clean_install_demo_status": "pass",
       "clean_install_conformance": {
         "status": "pass",

@@ -1,0 +1,23 @@
+{
+  "schema_version": "boundary-review-response.v1",
+  "reviewed_commit": "261ba3a74e2bec72acb768d0cda1f78c6e71e0cf",
+  "final_benchmark_commit": "152cb2ca3be39304ea27c38e78932cac609ab1f9",
+  "final_version": "0.4.2rc1",
+  "r1": {
+    "status": "fixed",
+    "tests": "tests/test_gpu_benchmark.py: missing results, missing CUDA subtask, source change, performance unavailable, missing performance task, short repetitions, empty expected set, normal pass",
+    "manual_budget_report": "r3-budget-summary.json"
+  },
+  "r2": {
+    "status": "fixed",
+    "source": "sequential PyAV PTS/duration intervals; not decoder returned PTS",
+    "counterexample": "both paths returning the next frame at t=0 is pts_mismatch",
+    "tests": "test_time_mapping_is_independent_of_returned_frame_pts; test_both_paths_returning_next_frame_is_a_pts_mismatch"
+  },
+  "r3": {
+    "status": "fixed",
+    "tests": "raw tensors are dropped; one-sided errors are JSON-safe; partial reports are written",
+    "manual_budget_report": "r3-budget-summary.json"
+  },
+  "pytest": "130 passed at the measured branch tip"
+}

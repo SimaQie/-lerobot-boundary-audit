@@ -6,6 +6,7 @@ boundary_audit/consumer_driver.py
 boundary_audit/download.py
 boundary_audit/environment.py
 boundary_audit/fixtures.py
+boundary_audit/gpu_benchmark.py
 boundary_audit/gpu_metrics.py
 boundary_audit/identity.py
 boundary_audit/loader_driver.py
@@ -20,10 +21,10 @@ boundary_audit/storage.py
 boundary_audit/suite_driver.py
 boundary_audit/verify.py
 boundary_audit/resources/frame-suite-v040.zip
-lerobot_boundary_audit-0.4.1.dist-info/licenses/LICENSE
-lerobot_boundary_audit-0.4.1.dist-info/licenses/NOTICE.md
-lerobot_boundary_audit-0.4.1.dist-info/METADATA
-lerobot_boundary_audit-0.4.1.dist-info/WHEEL
-lerobot_boundary_audit-0.4.1.dist-info/entry_points.txt
-lerobot_boundary_audit-0.4.1.dist-info/top_level.txt
-lerobot_boundary_audit-0.4.1.dist-info/RECORD
+lerobot_boundary_audit-0.4.2rc1.dist-info/licenses/LICENSE
+lerobot_boundary_audit-0.4.2rc1.dist-info/licenses/NOTICE.md
+lerobot_boundary_audit-0.4.2rc1.dist-info/METADATA
+lerobot_boundary_audit-0.4.2rc1.dist-info/WHEEL
+lerobot_boundary_audit-0.4.2rc1.dist-info/entry_points.txt
+lerobot_boundary_audit-0.4.2rc1.dist-info/top_level.txt
+lerobot_boundary_audit-0.4.2rc1.dist-info/RECORD

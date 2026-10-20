@@ -10,20 +10,20 @@ correctness demo-camera-swap/cuda: pass
 correctness demo-pixel-order-swap/cuda: pass
 correctness aloha-left/cuda: partial
 correctness agibot-left/cuda: partial
-performance aloha-left/cpu/batch1: 0.05001244900131496
-performance aloha-left/cpu/batch8: 0.045882456000072125
-performance aloha-left/cpu/batch32: 0.04736895900032323
-performance aloha-left/cuda/batch1: 0.041483542001060414
-performance aloha-left/cuda/batch8: 0.030493694999677246
-performance aloha-left/cuda/batch32: 0.03149419300007139
-performance agibot-left/cpu/batch1: 0.10861449300000459
-performance agibot-left/cpu/batch8: 0.10076949299946136
-performance agibot-left/cpu/batch32: 0.113164536000113
-performance agibot-left/cuda/batch1: 0.08899454300035359
-performance agibot-left/cuda/batch8: 0.07364207499995246
-performance agibot-left/cuda/batch32: 0.06684343000006265
+performance aloha-left/cpu/batch1: 0.05416848400011531 (pass)
+performance aloha-left/cpu/batch8: 0.051933005999785564 (pass)
+performance aloha-left/cpu/batch32: 0.05183117800004311 (pass)
+performance aloha-left/cuda/batch1: 0.0366374409996979 (pass)
+performance aloha-left/cuda/batch8: 0.03356643400002213 (pass)
+performance aloha-left/cuda/batch32: 0.03347669299989775 (pass)
+performance agibot-left/cpu/batch1: 0.09951195599990115 (pass)
+performance agibot-left/cpu/batch8: 0.09895050400007221 (pass)
+performance agibot-left/cpu/batch32: 0.09770969099997728 (pass)
+performance agibot-left/cuda/batch1: 0.08174156899985974 (pass)
+performance agibot-left/cuda/batch8: 0.07979393200014329 (pass)
+performance agibot-left/cuda/batch32: 0.07887429499999143 (pass)
 {
   "status": "partial",
-  "out": "research/runs/rtx4090/session-001/gpu-benchmark-003"
+  "out": "research/runs/rtx4090/session-001/gpu-benchmark-005"
 }
 BENCH_EXIT=0

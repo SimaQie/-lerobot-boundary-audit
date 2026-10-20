@@ -7,20 +7,22 @@ hashes, report JSON/HTML and logs only. It contains no real videos, action
 Parquet tables, derived real datasets, virtual environments or credentials.
 
 Detailed narrative: [`RTX4090_2026-10-20.md`](RTX4090_2026-10-20.md) (also at
-`research/RTX4090_2026-10-20.md`).
+`research/RTX4090_2026-10-20.md`). Review response:
+[`REVIEW_RESPONSE_2026-10-20.md`](REVIEW_RESPONSE_2026-10-20.md) and
+[`review-response.json`](review-response.json).
 
 ## Headline
 
 | Phase | Result |
 |---|---|
-| A. CPU audit on this host | 115 tests, ruff clean, 208/208 fixture conformance |
+| A. CPU audit on this host | 130 tests, ruff clean, 208/208 fixture conformance |
 | A. real samples | AgiBot and ALOHA both `expected_outcomes_met`; official 60/60 and 300/300 queries; repairs exact |
 | A. sampling | AgiBot mixed 31/5, stratified 35/1; ALOHA 12/24, 29/7; both backends |
 | B. CUDA build, stock reader | 78/78 conformance; sampling identical to A; requested/observed decode device CPU |
 | C. explicit CUDA smoke | output `cuda:0`; no CPU fallback; cuvid/AV1 decoders present |
 | C. correctness | fixture faults detected by CPU and CUDA; real AV1 0 wrong frames, but many ambiguous |
-| C. performance | 32-frame single-video decode + H2D + checksum microbenchmark: CPU/CUDA 1.53–2.15× with decoder reuse; not a full-tool or RGB-equivalent speedup |
-| Packaging | 323 KiB wheel, clean install, demo pass, 26/26 single-phase conformance |
+| C. performance | 32-frame single-video decode + H2D + checksum microbenchmark: CPU/CUDA 1.37–2.34× with decoder reuse; not a full-tool or RGB-equivalent speedup |
+| Packaging | 0.4.2rc1 wheel/sdist, clean install, demo pass, 26/26 single-phase conformance |
 
 The GPU benchmark status is `partial`, not `pass`: CUDA RGB differs from CPU RGB
 and many real identities remain ambiguous. The CPU default path is unchanged.
@@ -42,7 +44,7 @@ and many real identities remain ambiguous. The CPU default path is unchanged.
 - Branch: `experiment/rtx4090-validation`.
 - Tested commits are embedded in each summary: conformance `5da5384`; AgiBot
   validation `4aee263`; ALOHA/sampling `d1eb625`; final GPU benchmark
-  `88ae99b`; final branch tip also includes packaging/reporting fixes.
+  `152cb2c` (0.4.2rc1); final branch tip also includes packaging/reporting fixes.
 - Data revisions: AgiBot `caa5bf1b0b5be48ed52d158ff0d66af40b0f9258`, ALOHA
   `21eead16760a8d94d449cadf4bc438b322ab528d`, project 13-case fixture.
 - All source hashes are unchanged; see `source-integrity.json` and the
@@ -65,6 +67,8 @@ and many real identities remain ambiguous. The CPU default path is unchanged.
 | `freezes/` | auditor, CPU consumer, CUDA consumer, wheel-check freezes |
 | `logs/` | original command logs with project/home paths redacted |
 | `wheel/` | wheel SHA-256 and file list |
+| `REVIEW_RESPONSE_2026-10-20.md`, `review-response.json` | R1/R2/R3 fixes, regression tests and manual budget evidence |
+| `r3-budget-summary.json` | soft-budget run that still writes integrity and a partial report |
 | `benchmark-config.json` | exact query plan (including targeted fault frames) |
 
 The benchmark's `minimum`/`median`/`maximum` values are from 3 warm-ups and 5
@@ -85,20 +89,23 @@ Performance medians (32 frames, one camera, decoder reused):
 
 | Input/batch | CPU native ms | CUDA native ms | CPU e2e ms | CUDA e2e ms | e2e ratio |
 |---|---:|---:|---:|---:|---:|
-| ALOHA 1 | 50.0 | 41.5 | 99.7 | 46.4 | 2.15× |
-| ALOHA 8 | 45.9 | 30.5 | 63.5 | 34.6 | 1.84× |
-| ALOHA 32 | 47.4 | 31.5 | 62.1 | 35.6 | 1.75× |
-| AgiBot 1 | 108.6 | 89.0 | 152.4 | 93.4 | 1.63× |
-| AgiBot 8 | 100.8 | 73.6 | 119.6 | 78.3 | 1.53× |
-| AgiBot 32 | 113.2 | 66.8 | 129.8 | 71.2 | 1.82× |
+| ALOHA 1 | 54.2 | 36.6 | 97.5 | 41.7 | 2.34× |
+| ALOHA 8 | 51.9 | 33.6 | 66.7 | 37.7 | 1.77× |
+| ALOHA 32 | 51.8 | 33.5 | 66.3 | 37.5 | 1.77× |
+| AgiBot 1 | 99.5 | 81.7 | 145.6 | 86.2 | 1.69× |
+| AgiBot 8 | 99.0 | 79.8 | 117.9 | 84.0 | 1.40× |
+| AgiBot 32 | 97.7 | 78.9 | 113.4 | 83.0 | 1.37× |
 
 CPU e2e includes H2D to the common CUDA endpoint and a checksum. CUDA e2e is
-decode + checksum. First CUDA decode was 34–44 ms vs 1.5–6.4 ms CPU; decoder
-creation was ~30–33 ms on both. NVDEC utilisation sampled 21–28% after the
-timed groups. VRAM allocated peaked at 4.4–35.8 MiB (reserved 24–86 MiB).
+decode + checksum. This is a single-video decoder microbenchmark, not a full
+audit/window/action/DataLoader measurement. First CUDA decode was 34–44 ms vs
+1.5–6.4 ms CPU; it is the first call in this process after correctness/CUDA
+work, not a cold-process measurement. Decoder creation was ~30–33 ms on both.
+NVDEC utilisation sampled 21–28% after the timed groups. VRAM allocated peaked
+at 4.4–35.8 MiB (reserved 24–86 MiB).
 
-Colour: ALOHA CUDA raw MAE median 9.747, TV→full adjusted 0.633; AgiBot
-CUDA 8.739 raw and 2.496 adjusted. Exact CPU/CUDA equality was zero on the real
+Colour: ALOHA CUDA raw MAE median 9.751, TV→full adjusted 0.630; AgiBot
+CUDA 8.739 raw and 2.497 adjusted. Exact CPU/CUDA equality was zero on the real
 videos. The existing MAE ≤ 2 heuristic was not changed.
 
 ## Commands used (Linux/WSL2)
