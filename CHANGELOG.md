@@ -18,6 +18,9 @@
   a CPU or GPU decoder's returned PTS. Two decoders returning the same wrong
   next frame now fail the independent time contract.
 - Keep raw tensors out of report payloads; one-sided time errors are JSON-safe.
+- Add USAGE.md and USAGE.zh-CN.md: a no-download demo quickstart, a
+  command-to-problem table, real-sample instructions, optional official-reader
+  checks and the repair/restore walkthrough.
 - Validate repeats/frames/batch sizes as positive integers, warmup nonnegative
   and the wall-clock budget finite and positive after CLI overrides. Performance
   subtasks must explicitly be `pass`; `partial`, unknown, missing and

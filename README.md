@@ -16,6 +16,24 @@ See [release notes](RELEASE_NOTES_0.4.2rc1.md),
 [RTX 4090 evidence](research/results/rtx4090/session-001/README.md), and
 [known limits](research/RTX4090_2026-10-20.md).
 
+## Quick start (no download)
+
+```sh
+lerobot-boundary-audit demo --out demo-result
+# open demo-result/demo-report/report.html
+lerobot-boundary-audit audit demo-result/merged --decode --out reports/demo-clean
+lerobot-boundary-audit audit demo-result/offset-one-frame --decode --out reports/demo-offset
+```
+
+The demo contains 13 clean/faulty synthetic cases. The first audit exits 0
+(`pass`); the offset case exits 1 with episode/timestamp findings. Camera swaps
+and duplicated pixels intentionally pass `audit` because their timeline/index is
+valid; use `conformance` or `probe-loader` for content identity.
+
+Full walkthrough, what each command detects, real-data download, optional
+official-reader checks and the repair/restore flow:
+[USAGE.md](USAGE.md) · [中文使用指南](USAGE.zh-CN.md).
+
 ## 0.4.1 reader evidence review
 
 Fractional/noninteger reader labels are rejected, action array shape is checked

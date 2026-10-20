@@ -25,7 +25,7 @@ Experimental research path:
   32-frame, single-video decode + H2D + checksum microbenchmark with a reused
   decoder. It is not a full-audit, training or end-to-end tool speedup.
 
-## Install
+## Install and first run
 
 ```sh
 git clone https://github.com/SimaQie/-lerobot-boundary-audit.git
@@ -34,7 +34,14 @@ git checkout v0.4.2rc1
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
 .venv/bin/lerobot-boundary-audit --help
+.venv/bin/lerobot-boundary-audit demo --out demo-result
 ```
+
+Start with [USAGE.md](https://github.com/SimaQie/-lerobot-boundary-audit/blob/main/USAGE.md)
+or [USAGE.zh-CN.md](https://github.com/SimaQie/-lerobot-boundary-audit/blob/main/USAGE.zh-CN.md):
+it uses the bundled 13-case suite to show clean/faulty audits, expected exit
+codes, content checks that require an official consumer, and the repair/restore
+flow.
 
 Windows uses `.venv/Scripts/python.exe` and `.venv/Scripts/lerobot-boundary-audit.exe`.
 The wheel and sdist are attached build artifacts; the sdist also contains the

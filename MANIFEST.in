@@ -1,5 +1,6 @@
 include README.md LICENSE NOTICE.md
 include README.zh-CN.md
+include USAGE.md USAGE.zh-CN.md
 include CITATION.cff CHANGELOG.md CONTRIBUTING.md
 include .github/workflows/tests.yml
 include .github/workflows/release.yml

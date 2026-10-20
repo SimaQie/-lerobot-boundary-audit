@@ -38,9 +38,14 @@ jobs:
           body_path: RELEASE_NOTES_0.4.2rc1.md
           prerelease: true
           make_latest: false
-          files: dist/*
-      - name: Upload release artifacts
+          files: |
+            dist/*
+            USAGE.md
+            USAGE.zh-CN.md
+      - name: Upload release artifacts and usage guides
         if: steps.check.outputs.exists == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload v0.4.2rc1 dist/* --clobber
+        run: |
+          gh release upload v0.4.2rc1 dist/* USAGE.md USAGE.zh-CN.md --clobber
+          gh release edit v0.4.2rc1 --notes-file RELEASE_NOTES_0.4.2rc1.md

@@ -17,6 +17,22 @@ python -m venv .venv
 [RTX 4090 证据](research/results/rtx4090/session-001/README.md)、
 [完整报告](research/RTX4090_2026-10-20.md)。
 
+## 快速开始（无需下载）
+
+```sh
+lerobot-boundary-audit demo --out demo-result
+# 浏览器打开 demo-result/demo-report/report.html
+lerobot-boundary-audit audit demo-result/merged --decode --out reports/demo-clean
+lerobot-boundary-audit audit demo-result/offset-one-frame --decode --out reports/demo-offset
+```
+
+示例套件包含 13 个正常/人工故障案例。第一条审计退出 0（pass）；offset 案例退出 1，
+报告 episode 和时间戳错误。相机交换/重复像素会故意通过 `audit`，因为时间轴和索引
+合法；内容身份要用 `conformance` 或 `probe-loader`。
+
+完整步骤、每个命令能处理什么、真实数据下载、可选官方 reader 检查和修复/恢复流程：
+[中文使用指南](USAGE.zh-CN.md) · [English guide](USAGE.md)。
+
 它检查视频帧的实际展示时间、轨迹视频起止偏移，以及数据表中的时间戳
 是否一致。输出可离线打开的 HTML 报告和 JSON 证据。日常使用只需要
 Python、PyArrow 和 PyAV，无需训练模型、GPU、数据库或服务器。
