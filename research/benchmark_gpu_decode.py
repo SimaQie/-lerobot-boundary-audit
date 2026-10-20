@@ -28,7 +28,17 @@ import zipfile
 from collections import Counter
 from pathlib import Path
 
+from boundary_audit import __version__
 from boundary_audit.environment import collect_environment, nvidia_smi_path, source_provenance
+from boundary_audit.gpu_benchmark import (
+    build_expected,
+    evaluate_benchmark,
+    expected_ordinal_for_time,
+    grid_error,
+    map_time_to_ordinal,
+    safe_time_value,
+    time_matches,
+)
 from boundary_audit.gpu_metrics import (
     chunked,
     compare_frame,
@@ -278,33 +288,47 @@ def build_cpu_references(path, needed, batch_size, max_bytes):
     return references, stored
 
 
-def build_pyav_references(path, needed, max_bytes, max_decode_frames):
+def build_pyav_references(path, needed, time_candidates, max_bytes, max_decode_frames, frame_count, fps):
+    """Decode every frame for an independent PTS/duration map; retain selected RGB."""
     import av
 
-    wanted = set(needed)
-    if not wanted:
-        return {}, 0
-    max_needed = max(wanted)
+    wanted = set(needed) | set(time_candidates)
     references, stored, decoded = {}, 0, 0
+    intervals = []
     with av.open(str(path)) as container:
         stream = container.streams.video[0]
         stream.codec_context.thread_count = 1
+        time_base = stream.time_base
         for index, frame in enumerate(container.decode(stream)):
             decoded += 1
             if decoded > max_decode_frames:
                 raise BudgetExceeded("Sequential PyAV reference frame budget exhausted")
+            if frame.pts is None:
+                raise ValueError("PyAV frame lacks PTS")
+            point = float(frame.pts * time_base)
+            duration = float(frame.duration * time_base) if frame.duration is not None else None
+            intervals.append({"pts_seconds": point, "duration_seconds": duration})
             if index in wanted:
                 pixels = frame.to_ndarray(format="rgb24")
                 stored += pixels.nbytes
                 if stored > max_bytes:
                     raise BudgetExceeded("PyAV reference image budget exhausted")
                 references[index] = pixels
-            if index >= max_needed:
-                break
+    if decoded < frame_count:
+        raise ValueError(f"Sequential PyAV decoded {decoded} of {frame_count} frames")
+    for index in range(len(intervals) - 1):
+        duration = intervals[index]["duration_seconds"]
+        if duration is None or duration <= 0:
+            intervals[index]["duration_seconds"] = max(
+                intervals[index + 1]["pts_seconds"] - intervals[index]["pts_seconds"], 1e-9
+            )
+    last_duration = intervals[-1]["duration_seconds"]
+    if last_duration is None or last_duration <= 0:
+        intervals[-1]["duration_seconds"] = 1.0 / fps if fps > 0 else 1e-9
     missing = wanted - references.keys()
     if missing:
         raise ValueError(f"Sequential PyAV reference missed ordinals {sorted(missing)[:5]}")
-    return references, decoded
+    return references, decoded, intervals
 
 
 def oracle_identity(spec, ordinal):
@@ -432,6 +456,11 @@ def run_correctness(spec, device, config, controls):
         "fallback": fallback,
         "requested_ordinals": len(plan["ordinals"]),
         "requested_times": plan["time_repeats"],
+        "coverage": {
+            "ordinal_requests": len(plan["ordinals"]),
+            "time_requests": plan["time_repeats"],
+            "checks": 0,
+        },
         "checks": [],
         "errors": [],
     }
@@ -450,39 +479,29 @@ def run_correctness(spec, device, config, controls):
         for delta in (-1, 0, 1)
         if 0 <= index + delta < frame_count
     }
-
-    # Resolve CPU time semantics first so their ordinals join the reference set.
-    cpu_time = {}
-    for seek_mode in plan["seek_modes"]:
-        cpu_decoder = VideoDecoder(str(spec["path"]), device="cpu", seek_mode=seek_mode)
-        for seconds in plan["times"]:
-            result_key = (seek_mode, seconds)
-            value = one_timestamp(cpu_decoder, seconds)
-            cpu_time[result_key] = value
-            if value["status"] == "ok":
-                ordinal = round(value["pts_seconds"] * fps)
-                if abs(value["pts_seconds"] - ordinal / fps) > 1e-4:
-                    result["errors"].append(
-                        {
-                            "kind": "pts_grid",
-                            "seek_mode": seek_mode,
-                            "seconds": seconds,
-                            "pts_seconds": value["pts_seconds"],
-                        }
-                    )
-                needed.update(index + delta for index in [ordinal] for delta in (-1, 0, 1) if 0 <= index + delta < frame_count)
+    time_candidates = set()
+    for seconds in plan["times"]:
+        ordinal = expected_ordinal_for_time(seconds, fps, frame_count)
+        if ordinal is not None:
+            time_candidates.update(index for index in (ordinal - 1, ordinal, ordinal + 1) if 0 <= index < frame_count)
+    needed.update(time_candidates)
     needed = {index for index in needed if 0 <= index < frame_count}
+
+    # PyAV is decoded once for an independent PTS/duration map and selected RGB.
+    pyav_refs, pyav_decoded, intervals = build_pyav_references(
+        spec["path"], needed, time_candidates, max_reference_bytes, max_decode_frames, frame_count, fps
+    )
+    pyav_grid = grid_error(intervals, fps)
+    uniform_time = pyav_grid is not None and pyav_grid <= 1e-6
     cpu_refs, cpu_bytes = build_cpu_references(spec["path"], needed, batch_size, max_reference_bytes)
-    pyav_refs, pyav_decoded = ({}, 0)
-    if spec["kind"] == "real":
-        pyav_refs, pyav_decoded = build_pyav_references(
-            spec["path"], needed, max_reference_bytes, max_decode_frames
-        )
     result["reference"] = {
         "frames": len(cpu_refs),
         "cpu_image_bytes": cpu_bytes,
         "pyav_frames": len(pyav_refs),
         "pyav_decoded_frames": pyav_decoded,
+        "time_source": "sequential PyAV PTS/duration intervals",
+        "pyav_grid_max_error_seconds": pyav_grid,
+        "uniform_time_mapping": uniform_time,
     }
 
     # Ordinal requests, preserving duplicates and order.
@@ -524,76 +543,98 @@ def run_correctness(spec, device, config, controls):
             if spec["kind"] == "fixture":
                 controls[(spec["id"], device, spec["expected"], check.get("control") or check["status"])] += 1
 
-    # Time requests, one timestamp at a time so the exclusive end is recorded, not hidden.
+    # Time requests are resolved from PyAV intervals, never from a decoder's returned PTS.
     time_budget = 0
     for seek_mode in plan["seek_modes"]:
         device_decoder = VideoDecoder(str(spec["path"]), device=device, seek_mode=seek_mode)
+        cpu_decoder = VideoDecoder(str(spec["path"]), device="cpu", seek_mode=seek_mode)
         for seconds in plan["times"]:
             time_budget += 1
             if budget + time_budget > max_frames:
                 raise BudgetExceeded(f"Correctness frame budget exceeded for {spec['id']}")
-            cpu_value = cpu_time[(seek_mode, seconds)]
+            cpu_value = one_timestamp(cpu_decoder, seconds)
             device_value = one_timestamp(device_decoder, seconds)
+            mapping = map_time_to_ordinal(seconds, intervals)
+            if not uniform_time:
+                mapping = {"status": "unverified_nonuniform", "reason": "PyAV PTS is not on the declared CFR grid"}
             check = {
                 "input": spec["id"],
                 "device": device,
                 "mode": "time",
                 "seek_mode": seek_mode,
                 "seconds": seconds,
+                "time_mapping": mapping,
+                "cpu_time": safe_time_value(cpu_value),
+                "device_time": safe_time_value(device_value),
             }
-            if cpu_value["status"] == "error" and device_value["status"] == "error":
-                at_boundary = (
-                    seconds >= float(metadata.end_stream_seconds) - 1e-6
-                    or seconds < float(metadata.begin_stream_seconds) - 1e-6
-                )
-                check.update(
-                    status="expected_boundary_error" if at_boundary else "error",
-                    cpu_error=cpu_value,
-                    device_error=device_value,
-                )
-            elif cpu_value["status"] != device_value["status"]:
-                check.update(status="device_disagreement", cpu_error=cpu_value, device_error=device_value)
-            elif cpu_value["status"] == "error":
-                check.update(status="error", cpu_error=cpu_value, device_error=device_value)
-            else:
-                require_tensor_device(device_value["frame"], device)
-                cpu_pts, device_pts = cpu_value["pts_seconds"], device_value["pts_seconds"]
-                ordinal = round(cpu_pts * fps)
-                pts_error = compare_pts(cpu_pts, device_pts)
-                check.update(
-                    cpu_pts_seconds=cpu_pts,
-                    device_pts_seconds=device_pts,
-                    ordinal=ordinal,
-                    pts_error_seconds=pts_error,
-                )
-                if abs(cpu_pts - ordinal / fps) > 1e-4:
-                    check["status"] = "pts_grid"
-                elif pts_error is not None and pts_error > 1e-4:
-                    check["status"] = "pts_mismatch"
+            if mapping["status"] == "out_of_range":
+                both_error = cpu_value["status"] == "error" and device_value["status"] == "error"
+                both_ok = cpu_value["status"] == "ok" and device_value["status"] == "ok"
+                if both_error:
+                    check["status"] = "expected_boundary_error"
+                elif both_ok:
+                    check["status"] = "unexpected_time_frame"
                 else:
-                    actual = frame_to_hwc(device_value["frame"])
-                    cpu_actual = frame_to_hwc(cpu_value["frame"])
-                    if spec["kind"] == "fixture":
-                        expected = oracle_identity(spec, ordinal)
-                        identity = check_fixture(actual, expected, cpu_actual)
-                        check.update(identity)
-                        if identity["status"] == "wrong_frame" and spec["expected"] == "fault":
-                            check["control"] = "detected"
-                        elif identity["status"] == "unknown_identity":
-                            check["control"] = "unknown"
-                        elif identity["status"] == "pass" and spec["expected"] == "fault":
-                            check["control"] = "unchanged"
+                    check["status"] = "device_disagreement"
+            elif mapping["status"] != "ok":
+                check["status"] = "unverified_time_mapping"
+            else:
+                ordinal = mapping["ordinal"]
+                check["ordinal"] = ordinal
+                check["expected_pts_seconds"] = mapping["pts_seconds"]
+                if ordinal not in cpu_refs or ordinal not in pyav_refs:
+                    check["status"] = "reference_missing"
+                elif cpu_value["status"] != "ok" or device_value["status"] != "ok":
+                    check["status"] = (
+                        "device_disagreement"
+                        if cpu_value["status"] != device_value["status"]
+                        else "error"
+                    )
+                else:
+                    require_tensor_device(device_value["frame"], device)
+                    cpu_pts, device_pts = cpu_value["pts_seconds"], device_value["pts_seconds"]
+                    check.update(
+                        cpu_pts_seconds=cpu_pts,
+                        device_pts_seconds=device_pts,
+                        cpu_pts_error_seconds=abs(cpu_pts - mapping["pts_seconds"]),
+                        device_pts_error_seconds=abs(device_pts - mapping["pts_seconds"]),
+                    )
+                    if not time_matches(cpu_pts, mapping) or not time_matches(device_pts, mapping):
+                        check["status"] = "pts_mismatch"
                     else:
-                        if ordinal in cpu_refs:
-                            check.update(check_real(actual, ordinal, cpu_refs, pyav_refs, allow_range=device == "cuda"))
+                        actual = frame_to_hwc(device_value["frame"])
+                        cpu_actual = frame_to_hwc(cpu_value["frame"])
+                        if spec["kind"] == "fixture":
+                            expected = oracle_identity(spec, ordinal)
+                            identity = check_fixture(actual, expected, cpu_actual)
+                            check.update(identity)
+                            if identity["status"] == "wrong_frame" and spec["expected"] == "fault":
+                                check["control"] = "detected"
+                            elif identity["status"] == "unknown_identity":
+                                check["control"] = "unknown"
+                            elif identity["status"] == "pass" and spec["expected"] == "fault":
+                                check["control"] = "unchanged"
                         else:
-                            check.update(status="reference_missing", reason="Time ordinal lacks a CPU reference")
-                    if "status" not in check:
-                        check["status"] = "pass"
+                            device_reference = check_real(
+                                actual, ordinal, cpu_refs, pyav_refs, allow_range=device == "cuda"
+                            )
+                            cpu_reference = check_real(
+                                cpu_actual, ordinal, cpu_refs, pyav_refs, allow_range=False
+                            )
+                            check.update(device_reference=device_reference, cpu_time_reference=cpu_reference)
+                            device_status = device_reference["status"]
+                            cpu_status = cpu_reference["status"]
+                            if device_status in {"wrong_frame", "wrong_shape"} or cpu_status in {"wrong_frame", "wrong_shape"}:
+                                check["status"] = "wrong_frame"
+                            elif device_status == "pass" and cpu_status == "pass":
+                                check["status"] = "pass"
+                            else:
+                                check["status"] = "ambiguous"
             result["checks"].append(check)
             if spec["kind"] == "fixture":
                 controls[(spec["id"], device, spec["expected"], check.get("control") or check["status"])] += 1
     result["checks"].sort(key=lambda item: (item["mode"], item.get("seek_mode", ""), item.get("ordinal", -1), item.get("seconds", -1)))
+    result["coverage"]["checks"] = len(result["checks"])
     counts = Counter(item["status"] for item in result["checks"])
     result["counts"] = dict(sorted(counts.items()))
     if spec["expected"] == "clean":
@@ -603,22 +644,38 @@ def run_correctness(spec, device, config, controls):
             + counts.get("unknown_identity", 0)
             + counts.get("error", 0)
             + counts.get("device_disagreement", 0)
+            + counts.get("pts_mismatch", 0)
+            + counts.get("unexpected_time_frame", 0)
         )
         result["status"] = (
             "fail"
             if bad
             else "partial"
-            if counts.get("ambiguous") or counts.get("reference_missing") or counts.get("pts_mismatch") or counts.get("pts_grid")
+            if counts.get("ambiguous")
+            or counts.get("reference_missing")
+            or counts.get("unverified_time_mapping")
+            or counts.get("unverified_nonuniform")
+            or counts.get("pts_grid")
             else "pass"
         )
     else:
         detected = sum(1 for item in result["checks"] if item.get("control") == "detected")
         unknown = sum(1 for item in result["checks"] if item.get("control") == "unknown")
+        bad = (
+            counts.get("error", 0)
+            + counts.get("device_disagreement", 0)
+            + counts.get("pts_mismatch", 0)
+            + counts.get("unexpected_time_frame", 0)
+        )
         result["status"] = (
             "fail"
-            if not detected or counts.get("error") or counts.get("device_disagreement")
+            if not detected or bad
             else "partial"
-            if unknown or counts.get("ambiguous") or counts.get("pts_mismatch") or counts.get("pts_grid")
+            if unknown
+            or counts.get("ambiguous")
+            or counts.get("reference_missing")
+            or counts.get("unverified_time_mapping")
+            or counts.get("unverified_nonuniform")
             else "pass"
         )
     return result, plan
@@ -639,7 +696,7 @@ def run_performance(spec, device, batch_size, config, timings):
         frame_count = int(probe.metadata.num_frames)
         spec["frame_count"] = frame_count
     frames = min(int(performance.get("frames", 32)), frame_count)
-    rng = random.Random(int(config.get("seed", 20261014)) + batch_size)
+    rng = random.Random(int(config.get("seed", 20261014)))
     indices = sorted(rng.sample(range(frame_count), frames))
     warmup = int(performance.get("warmup", 3))
     repeats = int(performance.get("repeats", 5))
@@ -703,7 +760,16 @@ def run_performance(spec, device, batch_size, config, timings):
             "allocated_mib": round(torch.cuda.max_memory_allocated() / (1024 * 1024), 3),
             "reserved_mib": round(torch.cuda.max_memory_reserved() / (1024 * 1024), 3),
         }
+    if fallback.get("occurred"):
+        status = "fail"
+    elif device == "cuda" and not fallback.get("known", False):
+        status = "unavailable"
+    elif len(native_seconds) < repeats or len(end_to_end_seconds) < repeats:
+        status = "partial"
+    else:
+        status = "pass"
     result = {
+        "status": status,
         "input": spec["id"],
         "device": device,
         "batch_size": batch_size,
@@ -711,6 +777,13 @@ def run_performance(spec, device, batch_size, config, timings):
         "indices": indices,
         "decoder_create_seconds": create_seconds,
         "first_decode_seconds": first_decode_seconds,
+        "first_decode_scope": (
+            "first call in this process after correctness/CUDA work; not a cold-process or NVDEC-initialization measurement"
+        ),
+        "workload": (
+            "32-frame single-video microbenchmark; decoder reused; CPU common endpoint includes H2D; GPU checksum; "
+            "no reference checks, LeRobot windows/actions/padding, multi-camera or DataLoader"
+        ),
         "warmup": warmup,
         "repeats": repeats,
         "fallback": fallback,
@@ -731,51 +804,6 @@ def run_performance(spec, device, batch_size, config, timings):
     }
     timings.append(result)
     return result
-
-
-def evaluate(summary, config, devices):
-    issues, notes = [], []
-    unavailable = summary.get("device_status", {}).get("cuda", {}).get("status") == "unavailable"
-    for spec in config["inputs"]:
-        for device in devices:
-            result = summary.get("correctness", {}).get(spec["id"], {}).get(device)
-            if not result:
-                continue
-            if result["status"] == "fail":
-                issues.append(f"{spec['id']}/{device}: {result['status']}")
-            elif result["status"] in {"partial", "unavailable"}:
-                notes.append(f"{spec['id']}/{device}: {result['status']}")
-            if spec["kind"] == "fixture" and spec["expected"] == "fault":
-                prefix = f"{spec['id']}|{device}|fault|"
-                entries = summary.get("controls", {}).get("counts", {})
-                detected = sum(
-                    value for key, value in entries.items() if key.startswith(prefix) and key.endswith("|detected")
-                )
-                unknown = sum(
-                    value for key, value in entries.items() if key.startswith(prefix) and key.endswith("|unknown")
-                )
-                if not detected:
-                    issues.append(f"{spec['id']}/{device}: a faulty fixture was not detected")
-                elif unknown:
-                    notes.append(f"{spec['id']}/{device}: some faulty identities were unknown")
-    if unavailable:
-        issues.append("CUDA was requested but unavailable")
-    for input_id, devices in summary.get("performance", {}).items():
-        for device, batches in devices.items():
-            if not isinstance(batches, dict):
-                continue
-            for batch, result in batches.items():
-                if not isinstance(result, dict):
-                    continue
-                if result.get("fallback", {}).get("occurred"):
-                    issues.append(f"performance {input_id}/{device}/{batch}: CPU fallback")
-                elif device == "cuda" and not result.get("fallback", {}).get("known", False):
-                    notes.append(f"performance {input_id}/{device}/{batch}: fallback status unknown")
-    if any("unavailable" in issue for issue in issues):
-        return "unavailable" if unavailable else "fail"
-    if issues:
-        return "fail"
-    return "partial" if notes else "pass"
 
 
 def write_html(summary, path):
@@ -812,6 +840,98 @@ def write_html(summary, path):
 </body></html>
 """
     Path(path).write_text(document, encoding="utf-8")
+
+
+def source_hashes(inputs):
+    result = {}
+    for spec in inputs:
+        entry = {
+            "path": relative_path(spec["path"]),
+            "kind": spec["kind"],
+            "sha256": sha256(spec["path"]),
+            "bytes": spec["path"].stat().st_size,
+        }
+        if spec["kind"] == "fixture":
+            entry["oracle"] = {
+                "path": relative_path(spec["oracle_path"]),
+                "sha256": sha256(spec["oracle_path"]),
+            }
+        result[spec["id"]] = entry
+    return result
+
+
+def sources_unchanged(before, after):
+    if not before or not after:
+        return None
+    for input_id, entry in before.items():
+        current = after.get(input_id)
+        if not current or current.get("sha256") != entry.get("sha256"):
+            return False
+        if entry.get("oracle") and current.get("oracle", {}).get("sha256") != entry["oracle"]["sha256"]:
+            return False
+    return True
+
+
+def performance_comparison(performance):
+    comparison = {}
+    for input_id, device_results in performance.items():
+        cpu_batches = device_results.get("cpu", {})
+        cuda_batches = device_results.get("cuda", {})
+        for batch, cpu_result in cpu_batches.items():
+            cuda_result = cuda_batches.get(batch)
+            if not isinstance(cuda_result, dict) or "native" not in cuda_result:
+                continue
+            cpu_native = (cpu_result.get("native") or {}).get("median")
+            cuda_native = (cuda_result.get("native") or {}).get("median")
+            cpu_e2e = (cpu_result.get("end_to_end") or {}).get("median")
+            cuda_e2e = (cuda_result.get("end_to_end") or {}).get("median")
+            if not cpu_native or not cuda_native or not cpu_e2e or not cuda_e2e:
+                continue
+            comparison[f"{input_id}|batch{batch}"] = {
+                "cpu_native_seconds": cpu_native,
+                "cuda_native_seconds": cuda_native,
+                "cpu_end_to_end_seconds": cpu_e2e,
+                "cuda_end_to_end_seconds": cuda_e2e,
+                "native_cpu_over_cuda": cpu_native / cuda_native,
+                "end_to_end_cpu_over_cuda": cpu_e2e / cuda_e2e,
+                "scope": (
+                    "32-frame single-video microbenchmark; decoder reused; CPU e2e includes H2D; "
+                    "no full LeRobot window/action/padding processing or RGB-equivalence claim"
+                ),
+            }
+    return comparison
+
+
+def write_artifacts(out, summary, requests, controls_summary, timings):
+    write_json(out / "requests.json", requests)
+    write_json(out / "controls-summary.json", controls_summary)
+    write_json(
+        out / "source-integrity.json",
+        {
+            "before": summary["integrity"]["before"],
+            "after": summary["integrity"]["after"],
+            "unchanged": summary["integrity"]["unchanged"],
+            "status": summary["integrity"]["status"],
+        },
+    )
+    write_json(out / "summary.json", summary)
+    with (out / "timings.jsonl").open("w", encoding="utf-8") as stream:
+        for item in timings:
+            stream.write(json.dumps(item, ensure_ascii=False, allow_nan=False) + "\n")
+    write_html(summary, out / "report.html")
+    with zipfile.ZipFile(out / "evidence.zip", "w", zipfile.ZIP_DEFLATED) as archive:
+        for name in (
+            "summary.json",
+            "requests.json",
+            "timings.jsonl",
+            "environment.json",
+            "controls-summary.json",
+            "report.html",
+            "source-integrity-before.json",
+            "source-integrity.json",
+        ):
+            if (out / name).is_file():
+                archive.write(out / name, name)
 
 
 def main(argv=None):
@@ -859,126 +979,134 @@ def main(argv=None):
             "device": torch.cuda.get_device_name(0) if available else None,
             "reason": None if available else "torch.cuda.is_available() is false",
         }
-    sources = {}
-    before = {}
-    for spec in inputs:
-        sources[spec["id"]] = {
-            "path": relative_path(spec["path"]),
-            "kind": spec["kind"],
-            "sha256": sha256(spec["path"]),
-            "bytes": spec["path"].stat().st_size,
-        }
-        if spec["kind"] == "fixture":
-            sources[spec["id"]]["oracle"] = {
-                "path": relative_path(spec["oracle_path"]),
-                "sha256": sha256(spec["oracle_path"]),
-            }
-        before[spec["id"]] = sources[spec["id"]]["sha256"]
-    write_json(out / "source-integrity-before.json", sources)
     requests, correctness, performance, controls = {}, {}, {}, Counter()
     timings = []
     started = time.perf_counter()
     max_seconds = float(config.get("max_seconds", 900))
-    for device in devices:
-        if device == "cuda" and device_status["cuda"]["status"] != "available":
-            continue
-        for spec in inputs:
-            if time.perf_counter() - started > max_seconds:
-                raise BudgetExceeded("Benchmark wall-clock budget exhausted")
-            try:
-                result, plan = run_correctness(spec, device, config, controls)
-            except BudgetExceeded as exc:
-                result = {"status": "partial", "errors": [{"kind": "budget", "detail": str(exc)}], "checks": []}
-                plan = None
-            except Exception as exc:
-                result = {
-                    "status": "unavailable",
-                    "errors": [{"kind": type(exc).__name__, "detail": str(exc)[:500]}],
-                    "checks": [],
-                }
-                plan = None
-            correctness.setdefault(spec["id"], {})[device] = result
-            if plan is not None:
-                requests.setdefault(spec["id"], {})[device] = plan
-            print(f"correctness {spec['id']}/{device}: {result['status']}", flush=True)
-    if "performance" in modes and config.get("performance", {}).get("enabled", True):
-        performance = {}
-        selected = set(config.get("performance", {}).get("inputs", []))
-        for spec in inputs:
-            if selected and spec["id"] not in selected:
-                continue
-            for device in devices:
-                if device == "cuda" and device_status["cuda"]["status"] != "available":
-                    continue
-                for batch_size in config.get("performance", {}).get("batch_sizes", [1, 8, 32]):
-                    if time.perf_counter() - started > max_seconds:
-                        raise BudgetExceeded("Benchmark wall-clock budget exhausted")
-                    try:
-                        result = run_performance(spec, device, int(batch_size), config, timings)
-                    except BudgetExceeded as exc:
-                        result = {"status": "partial", "error": str(exc)}
-                    except Exception as exc:
-                        result = {"status": "unavailable", "error": f"{type(exc).__name__}: {str(exc)[:300]}"}
-                    performance.setdefault(spec["id"], {}).setdefault(device, {})[str(batch_size)] = result
-                    print(f"performance {spec['id']}/{device}/batch{batch_size}: {result.get('native', {}).get('median')}", flush=True)
-    after = {spec["id"]: sha256(spec["path"]) for spec in inputs}
-    unchanged = all(after[input_id] == before[input_id] for input_id in before)
-    controls_summary = {"counts": {f"{a}|{b}|{c}|{d}": value for (a, b, c, d), value in controls.items()}}
-    comparison = {}
-    for input_id, device_results in performance.items():
-        cpu_batches = device_results.get("cpu", {})
-        cuda_batches = device_results.get("cuda", {})
-        for batch, cpu_result in cpu_batches.items():
-            cuda_result = cuda_batches.get(batch)
-            if not isinstance(cuda_result, dict) or "native" not in cuda_result:
-                continue
-            cpu_native = cpu_result["native"].get("median")
-            cuda_native = cuda_result["native"].get("median")
-            cpu_e2e = cpu_result["end_to_end"].get("median")
-            cuda_e2e = cuda_result["end_to_end"].get("median")
-            if not cpu_native or not cuda_native or not cpu_e2e or not cuda_e2e:
-                continue
-            comparison[f"{input_id}|batch{batch}"] = {
-                "cpu_native_seconds": cpu_native,
-                "cuda_native_seconds": cuda_native,
-                "cpu_end_to_end_seconds": cpu_e2e,
-                "cuda_end_to_end_seconds": cuda_e2e,
-                "native_cpu_over_cuda": cpu_native / cuda_native,
-                "end_to_end_cpu_over_cuda": cpu_e2e / cuda_e2e,
-            }
     summary = {
         "schema_version": "boundary-gpu-benchmark-summary.v1",
+        "tool_version": __version__,
         "measurement_time": environment["measurement_time"],
         "source": source,
         "environment": environment,
         "device_status": device_status,
-        "input_hashes": sources,
-        "source_unchanged": unchanged,
+        "modes": sorted(modes),
+        "input_hashes": {},
+        "source_unchanged": None,
         "requests": requests,
         "correctness": correctness,
-        "controls": controls_summary,
+        "controls": {"counts": {}},
         "performance": performance,
-        "performance_comparison": comparison,
+        "performance_comparison": {},
+        "integrity": {"status": "unknown", "before": {}, "after": {}, "unchanged": None},
+        "budget": {"kind": "soft", "max_seconds": max_seconds, "exhausted": False},
+        "errors": [],
         "limitations": (
             "Fixture markers are synthetic ground truth; real RGB is compared with an independent sequential "
-            "PyAV reference and a same-environment CPU TorchCodec reference. CUDA output observed in this "
-            "environment is TV-range RGB, so raw and limited-to-full metrics are reported separately. "
-            "This is decode-path evidence, not physical synchronization, training uplift, or a stock "
-            "LeRobot GPU-reader claim."
+            "PyAV PTS/duration reference and a same-environment CPU TorchCodec reference. CUDA output observed "
+            "in this environment is TV-range RGB, so raw and limited-to-full metrics are reported separately. "
+            "Performance is a 32-frame single-video decoder microbenchmark, not a full tool or RGB-equivalent "
+            "throughput claim. This is decode-path evidence, not physical synchronization, training uplift, or "
+            "a stock LeRobot GPU-reader claim."
         ),
     }
-    summary["status"] = evaluate(summary, config, devices)
-    write_json(out / "requests.json", requests)
-    write_json(out / "controls-summary.json", controls_summary)
-    write_json(out / "source-integrity.json", {"before": sources, "after": after, "unchanged": unchanged})
-    write_json(out / "summary.json", summary)
-    with (out / "timings.jsonl").open("w", encoding="utf-8") as stream:
-        for item in timings:
-            stream.write(json.dumps(item, ensure_ascii=False, allow_nan=False) + "\n")
-    write_html(summary, out / "report.html")
-    with zipfile.ZipFile(out / "evidence.zip", "w", zipfile.ZIP_DEFLATED) as archive:
-        for name in ("summary.json", "requests.json", "timings.jsonl", "environment.json", "controls-summary.json", "report.html", "source-integrity-before.json", "source-integrity.json"):
-            archive.write(out / name, name)
+    try:
+        try:
+            before = source_hashes(inputs)
+        except Exception as exc:
+            before = {}
+            summary["errors"].append({"kind": "integrity_before", "detail": f"{type(exc).__name__}: {exc}"})
+        summary["input_hashes"] = before
+        write_json(out / "source-integrity-before.json", before)
+        for device in devices:
+            if device == "cuda" and device_status["cuda"]["status"] != "available":
+                summary["errors"].append({"kind": "device_unavailable", "device": device})
+                continue
+            for spec in inputs:
+                if time.perf_counter() - started > max_seconds:
+                    raise BudgetExceeded("Benchmark soft wall-clock budget exhausted")
+                try:
+                    result, plan = run_correctness(spec, device, config, controls)
+                except BudgetExceeded as exc:
+                    result = {"status": "partial", "errors": [{"kind": "budget", "detail": str(exc)}], "checks": []}
+                    plan = None
+                except Exception as exc:
+                    result = {
+                        "status": "unavailable",
+                        "errors": [{"kind": type(exc).__name__, "detail": str(exc)[:500]}],
+                        "checks": [],
+                    }
+                    plan = None
+                correctness.setdefault(spec["id"], {})[device] = result
+                if plan is not None:
+                    requests.setdefault(spec["id"], {})[device] = plan
+                if result["status"] not in {"pass", "partial"}:
+                    summary["errors"].append(
+                        {"kind": "correctness", "input": spec["id"], "device": device, "status": result["status"]}
+                    )
+                print(f"correctness {spec['id']}/{device}: {result['status']}", flush=True)
+        if "performance" in modes and config.get("performance", {}).get("enabled", True):
+            selected = set(config.get("performance", {}).get("inputs", []))
+            for spec in inputs:
+                if selected and spec["id"] not in selected:
+                    continue
+                for device in devices:
+                    if device == "cuda" and device_status["cuda"]["status"] != "available":
+                        continue
+                    for batch_size in config.get("performance", {}).get("batch_sizes", [1, 8, 32]):
+                        if time.perf_counter() - started > max_seconds:
+                            raise BudgetExceeded("Benchmark soft wall-clock budget exhausted")
+                        try:
+                            result = run_performance(spec, device, int(batch_size), config, timings)
+                        except BudgetExceeded as exc:
+                            result = {"status": "partial", "error": str(exc)}
+                        except Exception as exc:
+                            result = {"status": "unavailable", "error": f"{type(exc).__name__}: {str(exc)[:300]}"}
+                        performance.setdefault(spec["id"], {}).setdefault(device, {})[str(batch_size)] = result
+                        if result.get("status") not in {"pass", "partial"}:
+                            summary["errors"].append(
+                                {
+                                    "kind": "performance",
+                                    "input": spec["id"],
+                                    "device": device,
+                                    "batch": batch_size,
+                                    "status": result.get("status"),
+                                }
+                            )
+                        print(
+                            f"performance {spec['id']}/{device}/batch{batch_size}: "
+                            f"{result.get('native', {}).get('median')} ({result.get('status')})",
+                            flush=True,
+                        )
+    except BudgetExceeded as exc:
+        summary["budget"]["exhausted"] = True
+        summary["errors"].append({"kind": "budget", "detail": str(exc)})
+    except Exception as exc:
+        summary["errors"].append({"kind": type(exc).__name__, "detail": str(exc)[:500]})
+    finally:
+        try:
+            after = source_hashes(inputs)
+        except Exception as exc:
+            after = {}
+            summary["errors"].append({"kind": "integrity_after", "detail": f"{type(exc).__name__}: {exc}"})
+        unchanged = sources_unchanged(summary["input_hashes"], after)
+        integrity_status = "fail" if unchanged is False else "pass" if unchanged is True else "unknown"
+        summary["integrity"] = {
+            "status": integrity_status,
+            "before": summary["input_hashes"],
+            "after": after,
+            "unchanged": unchanged,
+        }
+        summary["source_unchanged"] = unchanged
+        controls_summary = {
+            "counts": {f"{a}|{b}|{c}|{d}": value for (a, b, c, d), value in controls.items()}
+        }
+        summary["controls"] = controls_summary
+        summary["performance_comparison"] = performance_comparison(performance)
+        summary["expected"] = build_expected(config, devices, modes)
+        summary["evaluation"] = evaluate_benchmark(config, summary, devices, modes)
+        summary["status"] = summary["evaluation"]["status"]
+        write_artifacts(out, summary, requests, controls_summary, timings)
     print(json.dumps({"status": summary["status"], "out": relative_path(out)}, indent=2), flush=True)
     return 0 if summary["status"] in {"pass", "partial"} else 1
 
