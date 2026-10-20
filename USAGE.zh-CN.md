@@ -40,15 +40,15 @@ python -m venv .venv
 # .venv\Scripts\python.exe -m pip install ".[repair]"
 ```
 
-安装后的命令是 `lerobot-boundary-audit`。Windows 使用
-`.venv\Scripts\lerobot-boundary-audit.exe`；下面示例用 POSIX 路径。
+安装后的命令是 `.venv/bin/lerobot-boundary-audit`（无需激活虚拟环境）。
+Windows 使用 `.venv\Scripts\lerobot-boundary-audit.exe`；下面示例用 POSIX 路径。
 
 ## 3. 用自带示例数据跑通（无需下载，约两分钟）
 
 ### 3.1 生成示例套件
 
 ```sh
-lerobot-boundary-audit demo --out demo-result
+.venv/bin/lerobot-boundary-audit demo --out demo-result
 ```
 
 它会生成 13 个案例的小型 LeRobot v3 套件，审计干净的 `merged` 数据集，并写出
@@ -82,8 +82,8 @@ lerobot-boundary-audit demo --out demo-result
 ### 3.2 审计干净与故障案例
 
 ```sh
-lerobot-boundary-audit audit demo-result/merged --decode --out reports/demo-clean
-lerobot-boundary-audit audit demo-result/offset-one-frame --decode --out reports/demo-offset
+.venv/bin/lerobot-boundary-audit audit demo-result/merged --decode --out reports/demo-clean
+.venv/bin/lerobot-boundary-audit audit demo-result/offset-one-frame --decode --out reports/demo-offset
 ```
 
 第一条应退出 **0**、状态 `pass`，覆盖 5 个 episode、2 个相机、35 行、
@@ -107,7 +107,7 @@ JSON 证据在 `report.json`。
 再试全局索引故障：
 
 ```sh
-lerobot-boundary-audit audit demo-result/global-index-shift --out reports/demo-index
+.venv/bin/lerobot-boundary-audit audit demo-result/global-index-shift --out reports/demo-index
 # 退出 1，35 条 GLOBAL_INDEX_MISMATCH
 ```
 
@@ -120,7 +120,7 @@ lerobot-boundary-audit audit demo-result/global-index-shift --out reports/demo-i
 推断物理同步。
 
 ```sh
-lerobot-boundary-audit repair-plan demo-result/offset-one-frame \
+.venv/bin/lerobot-boundary-audit repair-plan demo-result/offset-one-frame \
   --assume-cfr --out reports/demo-plan.json
 ```
 
@@ -138,14 +138,14 @@ lerobot-boundary-audit repair-plan demo-result/offset-one-frame \
 应用到新目录，并恢复到另一个新目录：
 
 ```sh
-lerobot-boundary-audit apply reports/demo-plan.json \
+.venv/bin/lerobot-boundary-audit apply reports/demo-plan.json \
   --source demo-result/offset-one-frame --out reports/demo-repaired
 
-lerobot-boundary-audit audit reports/demo-repaired --decode \
+.venv/bin/lerobot-boundary-audit audit reports/demo-repaired --decode \
   --out reports/demo-repaired-audit
 # status: pass
 
-lerobot-boundary-audit restore reports/demo-repaired --out reports/demo-restored
+.venv/bin/lerobot-boundary-audit restore reports/demo-repaired --out reports/demo-restored
 ```
 
 `apply` 输出包含 `"status": "applied"` 和通过的 verification。`restore` 会逐文件
@@ -165,7 +165,7 @@ lerobot-boundary-audit restore reports/demo-repaired --out reports/demo-restored
 ## 4. 审计自己的数据集
 
 ```sh
-lerobot-boundary-audit audit MY_DATASET \
+.venv/bin/lerobot-boundary-audit audit MY_DATASET \
   --camera observation.images.cam_high \
   --camera observation.images.cam_left_wrist \
   --decode --out reports/my-audit
@@ -188,8 +188,8 @@ PASS 只覆盖所选相机和请求的检查，不是整个数据集的质量证
 ### 下载固定版本真实样本
 
 ```sh
-lerobot-boundary-audit download aloha_screw_driver --out samples/aloha
-lerobot-boundary-audit audit samples/aloha \
+.venv/bin/lerobot-boundary-audit download aloha_screw_driver --out samples/aloha
+.venv/bin/lerobot-boundary-audit audit samples/aloha \
   --camera observation.images.cam_left_wrist \
   --camera observation.images.cam_right_wrist \
   --decode --out reports/aloha
@@ -219,7 +219,7 @@ Windows 使用 `.consumer-cpu\Scripts\python.exe`；TorchCodec 可能需要
 ### 5.1 完整 marker 身份矩阵
 
 ```sh
-lerobot-boundary-audit conformance demo-result \
+.venv/bin/lerobot-boundary-audit conformance demo-result \
   --python .consumer-cpu/bin/python --jobs 2 \
   --out reports/demo-conformance
 ```
@@ -231,7 +231,7 @@ lerobot-boundary-audit conformance demo-result \
 单案例快速替代：
 
 ```sh
-lerobot-boundary-audit verify-loader demo-result/merged \
+.venv/bin/lerobot-boundary-audit verify-loader demo-result/merged \
   --python .consumer-cpu/bin/python --phase workers \
   --out reports/demo-loader
 ```
@@ -239,7 +239,7 @@ lerobot-boundary-audit verify-loader demo-result/merged \
 ### 5.2 真实画面完整加载器探测
 
 ```sh
-lerobot-boundary-audit probe-loader samples/aloha \
+.venv/bin/lerobot-boundary-audit probe-loader samples/aloha \
   --camera observation.images.cam_left_wrist \
   --camera observation.images.cam_right_wrist \
   --python .consumer-cpu/bin/python --backend torchcodec \
@@ -254,7 +254,7 @@ lerobot-boundary-audit probe-loader samples/aloha \
 ### 5.3 官方解码器边界检查
 
 ```sh
-lerobot-boundary-audit verify samples/aloha \
+.venv/bin/lerobot-boundary-audit verify samples/aloha \
   --camera observation.images.cam_left_wrist \
   --camera observation.images.cam_right_wrist \
   --python .consumer-cpu/bin/python --backend torchcodec \

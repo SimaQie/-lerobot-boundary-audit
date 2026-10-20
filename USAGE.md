@@ -43,16 +43,16 @@ python -m venv .venv
 # .venv\Scripts\python.exe -m pip install ".[repair]"
 ```
 
-The installed command is `lerobot-boundary-audit`. On Windows use
-`.venv\Scripts\lerobot-boundary-audit.exe`; the examples below use the POSIX
-path.
+The venv-local command is `.venv/bin/lerobot-boundary-audit` (no activation is
+needed). On Windows use `.venv\Scripts\lerobot-boundary-audit.exe`; the examples
+below use the POSIX path.
 
 ## 3. Two-minute quick start with bundled data (no download)
 
 ### 3.1 Generate the example suite
 
 ```sh
-lerobot-boundary-audit demo --out demo-result
+.venv/bin/lerobot-boundary-audit demo --out demo-result
 ```
 
 The command creates a small LeRobot v3 suite (13 cases), audits the clean merged
@@ -89,8 +89,8 @@ what different commands detect:
 ### 3.2 Audit a clean and a faulty dataset
 
 ```sh
-lerobot-boundary-audit audit demo-result/merged --decode --out reports/demo-clean
-lerobot-boundary-audit audit demo-result/offset-one-frame --decode --out reports/demo-offset
+.venv/bin/lerobot-boundary-audit audit demo-result/merged --decode --out reports/demo-clean
+.venv/bin/lerobot-boundary-audit audit demo-result/offset-one-frame --decode --out reports/demo-offset
 ```
 
 The first exits **0** and reports `pass`: 5 episodes, 2 cameras, 35 rows,
@@ -115,7 +115,7 @@ evidence. JSON evidence is in `report.json`.
 Try the index fault too:
 
 ```sh
-lerobot-boundary-audit audit demo-result/global-index-shift --out reports/demo-index
+.venv/bin/lerobot-boundary-audit audit demo-result/global-index-shift --out reports/demo-index
 # exit 1, 35 GLOBAL_INDEX_MISMATCH findings
 ```
 
@@ -129,7 +129,7 @@ The repair contract must be asserted explicitly: all frames are ordered,
 contiguous samples at the declared constant FPS. This is not inferred.
 
 ```sh
-lerobot-boundary-audit repair-plan demo-result/offset-one-frame \
+.venv/bin/lerobot-boundary-audit repair-plan demo-result/offset-one-frame \
   --assume-cfr --out reports/demo-plan.json
 ```
 
@@ -147,14 +147,14 @@ Inspect `reports/demo-plan.json`. It lists the exact episode, column, before and
 after values. Then apply to a **new** directory and restore to another directory:
 
 ```sh
-lerobot-boundary-audit apply reports/demo-plan.json \
+.venv/bin/lerobot-boundary-audit apply reports/demo-plan.json \
   --source demo-result/offset-one-frame --out reports/demo-repaired
 
-lerobot-boundary-audit audit reports/demo-repaired --decode \
+.venv/bin/lerobot-boundary-audit audit reports/demo-repaired --decode \
   --out reports/demo-repaired-audit
 # status: pass
 
-lerobot-boundary-audit restore reports/demo-repaired --out reports/demo-restored
+.venv/bin/lerobot-boundary-audit restore reports/demo-repaired --out reports/demo-restored
 ```
 
 The apply output contains `"status": "applied"` and a passing verification.
@@ -175,7 +175,7 @@ new directory, not an in-place operation.
 ## 4. Audit your own dataset
 
 ```sh
-lerobot-boundary-audit audit MY_DATASET --camera observation.images.cam_high \
+.venv/bin/lerobot-boundary-audit audit MY_DATASET --camera observation.images.cam_high \
   --camera observation.images.cam_left_wrist --decode --out reports/my-audit
 ```
 
@@ -198,8 +198,8 @@ dataset-wide quality certificate.
 ### Download a pinned real sample
 
 ```sh
-lerobot-boundary-audit download aloha_screw_driver --out samples/aloha
-lerobot-boundary-audit audit samples/aloha \
+.venv/bin/lerobot-boundary-audit download aloha_screw_driver --out samples/aloha
+.venv/bin/lerobot-boundary-audit audit samples/aloha \
   --camera observation.images.cam_left_wrist \
   --camera observation.images.cam_right_wrist \
   --decode --out reports/aloha
@@ -234,7 +234,7 @@ packages or runtime failures produce `unavailable`, not a fake PASS.
 Run the official `LeRobotDataset` against the 13-case example suite:
 
 ```sh
-lerobot-boundary-audit conformance demo-result \
+.venv/bin/lerobot-boundary-audit conformance demo-result \
   --python .consumer-cpu/bin/python --jobs 2 \
   --out reports/demo-conformance
 ```
@@ -247,7 +247,7 @@ camera swaps, duplicated pixels and index shifts are detected. Open
 `verify-loader` is a smaller, single-case alternative:
 
 ```sh
-lerobot-boundary-audit verify-loader demo-result/merged \
+.venv/bin/lerobot-boundary-audit verify-loader demo-result/merged \
   --python .consumer-cpu/bin/python --phase workers \
   --out reports/demo-loader
 ```
@@ -255,7 +255,7 @@ lerobot-boundary-audit verify-loader demo-result/merged \
 ### 5.2 Real-footage full-loader probe
 
 ```sh
-lerobot-boundary-audit probe-loader samples/aloha \
+.venv/bin/lerobot-boundary-audit probe-loader samples/aloha \
   --camera observation.images.cam_left_wrist \
   --camera observation.images.cam_right_wrist \
   --python .consumer-cpu/bin/python --backend torchcodec \
@@ -272,7 +272,7 @@ valid result, not a hidden failure. A probe PASS is not physical synchronization
 ### 5.3 Official decoder boundary check
 
 ```sh
-lerobot-boundary-audit verify samples/aloha \
+.venv/bin/lerobot-boundary-audit verify samples/aloha \
   --camera observation.images.cam_left_wrist \
   --camera observation.images.cam_right_wrist \
   --python .consumer-cpu/bin/python --backend torchcodec \

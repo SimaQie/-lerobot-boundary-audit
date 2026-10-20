@@ -19,10 +19,10 @@ See [release notes](RELEASE_NOTES_0.4.2rc1.md),
 ## Quick start (no download)
 
 ```sh
-lerobot-boundary-audit demo --out demo-result
+.venv/bin/lerobot-boundary-audit demo --out demo-result
 # open demo-result/demo-report/report.html
-lerobot-boundary-audit audit demo-result/merged --decode --out reports/demo-clean
-lerobot-boundary-audit audit demo-result/offset-one-frame --decode --out reports/demo-offset
+.venv/bin/lerobot-boundary-audit audit demo-result/merged --decode --out reports/demo-clean
+.venv/bin/lerobot-boundary-audit audit demo-result/offset-one-frame --decode --out reports/demo-offset
 ```
 
 The demo contains 13 clean/faulty synthetic cases. The first audit exits 0
@@ -46,7 +46,7 @@ episodes. The seed selects timestamps before any image is decoded; all ambiguity
 is retained. The default `mixed` boundary-oriented sample is unchanged.
 
 ```sh
-lerobot-boundary-audit probe-loader DATASET --python PATH_TO_OFFICIAL_PYTHON --sampling stratified --max-rows 6 --phase workers --out reports/stratified
+.venv/bin/lerobot-boundary-audit probe-loader DATASET --python PATH_TO_OFFICIAL_PYTHON --sampling stratified --max-rows 6 --phase workers --out reports/stratified
 ```
 
 See the [dated research/code review](research/REVIEW_2026-10-20.md) and
@@ -65,7 +65,7 @@ The source preview includes reproducible experiments; it is not a PyPI release.
 Offline, after installing `.[repair]`, including from a wheel:
 
 ```sh
-lerobot-boundary-audit demo --out demo-v040
+.venv/bin/lerobot-boundary-audit demo --out demo-v040
 ```
 
 The package includes a ~384 KiB original MIT fixture with **13 cases** (six clean
@@ -76,7 +76,7 @@ the original recording; derived encodings record their own runtime. These are
 controlled tests, not 13 naturally discovered defects.
 
 ```sh
-lerobot-boundary-audit conformance demo-v040 --python PATH_TO_OFFICIAL_PYTHON --jobs 2 --out reports/v040
+.venv/bin/lerobot-boundary-audit conformance demo-v040 --python PATH_TO_OFFICIAL_PYTHON --jobs 2 --out reports/v040
 ```
 
 Eight phases: `single`, `window`, `batch`, `workers`, `subset`, `long-window`
@@ -88,7 +88,7 @@ evidence; an exception alone cannot satisfy an expected failure.
 Probe **your own ordinary LeRobot v3 footage** without a frame oracle:
 
 ```sh
-lerobot-boundary-audit probe-loader MY_DATA --python PATH_TO_OFFICIAL_PYTHON --camera observation.images.wrist --phase workers --max-rows 12 --radius 4 --out reports/my-probe
+.venv/bin/lerobot-boundary-audit probe-loader MY_DATA --python PATH_TO_OFFICIAL_PYTHON --camera observation.images.wrist --phase workers --max-rows 12 --radius 4 --out reports/my-probe
 ```
 
 The probe copies a bounded camera projection into a temporary directory so the
@@ -128,8 +128,8 @@ not a claim of newly collected 2026 data. The pinned metadata is v3.0 even thoug
 the dataset card's illustrative JSON still shows an older layout.
 
 ```sh
-lerobot-boundary-audit download aloha_screw_driver --out samples/aloha_screw_driver
-lerobot-boundary-audit audit samples/aloha_screw_driver --camera observation.images.cam_left_wrist --camera observation.images.cam_right_wrist --decode --out reports/aloha
+.venv/bin/lerobot-boundary-audit download aloha_screw_driver --out samples/aloha_screw_driver
+.venv/bin/lerobot-boundary-audit audit samples/aloha_screw_driver --camera observation.images.cam_left_wrist --camera observation.images.cam_right_wrist --decode --out reports/aloha
 ```
 
 Source: [LeRobot ALOHA dataset](https://huggingface.co/datasets/lerobot/aloha_static_screw_driver),
@@ -140,7 +140,7 @@ includes both official decoders, worker/window probes, full PTS decode, controll
 one-frame offset repair/restoration, and the global-index rejection control.
 
 ```sh
-python research/validate_real_sample.py aloha_screw_driver --source samples/aloha_screw_driver --out research/runs/my-aloha-run --consumer-python PATH_TO_OFFICIAL_PYTHON
+.venv/bin/python research/validate_real_sample.py aloha_screw_driver --source samples/aloha_screw_driver --out research/runs/my-aloha-run --consumer-python PATH_TO_OFFICIAL_PYTHON
 ```
 
 The identical command protocol also accepts `agibot2026`. Both real samples use
@@ -193,14 +193,17 @@ with no training framework, GPU, model service, database, or web server.
 git clone https://github.com/SimaQie/-lerobot-boundary-audit.git lerobot-boundary-audit
 cd lerobot-boundary-audit
 python -m venv .venv
-# Windows: use .venv/Scripts/python; Linux/macOS: .venv/bin/python
-.venv/Scripts/python -m pip install ".[repair]"
-.venv/Scripts/python -m boundary_audit.cli download agibot2026 --out samples/agibot2026
-.venv/Scripts/python -m boundary_audit.cli audit samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --decode --out reports/agibot2026
+.venv/bin/python -m pip install ".[repair]"
+.venv/bin/lerobot-boundary-audit download agibot2026 --out samples/agibot2026
+.venv/bin/lerobot-boundary-audit audit samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --decode --out reports/agibot2026
 ```
 
+Windows: use `.venv\Scripts\python.exe` and
+`.venv\Scripts\lerobot-boundary-audit.exe` with the same arguments. The examples
+below use the POSIX venv paths.
+
 Open `reports/agibot2026/report.html` directly in a browser. No network connection
-is needed for the report. `lerobot-boundary-audit` is also installed as a command.
+is needed for the report.
 
 The pinned example is the September 2026 **Voxel51 public re-export of
 AgiBotWorld2026**, containing 10 real G2 robot episodes. Download only metadata,
@@ -244,10 +247,10 @@ ordered, contiguous samples at the declared constant FPS. This contract is a
 user assertion; the tool cannot infer physical sensor synchronization.
 
 ```sh
-lerobot-boundary-audit repair-plan MY_DATA --assume-cfr --out reports/plan.json
+.venv/bin/lerobot-boundary-audit repair-plan MY_DATA --assume-cfr --out reports/plan.json
 # Inspect operations, original hashes, proposed values and any refusals.
-lerobot-boundary-audit apply reports/plan.json --source MY_DATA --out MY_DATA_REPAIRED
-lerobot-boundary-audit restore MY_DATA_REPAIRED --out MY_DATA_RESTORED
+.venv/bin/lerobot-boundary-audit apply reports/plan.json --source MY_DATA --out MY_DATA_REPAIRED
+.venv/bin/lerobot-boundary-audit restore MY_DATA_REPAIRED --out MY_DATA_RESTORED
 ```
 
 For partial camera downloads, repeat the same `--camera` selection on
@@ -270,7 +273,7 @@ publication; this is not a whole-directory atomic transaction.
 Try a tiny, original six-frame fixture without downloading data:
 
 ```sh
-python examples/offline_demo.py --out demo-result
+.venv/bin/python examples/offline_demo.py --out demo-result
 ```
 
 It deliberately introduces a one-tick time step, demonstrates REVIEW → PASS,
@@ -283,8 +286,8 @@ Use a separate Python environment containing the version of LeRobot you train
 with; the normal tool does not install Torch. Example with an existing environment:
 
 ```sh
-lerobot-boundary-audit verify samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --python PATH_TO_OFFICIAL_PYTHON --backend pyav --out reports/official-pyav
-lerobot-boundary-audit verify samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --python PATH_TO_OFFICIAL_PYTHON --backend torchcodec --out reports/official-torchcodec
+.venv/bin/lerobot-boundary-audit verify samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --python PATH_TO_OFFICIAL_PYTHON --backend pyav --out reports/official-pyav
+.venv/bin/lerobot-boundary-audit verify samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --python PATH_TO_OFFICIAL_PYTHON --backend torchcodec --out reports/official-torchcodec
 ```
 
 TorchCodec needs its compatible Torch and FFmpeg runtime. On Windows,
@@ -309,7 +312,7 @@ Extract the bundled fixture and try the lightweight storage audit:
 
 ```sh
 python -m zipfile -e examples/frame-suite-v030.zip demo-suite
-lerobot-boundary-audit audit demo-suite/merged --decode --out reports/merged
+.venv/bin/lerobot-boundary-audit audit demo-suite/merged --decode --out reports/merged
 ```
 
 For full conformance, install the optional official environment separately. The
@@ -319,7 +322,7 @@ following CPU versions reproduce the tested consumer; normal users do not need i
 python -m venv .consumer-env
 .consumer-env/Scripts/python -m pip install torch==2.10.0 torchvision==0.25.0 --index-url https://download.pytorch.org/whl/cpu
 .consumer-env/Scripts/python -m pip install "lerobot[dataset]==0.6.1" "torchcodec==0.10.0"
-lerobot-boundary-audit conformance demo-suite --python .consumer-env/Scripts/python --out reports/conformance
+.venv/bin/lerobot-boundary-audit conformance demo-suite --python .consumer-env/Scripts/python --out reports/conformance
 ```
 
 Linux/macOS: substitute `.consumer-env/bin/python`. TorchCodec also needs a
@@ -333,8 +336,8 @@ an environment failure cannot certify a negative control.
 Recreate the samples through the installed official recording/merge APIs:
 
 ```sh
-lerobot-boundary-audit fixture-suite --python .consumer-env/Scripts/python --out my-new-suite
-lerobot-boundary-audit verify-loader my-new-suite/merged --python .consumer-env/Scripts/python --backend pyav --phase window --out reports/window
+.venv/bin/lerobot-boundary-audit fixture-suite --python .consumer-env/Scripts/python --out my-new-suite
+.venv/bin/lerobot-boundary-audit verify-loader my-new-suite/merged --python .consumer-env/Scripts/python --backend pyav --phase window --out reports/window
 ```
 
 `fixture-suite` also attempts guarded repair and exact restoration of the injected
@@ -352,9 +355,9 @@ images, not arbitrary real robot footage or transformed/cropped training images.
 ## Reproduce validation
 
 ```sh
-python -m pip install ".[repair,dev]"
-python -m pytest -q
-python research/validate_agibot2026.py --out research/runs/my-run --consumer-python PATH_TO_OFFICIAL_PYTHON --ffmpeg-bin PATH_IF_NEEDED
+.venv/bin/python -m pip install ".[repair,dev]"
+.venv/bin/python -m pytest -q
+.venv/bin/python research/validate_agibot2026.py --out research/runs/my-run --consumer-python PATH_TO_OFFICIAL_PYTHON --ffmpeg-bin PATH_IF_NEEDED
 ```
 
 Omit the consumer arguments to run local audit, full decode reference, injected

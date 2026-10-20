@@ -20,10 +20,10 @@ python -m venv .venv
 ## 快速开始（无需下载）
 
 ```sh
-lerobot-boundary-audit demo --out demo-result
+.venv/bin/lerobot-boundary-audit demo --out demo-result
 # 浏览器打开 demo-result/demo-report/report.html
-lerobot-boundary-audit audit demo-result/merged --decode --out reports/demo-clean
-lerobot-boundary-audit audit demo-result/offset-one-frame --decode --out reports/demo-offset
+.venv/bin/lerobot-boundary-audit audit demo-result/merged --decode --out reports/demo-clean
+.venv/bin/lerobot-boundary-audit audit demo-result/offset-one-frame --decode --out reports/demo-offset
 ```
 
 示例套件包含 13 个正常/人工故障案例。第一条审计退出 0（pass）；offset 案例退出 1，
@@ -52,9 +52,9 @@ Python、PyArrow 和 PyAV，无需训练模型、GPU、数据库或服务器。
 
 ```sh
 python -m venv .venv
-.venv/Scripts/python -m pip install ".[repair]"
-.venv/Scripts/python -m boundary_audit.cli download agibot2026 --out samples/agibot2026
-.venv/Scripts/python -m boundary_audit.cli audit samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --decode --out reports/agibot2026
+.venv/bin/python -m pip install ".[repair]"
+.venv/bin/lerobot-boundary-audit download agibot2026 --out samples/agibot2026
+.venv/bin/lerobot-boundary-audit audit samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --decode --out reports/agibot2026
 ```
 
 打开 `reports/agibot2026/report.html` 即可查看结果。Linux/macOS 将解释器路径
@@ -72,9 +72,9 @@ python -m venv .venv
 先产生可审阅的修复计划，再写入新的副本：
 
 ```sh
-lerobot-boundary-audit repair-plan MY_DATA --assume-cfr --out reports/plan.json
-lerobot-boundary-audit apply reports/plan.json --source MY_DATA --out MY_DATA_REPAIRED
-lerobot-boundary-audit restore MY_DATA_REPAIRED --out MY_DATA_RESTORED
+.venv/bin/lerobot-boundary-audit repair-plan MY_DATA --assume-cfr --out reports/plan.json
+.venv/bin/lerobot-boundary-audit apply reports/plan.json --source MY_DATA --out MY_DATA_REPAIRED
+.venv/bin/lerobot-boundary-audit restore MY_DATA_REPAIRED --out MY_DATA_RESTORED
 ```
 
 仅下载部分相机时，生成计划也要指定同样的 `--camera` 参数。
@@ -85,7 +85,7 @@ lerobot-boundary-audit restore MY_DATA_REPAIRED --out MY_DATA_RESTORED
 无需联网的小演示：
 
 ```sh
-python examples/offline_demo.py --out demo-result
+.venv/bin/python examples/offline_demo.py --out demo-result
 ```
 
 演示会生成六帧原创合成视频，注入一处时间异常，完成检查、修复和精确恢复。
@@ -106,7 +106,7 @@ python examples/offline_demo.py --out demo-result
 
 ```sh
 python -m zipfile -e examples/frame-suite-v030.zip demo-suite
-lerobot-boundary-audit audit demo-suite/merged --decode --out reports/merged
+.venv/bin/lerobot-boundary-audit audit demo-suite/merged --decode --out reports/merged
 ```
 
 完整官方加载器验证需另建安装 LeRobot 0.6.1 的环境，详见英文说明。
@@ -138,8 +138,8 @@ TorchCodec 两种读取器；独立完整解码核对了两路视频共 47,316 �
 安装 `.[repair]` 后，无需下载外部数据即可运行安装包自带样例：
 
 ```sh
-lerobot-boundary-audit demo --out demo-v040
-lerobot-boundary-audit conformance demo-v040 --python 官方环境的Python路径 --jobs 2 --out reports/v040
+.venv/bin/lerobot-boundary-audit demo --out demo-v040
+.venv/bin/lerobot-boundary-audit conformance demo-v040 --python 官方环境的Python路径 --jobs 2 --out reports/v040
 ```
 
 新版包含 13 个原创小样例：6 个干净控制和 7 个人工故障控制。完整矩阵为两个后端、
@@ -149,7 +149,7 @@ lerobot-boundary-audit conformance demo-v040 --python 官方环境的Python路�
 普通真实视频也可使用完整加载器探测，无需预先生成画面编号：
 
 ```sh
-lerobot-boundary-audit probe-loader samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --python 官方环境的Python路径 --phase workers --max-rows 6 --out reports/agibot-probe
+.venv/bin/lerobot-boundary-audit probe-loader samples/agibot2026 --camera observation.images.hand_left --camera observation.images.hand_right --python 官方环境的Python路径 --phase workers --max-rows 6 --out reports/agibot-probe
 ```
 
 探测会将所选相机的数据复制到受预算限制的临时目录，并用顺序解码参考检查实际读取的
@@ -171,8 +171,8 @@ PyAV 参考与 PyAV 被测路径共享颜色转换，两个后端也有 FFmpeg �
 这是来自 RSS 2023 研究的主流真实机器人数据，数据卡声明 MIT 许可。
 
 ```sh
-lerobot-boundary-audit download aloha_screw_driver --out samples/aloha_screw_driver
-python research/validate_real_sample.py aloha_screw_driver --source samples/aloha_screw_driver --out research/runs/my-aloha-run --consumer-python 官方环境的Python路径
+.venv/bin/lerobot-boundary-audit download aloha_screw_driver --out samples/aloha_screw_driver
+.venv/bin/python research/validate_real_sample.py aloha_screw_driver --source samples/aloha_screw_driver --out research/runs/my-aloha-run --consumer-python 官方环境的Python路径
 ```
 
 使用与 AgiBot 相同的脚本与预算，进行存储/解码检查、官方 PyAV/TorchCodec 对照、

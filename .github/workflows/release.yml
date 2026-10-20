@@ -1,8 +1,10 @@
 name: release
 
+# Tag-only: normal main-branch development must never overwrite a published
+# version's release attachments.
 on:
   push:
-    branches: [main]
+    tags: ['v0.4.2rc1']
 
 permissions:
   contents: write
@@ -15,22 +17,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build wheel and sdist
+      - name: Build wheel and sdist from the fixed tag
         run: |
           python -m pip install build
           python -m build
-      - name: Check v0.4.2rc1 release
-        id: check
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if gh release view v0.4.2rc1 >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Create v0.4.2rc1 prerelease
-        if: steps.check.outputs.exists == 'false'
+      - name: Publish the fixed v0.4.2rc1 prerelease
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.4.2rc1
@@ -42,10 +33,3 @@ jobs:
             dist/*
             USAGE.md
             USAGE.zh-CN.md
-      - name: Upload release artifacts and usage guides
-        if: steps.check.outputs.exists == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release upload v0.4.2rc1 dist/* USAGE.md USAGE.zh-CN.md --clobber
-          gh release edit v0.4.2rc1 --notes-file RELEASE_NOTES_0.4.2rc1.md
