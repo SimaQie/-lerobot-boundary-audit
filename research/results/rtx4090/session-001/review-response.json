@@ -19,5 +19,14 @@
     "tests": "raw tensors are dropped; one-sided errors are JSON-safe; partial reports are written",
     "manual_budget_report": "r3-budget-summary.json"
   },
-  "pytest": "130 passed at the measured branch tip"
+  "p2_zero_repeats": {
+    "status": "fixed",
+    "tests": "config/CLI zero and negative repeats, frames, batch sizes, warmup and budget are rejected"
+  },
+  "p2_partial_status": {
+    "status": "fixed",
+    "tests": "full-count partial and unknown performance statuses cannot PASS",
+    "revalidation": "p2-revalidation.json"
+  },
+  "pytest": "134 passed at the measured branch tip"
 }

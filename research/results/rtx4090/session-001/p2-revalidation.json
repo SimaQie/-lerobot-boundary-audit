@@ -1,0 +1,33 @@
+{
+  "schema_version": "boundary-p2-revalidation.v1",
+  "benchmark_source": "152cb2ca3be39304ea27c38e78932cac609ab1f9",
+  "benchmark_tool_version": "0.4.2rc1",
+  "evaluator": "boundary_audit.gpu_benchmark.evaluate_benchmark after P2 fixes",
+  "status": "partial",
+  "correctness": {
+    "expected": 12,
+    "completed": 12,
+    "missing": [],
+    "incomplete": [],
+    "status": "partial"
+  },
+  "performance": {
+    "expected": 12,
+    "completed": 12,
+    "missing": [],
+    "incomplete": [],
+    "status": "pass"
+  },
+  "integrity": {
+    "status": "pass"
+  },
+  "missing": [],
+  "incomplete": [],
+  "issues": [],
+  "notes": [
+    "correctness aloha-left/cpu: partial",
+    "correctness aloha-left/cuda: partial",
+    "correctness agibot-left/cpu: partial",
+    "correctness agibot-left/cuda: partial"
+  ]
+}

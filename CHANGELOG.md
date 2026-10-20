@@ -18,6 +18,10 @@
   a CPU or GPU decoder's returned PTS. Two decoders returning the same wrong
   next frame now fail the independent time contract.
 - Keep raw tensors out of report payloads; one-sided time errors are JSON-safe.
+- Validate repeats/frames/batch sizes as positive integers, warmup nonnegative
+  and the wall-clock budget finite and positive after CLI overrides. Performance
+  subtasks must explicitly be `pass`; `partial`, unknown, missing and
+  zero-repetition results cannot contribute to a PASS.
 - RTX 4090/WSL2 validation: 208/208 CPU conformance, 78/78 CUDA-build CPU-path
   conformance, both real-data validations `expected_outcomes_met`; explicit
   NVDEC produced `cuda:0` tensors. The measured 1.37-2.34x gain applies only to

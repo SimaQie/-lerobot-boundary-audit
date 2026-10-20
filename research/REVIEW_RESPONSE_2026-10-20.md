@@ -96,6 +96,31 @@ contains `status=partial`, `budget.exhausted=true`, no fake `unchanged`.
   earlier `88ae99b` measurements are historical and are not presented as the
   final source.
 
+## Post-review P2 follow-up
+
+A second review found two remaining boundary defects: zero performance
+repetitions could satisfy a zero lower bound, and a performance subtask with
+`status="partial"` (or an unknown status) was not propagated by the evaluator.
+
+- `validate_config` now runs after CLI overrides and requires positive
+  `repeats`, `frames`, batch sizes and wall-clock budget, with nonnegative
+  warmup. `prepare_run` is the shared CLI entry used by the tests, so
+  `--repeats 0`, `--repeats -1`, config repeats 0, zero/negative budget and
+  negative warmup are rejected at the real entry point.
+- `run_performance` has its own positive-value guards instead of relying only
+  on the caller.
+- The evaluator only lets `status == "pass"` performance tasks contribute to a
+  PASS; `partial`/unknown statuses become PARTIAL, and repeats below 1 are a hard
+  issue even if the raw lists are empty.
+- `tests/test_gpu_benchmark.py` now has 19 GPU-contract tests (134 total) and
+  covers full-count-but-partial, unknown status, zero-repeat config, and CLI
+  zero/negative overrides.
+- The published five-repeat experiment was re-evaluated with the new
+  evaluator: `152cb2c` remains `partial`, performance `pass`, 12/12 correctness
+  and 12/12 performance tasks present, no missing/incomplete tasks. See
+  `p2-revalidation.json` in the evidence directory. No expensive GPU rerun was
+  needed because the default timing requests and algorithms did not change.
+
 ## Residual limits
 
 The stock LeRobot reader remains CPU-only; there is no GPU DataLoader worker or

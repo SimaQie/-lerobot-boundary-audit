@@ -15,7 +15,7 @@ Detailed narrative: [`RTX4090_2026-10-20.md`](RTX4090_2026-10-20.md) (also at
 
 | Phase | Result |
 |---|---|
-| A. CPU audit on this host | 130 tests, ruff clean, 208/208 fixture conformance |
+| A. CPU audit on this host | 134 tests, ruff clean, 208/208 fixture conformance |
 | A. real samples | AgiBot and ALOHA both `expected_outcomes_met`; official 60/60 and 300/300 queries; repairs exact |
 | A. sampling | AgiBot mixed 31/5, stratified 35/1; ALOHA 12/24, 29/7; both backends |
 | B. CUDA build, stock reader | 78/78 conformance; sampling identical to A; requested/observed decode device CPU |
@@ -48,6 +48,10 @@ and many real identities remain ambiguous. The CPU default path is unchanged.
 - Clean-clone check: fresh clone of `29e1de7`, fresh `.venv`, 130 tests, ruff,
   demo and the published CPU correctness config; samples symlinked read-only
   and the CPU consumer reused. See `clean-clone-check.json`.
+- Post-review P2 fixes: zero/negative repeats, frames, batch sizes, warmup and
+  budget are rejected at the CLI entry; only explicit performance `pass`
+  contributes to a PASS. `p2-revalidation.json` rechecks the published
+  five-repeat summary under the new evaluator.
 - Data revisions: AgiBot `caa5bf1b0b5be48ed52d158ff0d66af40b0f9258`, ALOHA
   `21eead16760a8d94d449cadf4bc438b322ab528d`, project 13-case fixture.
 - All source hashes are unchanged; see `source-integrity.json` and the
@@ -73,6 +77,7 @@ and many real identities remain ambiguous. The CPU default path is unchanged.
 | `REVIEW_RESPONSE_2026-10-20.md`, `review-response.json` | R1/R2/R3 fixes, regression tests and manual budget evidence |
 | `r3-budget-summary.json` | soft-budget run that still writes integrity and a partial report |
 | `clean-clone-check.json`, `logs/clean-clone.log` | fresh clone of the pushed branch: tests, demo and published config path check |
+| `p2-revalidation.json` | published five-repeat summary re-evaluated after zero-repeat/partial-status fixes |
 | `benchmark-config.json` | exact query plan (including targeted fault frames) |
 
 The benchmark's `minimum`/`median`/`maximum` values are from 3 warm-ups and 5

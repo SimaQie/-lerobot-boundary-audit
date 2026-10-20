@@ -1275,7 +1275,7 @@
       "note": "Fresh clone of the pushed branch; fresh .venv with -e .[fixtures,dev]; demo and published benchmark config; samples symlinked read-only; CPU consumer reused."
     },
     "packaging": {
-      "wheel": "05464c3588c0d08746bf6a6b4fb8461a927b3f1589203fe1a6f012c9726b99b2  lerobot_boundary_audit-0.4.2rc1-py3-none-any.whl",
+      "wheel": "b6aba356bd21724a7e4d3b4561f256f723c09917c509c9f8eb097abf9b9c43f4  lerobot_boundary_audit-0.4.2rc1-py3-none-any.whl",
       "wheel_files": 30,
       "clean_install_demo_status": "pass",
       "clean_install_conformance": {

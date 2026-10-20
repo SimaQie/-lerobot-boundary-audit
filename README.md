@@ -1,5 +1,21 @@
 # LeRobot Boundary Audit
 
+**Current candidate: `0.4.2rc1` research preview.** The supported product is the
+CPU audit and guarded repair path. The RTX 4090/TorchCodec study is experimental:
+it is not a stable GPU reader, and its microbenchmark is not a full-tool speedup.
+
+```sh
+git clone https://github.com/SimaQie/-lerobot-boundary-audit.git
+cd -- -lerobot-boundary-audit
+git checkout v0.4.2rc1
+python -m venv .venv
+.venv/bin/python -m pip install ".[repair]"
+```
+
+See [release notes](RELEASE_NOTES_0.4.2rc1.md),
+[RTX 4090 evidence](research/results/rtx4090/session-001/README.md), and
+[known limits](research/RTX4090_2026-10-20.md).
+
 ## 0.4.1 reader evidence review
 
 Fractional/noninteger reader labels are rejected, action array shape is checked
