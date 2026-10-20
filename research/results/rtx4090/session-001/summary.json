@@ -1265,6 +1265,15 @@
       },
       "source_unchanged": true
     },
+    "clean_clone": {
+      "commit": "29e1de7",
+      "status": "pass",
+      "pytest": "130 passed",
+      "ruff": "all checks passed",
+      "demo": "pass",
+      "benchmark": "partial (real AV1 ambiguity; fixture controls pass)",
+      "note": "Fresh clone of the pushed branch; fresh .venv with -e .[fixtures,dev]; demo and published benchmark config; samples symlinked read-only; CPU consumer reused."
+    },
     "packaging": {
       "wheel": "05464c3588c0d08746bf6a6b4fb8461a927b3f1589203fe1a6f012c9726b99b2  lerobot_boundary_audit-0.4.2rc1-py3-none-any.whl",
       "wheel_files": 30,

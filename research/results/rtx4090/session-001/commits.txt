@@ -1,6 +1,7 @@
-152cb2c (HEAD -> experiment/rtx4090-validation) Prepare 0.4.2rc1 research preview packages and docs
+29e1de7 (HEAD -> experiment/rtx4090-validation, origin/experiment/rtx4090-validation) Publish 0.4.2rc1 review fixes and rerun evidence
+152cb2c Prepare 0.4.2rc1 research preview packages and docs
 f9c68c9 Require complete evidence and independent time mapping in GPU benchmark
-261ba3a (origin/experiment/rtx4090-validation) Publish RTX 4090 CPU and TorchCodec decode evidence
+261ba3a Publish RTX 4090 CPU and TorchCodec decode evidence
 c0e21c1 Keep numpy optional in packaged benchmark metrics
 88ae99b Find nvidia-smi in the WSL driver directory
 612990a Judge fault fixtures by detected identities, not unrelated passes
@@ -9,4 +10,3 @@ d0aa5ec Sanitize benchmark library provenance and add device comparison
 d1eb625 Record benchmark source provenance and first-decode timing
 4aee263 Add standalone TorchCodec CPU/CUDA decode benchmark
 8bfe83e Preserve venv interpreter paths and record validation environment
-5da5384 Record measured host and decode provenance in reproducible reports

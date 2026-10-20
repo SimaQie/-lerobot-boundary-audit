@@ -45,6 +45,9 @@ and many real identities remain ambiguous. The CPU default path is unchanged.
 - Tested commits are embedded in each summary: conformance `5da5384`; AgiBot
   validation `4aee263`; ALOHA/sampling `d1eb625`; final GPU benchmark
   `152cb2c` (0.4.2rc1); final branch tip also includes packaging/reporting fixes.
+- Clean-clone check: fresh clone of `29e1de7`, fresh `.venv`, 130 tests, ruff,
+  demo and the published CPU correctness config; samples symlinked read-only
+  and the CPU consumer reused. See `clean-clone-check.json`.
 - Data revisions: AgiBot `caa5bf1b0b5be48ed52d158ff0d66af40b0f9258`, ALOHA
   `21eead16760a8d94d449cadf4bc438b322ab528d`, project 13-case fixture.
 - All source hashes are unchanged; see `source-integrity.json` and the
@@ -69,6 +72,7 @@ and many real identities remain ambiguous. The CPU default path is unchanged.
 | `wheel/` | wheel SHA-256 and file list |
 | `REVIEW_RESPONSE_2026-10-20.md`, `review-response.json` | R1/R2/R3 fixes, regression tests and manual budget evidence |
 | `r3-budget-summary.json` | soft-budget run that still writes integrity and a partial report |
+| `clean-clone-check.json`, `logs/clean-clone.log` | fresh clone of the pushed branch: tests, demo and published config path check |
 | `benchmark-config.json` | exact query plan (including targeted fault frames) |
 
 The benchmark's `minimum`/`median`/`maximum` values are from 3 warm-ups and 5
