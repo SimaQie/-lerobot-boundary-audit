@@ -155,6 +155,66 @@ def _expected_performance(config: dict, devices: list[str], modes: set[str]) -> 
     ]
 
 
+def validate_config(config: dict, modes: set[str]) -> None:
+    """Reject settings that could make an empty or meaningless run look valid."""
+    if not modes or not modes <= {"correctness", "performance"}:
+        raise ValueError("Modes must be correctness and/or performance")
+    inputs = config.get("inputs")
+    if not isinstance(inputs, list) or not inputs:
+        raise ValueError("Config needs a nonempty inputs list")
+    identifiers = [spec.get("id") for spec in inputs]
+    if any(not isinstance(identifier, str) or not identifier for identifier in identifiers):
+        raise ValueError("Every input needs a nonempty id")
+    if len(set(identifiers)) != len(identifiers):
+        raise ValueError("Input ids must be unique")
+    devices = config.get("devices", ["cpu", "cuda"])
+    if not isinstance(devices, list) or not devices or not set(devices) <= {"cpu", "cuda"}:
+        raise ValueError("Devices must be a nonempty subset of cpu and cuda")
+    max_seconds = config.get("max_seconds", 900)
+    if isinstance(max_seconds, bool) or not isinstance(max_seconds, (int, float)):
+        raise ValueError("max_seconds must be a positive finite number")
+    if not math.isfinite(float(max_seconds)) or float(max_seconds) <= 0:
+        raise ValueError("max_seconds must be a positive finite number")
+    for key, minimum in (
+        ("correctness_batch_size", 1),
+        ("max_frames_per_input", 1),
+        ("max_reference_bytes", 1),
+        ("max_decode_frames", 1),
+    ):
+        value = config.get(key)
+        if value is not None and (type(value) is not int or value < minimum):
+            raise ValueError(f"{key} must be an integer >= {minimum}")
+    performance = config.get("performance", {})
+    if not isinstance(performance, dict):
+        raise ValueError("performance must be an object")
+    enabled = performance.get("enabled", True)
+    if not isinstance(enabled, bool):
+        raise ValueError("performance.enabled must be boolean")
+    if "performance" in modes and not enabled:
+        raise ValueError("Performance mode was requested but performance.enabled is false")
+    repeats = performance.get("repeats", 5)
+    frames = performance.get("frames", 32)
+    warmup = performance.get("warmup", 3)
+    if type(repeats) is not int or repeats < 1:
+        raise ValueError("performance.repeats must be an integer >= 1")
+    if type(frames) is not int or frames < 1:
+        raise ValueError("performance.frames must be an integer >= 1")
+    if type(warmup) is not int or warmup < 0:
+        raise ValueError("performance.warmup must be an integer >= 0")
+    batches = performance.get("batch_sizes", [1, 8, 32])
+    if not isinstance(batches, list) or not batches:
+        raise ValueError("performance.batch_sizes must be a nonempty list")
+    if any(type(batch) is not int or batch < 1 for batch in batches):
+        raise ValueError("Each performance batch size must be an integer >= 1")
+    selected = performance.get("inputs") or identifiers
+    if not isinstance(selected, list) or not selected:
+        raise ValueError("performance.inputs must be a nonempty list")
+    if any(input_id not in identifiers for input_id in selected):
+        raise ValueError("performance.inputs must reference declared input ids")
+    if performance.get("common_endpoint", "cuda") not in {"cpu", "cuda"}:
+        raise ValueError("performance.common_endpoint must be cpu or cuda")
+
+
 def build_expected(config: dict, devices: list[str], modes: set[str]) -> dict:
     correctness = [
         {"input": spec["id"], "device": device}
@@ -247,6 +307,9 @@ def evaluate_benchmark(config: dict, summary: dict, devices: list[str], modes: s
         if not expected["performance"]:
             issues.append("no expected performance tasks")
         repeats = int(config.get("performance", {}).get("repeats", 5))
+        required = max(repeats, 1)
+        if repeats < 1:
+            issues.append("performance.repeats must be >= 1")
         for task in expected["performance"]:
             input_id, device, batch = task["input"], task["device"], task["batch"]
             result = (summary.get("performance") or {}).get(input_id, {}).get(device, {}).get(str(batch))
@@ -258,15 +321,19 @@ def evaluate_benchmark(config: dict, summary: dict, devices: list[str], modes: s
                 continue
             performance_details["completed"] += 1
             status = result.get("status")
-            if status in {"unavailable", "error", "failed"}:
-                notes.append(f"performance {key}: {status}")
+            if status == "pass":
+                pass
             elif status == "fail":
                 issues.append(f"performance {key}: fail")
+            elif status in {"unavailable", "error", "failed", "partial"}:
+                notes.append(f"performance {key}: {status}")
+            else:
+                notes.append(f"performance {key}: unknown status {status!r}")
             fallback = result.get("fallback") or {}
             if fallback.get("occurred"):
                 issues.append(f"performance {key}: CPU fallback")
-            counts = _result_counts(result, repeats)
-            if any(counts[name] < repeats for name in ("native", "end_to_end", "raw_native", "raw_end_to_end")):
+            counts = _result_counts(result, required)
+            if any(counts[name] < required for name in ("native", "end_to_end", "raw_native", "raw_end_to_end")):
                 incomplete.append(f"performance:{key}")
                 performance_details["incomplete"].append(f"{key}: {counts}")
                 notes.append(f"incomplete performance repetitions {key}: {counts}")

@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from boundary_audit.gpu_benchmark import (
     dumps,
     evaluate_benchmark,
@@ -227,3 +229,113 @@ def test_write_artifacts_survives_a_partial_summary(tmp_path):
     assert json.loads((tmp_path / "summary.json").read_text())["status"] == "partial"
     assert json.loads((tmp_path / "source-integrity.json").read_text())["status"] == "unknown"
     assert (tmp_path / "evidence.zip").is_file()
+
+
+def _config_with_performance(**overrides):
+    config = {
+        "schema_version": "boundary-gpu-benchmark.v1",
+        "inputs": [{"id": "sample", "kind": "real", "path": "sample.mp4"}],
+        "devices": ["cpu"],
+        "max_seconds": 10,
+        "performance": {
+            "enabled": True,
+            "inputs": ["sample"],
+            "batch_sizes": [1],
+            "repeats": 2,
+            "frames": 8,
+            "warmup": 1,
+        },
+    }
+    config["performance"].update(overrides)
+    return config
+
+
+def test_config_rejects_zero_or_negative_repeats_and_related_values():
+    from boundary_audit.gpu_benchmark import validate_config
+
+    modes = {"correctness", "performance"}
+    for repeats in (0, -1):
+        with pytest.raises(ValueError, match="repeats"):
+            validate_config(_config_with_performance(repeats=repeats), modes)
+    with pytest.raises(ValueError, match="frames"):
+        validate_config(_config_with_performance(frames=0), modes)
+    with pytest.raises(ValueError, match="warmup"):
+        validate_config(_config_with_performance(warmup=-1), modes)
+    with pytest.raises(ValueError, match="batch size"):
+        validate_config(_config_with_performance(batch_sizes=[0]), modes)
+    for seconds in (0, -1, float("inf")):
+        config = _config_with_performance()
+        config["max_seconds"] = seconds
+        with pytest.raises(ValueError, match="max_seconds"):
+            validate_config(config, modes)
+
+
+def _research_module():
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).parents[1] / "research" / "benchmark_gpu_decode.py"
+    spec = importlib.util.spec_from_file_location("benchmark_gpu_decode_validation", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_cli_entry_rejects_zero_and_negative_repeats(tmp_path):
+    module = _research_module()
+    video = tmp_path / "video.mp4"
+    video.write_bytes(b"not decoded by prepare_run")
+    config = {
+        "schema_version": "boundary-gpu-benchmark.v1",
+        "inputs": [{"id": "sample", "kind": "real", "path": str(video)}],
+        "devices": ["cpu"],
+        "max_seconds": 10,
+        "performance": {
+            "enabled": True,
+            "inputs": ["sample"],
+            "batch_sizes": [1],
+            "repeats": 2,
+            "frames": 8,
+            "warmup": 1,
+        },
+    }
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+    for value in ("0", "-1"):
+        with pytest.raises(ValueError, match="repeats"):
+            module.prepare_run(
+                ["--config", str(config_path), "--out", str(tmp_path / ("out" + value)), "--repeats", value]
+            )
+    with pytest.raises(ValueError, match="repeats"):
+        config["performance"]["repeats"] = 0
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        module.prepare_run(["--config", str(config_path), "--out", str(tmp_path / "out-config")])
+    with pytest.raises(ValueError, match="max_seconds"):
+        module.prepare_run(
+            ["--config", str(config_path), "--out", str(tmp_path / "out-time"), "--max-seconds", "0"]
+        )
+
+
+def test_partial_or_unknown_performance_status_cannot_pass():
+    summary = normal_summary()
+    summary["performance"]["sample"]["cpu"]["1"]["status"] = "partial"
+    result = evaluation(normal_config(), summary)
+    assert result["status"] == "partial"
+    assert result["performance"]["status"] == "partial"
+    summary["performance"]["sample"]["cpu"]["1"]["status"] = "unknown"
+    result = evaluation(normal_config(), summary)
+    assert result["status"] == "partial"
+    assert result["performance"]["status"] == "partial"
+
+
+def test_zero_repeats_cannot_pass_even_with_zero_timings():
+    config = normal_config()
+    config["performance"]["repeats"] = 0
+    summary = normal_summary()
+    result_value = summary["performance"]["sample"]["cpu"]["1"]
+    result_value["native"] = {"count": 0}
+    result_value["end_to_end"] = {"count": 0}
+    result_value["raw"] = {"native_seconds": [], "end_to_end_seconds": []}
+    result = evaluation(config, summary)
+    assert result["status"] == "fail"
+    assert result["performance"]["status"] == "fail"

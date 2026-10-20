@@ -38,6 +38,7 @@ from boundary_audit.gpu_benchmark import (
     map_time_to_ordinal,
     safe_time_value,
     time_matches,
+    validate_config,
 )
 from boundary_audit.gpu_metrics import (
     chunked,
@@ -690,16 +691,27 @@ def run_performance(spec, device, batch_size, config, timings):
     from torchcodec.decoders import VideoDecoder
 
     performance = config.get("performance", {})
+    if type(batch_size) is not int or batch_size < 1:
+        raise ValueError("Performance batch size must be an integer >= 1")
+    repeats = int(performance.get("repeats", 5))
+    frames = int(performance.get("frames", 32))
+    warmup = int(performance.get("warmup", 3))
+    if repeats < 1:
+        raise ValueError("Performance repeats must be >= 1")
+    if frames < 1:
+        raise ValueError("Performance frames must be >= 1")
+    if warmup < 0:
+        raise ValueError("Performance warmup must be >= 0")
     frame_count = spec.get("frame_count")
     if frame_count is None:
         probe = VideoDecoder(str(spec["path"]), device="cpu", seek_mode="exact")
         frame_count = int(probe.metadata.num_frames)
         spec["frame_count"] = frame_count
-    frames = min(int(performance.get("frames", 32)), frame_count)
+    frames = min(frames, frame_count)
+    if frames < 1:
+        raise ValueError("Performance needs at least one frame")
     rng = random.Random(int(config.get("seed", 20261014)))
     indices = sorted(rng.sample(range(frame_count), frames))
-    warmup = int(performance.get("warmup", 3))
-    repeats = int(performance.get("repeats", 5))
     common_endpoint = performance.get("common_endpoint", "cuda")
     common_cuda = common_endpoint == "cuda" and torch.cuda.is_available()
     if common_cuda:
@@ -934,7 +946,7 @@ def write_artifacts(out, summary, requests, controls_summary, timings):
                 archive.write(out / name, name)
 
 
-def main(argv=None):
+def prepare_run(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
@@ -954,15 +966,17 @@ def main(argv=None):
     if args.max_seconds is not None:
         config["max_seconds"] = args.max_seconds
     modes = {value.strip() for value in args.modes.split(",") if value.strip()}
-    if not modes <= {"correctness", "performance"}:
-        raise ValueError("Modes must be correctness and/or performance")
+    validate_config(config, modes)
     inputs = prepare_inputs(config)
     devices = list(config.get("devices", ["cpu", "cuda"]))
-    if not devices or not set(devices) <= {"cpu", "cuda"}:
-        raise ValueError("Devices must be cpu and/or cuda")
     out = args.out.resolve()
     if out.exists():
         raise ValueError("Use a fresh output directory")
+    return config, args, inputs, devices, modes, out
+
+
+def main(argv=None):
+    config, args, inputs, devices, modes, out = prepare_run(argv)
     out.mkdir(parents=True)
     import torch
 
