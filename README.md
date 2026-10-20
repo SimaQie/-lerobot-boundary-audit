@@ -126,10 +126,12 @@ calls with marker identities and sequential PyAV references.
 On the tested WSL2/RTX 4090 host the existing CPU workflow passed 208/208
 conformance checks and both pinned real-data validations. The CUDA build passed
 78/78 CPU-path checks and produced `cuda:0` tensors with no fallback. After
-decoder warm-up, 32-frame AV1 requests were 1.53-2.15x faster end-to-end on CUDA,
-but CUDA RGB is TV-range-like and not pixel-identical to CPU; real-frame identity
-coverage remained PARTIAL (0 wrong frames, many ambiguous). GPU decoding is
-therefore not enabled by default and is not a stable full-reader feature.
+decoder warm-up, a 32-frame single-video decode + H2D + checksum microbenchmark
+was 1.53-2.15x faster on CUDA. This is not a full audit/window/action/DataLoader
+speedup and does not establish RGB-equivalent output; CUDA RGB is TV-range-like
+and real-frame identity coverage remained PARTIAL (0 wrong frames, many
+ambiguous). GPU decoding is therefore not enabled by default and is not a stable
+full-reader feature.
 See [the session evidence](research/results/rtx4090/session-001/README.md) and
 [the full report](research/RTX4090_2026-10-20.md).
 

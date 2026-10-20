@@ -6,7 +6,8 @@ stock LeRobot reader remained CPU-only. This directory contains metrics,
 hashes, report JSON/HTML and logs only. It contains no real videos, action
 Parquet tables, derived real datasets, virtual environments or credentials.
 
-Detailed narrative: [`../../RTX4090_2026-10-20.md`](../../RTX4090_2026-10-20.md).
+Detailed narrative: [`RTX4090_2026-10-20.md`](RTX4090_2026-10-20.md) (also at
+`research/RTX4090_2026-10-20.md`).
 
 ## Headline
 
@@ -18,7 +19,7 @@ Detailed narrative: [`../../RTX4090_2026-10-20.md`](../../RTX4090_2026-10-20.md)
 | B. CUDA build, stock reader | 78/78 conformance; sampling identical to A; requested/observed decode device CPU |
 | C. explicit CUDA smoke | output `cuda:0`; no CPU fallback; cuvid/AV1 decoders present |
 | C. correctness | fixture faults detected by CPU and CUDA; real AV1 0 wrong frames, but many ambiguous |
-| C. performance | end-to-end CPU/CUDA 1.53–2.15× for 32-frame AV1 requests with decoder reuse |
+| C. performance | 32-frame single-video decode + H2D + checksum microbenchmark: CPU/CUDA 1.53–2.15× with decoder reuse; not a full-tool or RGB-equivalent speedup |
 | Packaging | 323 KiB wheel, clean install, demo pass, 26/26 single-phase conformance |
 
 The GPU benchmark status is `partial`, not `pass`: CUDA RGB differs from CPU RGB

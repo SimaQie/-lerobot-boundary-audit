@@ -13,6 +13,8 @@ include research/compare_v040.py
 include research/V040.md
 include research/validate_real_sample.py
 include research/review_v041.py
+include research/benchmark_gpu_decode.py
+include research/RTX4090_2026-10-20.md
 include research/REVIEW_2026-10-20.md
 recursive-include src/boundary_audit/resources *.zip
 exclude research/backup_fingerprint_before.json

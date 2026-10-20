@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — 2026-10-20
+## 0.4.2rc1 — research preview, 2026-10-20
 
 - Record measured host/timezone, source commit, consumer versions and separate
   requested/observed decode devices in real-data and sampling reports.
@@ -10,10 +10,20 @@
   unavailable/fallback handling, marker identity, two real-video references,
   raw and TV-range-adjusted RGB metrics, and native/common-endpoint/end-to-end
   timings. This is not a default GPU reader or a stable GPU release.
+- Require complete input × device × mode × batch coverage for a benchmark PASS;
+  propagate missing/unavailable/exception/insufficient-repetition performance
+  tasks and source/oracle integrity failures. Preserve a final JSON report and
+  integrity record after soft budget exhaustion or runtime errors.
+- Resolve time requests from sequential PyAV PTS/duration intervals rather than
+  a CPU or GPU decoder's returned PTS. Two decoders returning the same wrong
+  next frame now fail the independent time contract.
+- Keep raw tensors out of report payloads; one-sided time errors are JSON-safe.
 - RTX 4090/WSL2 validation: 208/208 CPU conformance, 78/78 CUDA-build CPU-path
   conformance, both real-data validations `expected_outcomes_met`; explicit
-  NVDEC produced `cuda:0` tensors and 1.53-2.15x end-to-end gains after warm-up,
-  while real-frame identity coverage remained partial and RGB differed.
+  NVDEC produced `cuda:0` tensors. The measured 1.53-2.15x gain applies only to
+  the 32-frame single-video decode + H2D + checksum microbenchmark with a reused
+  decoder; it is not a full-tool or RGB-equivalent speedup. Real-frame identity
+  coverage remained partial and RGB differed.
   Evidence: `research/results/rtx4090/session-001/`.
 
 ## 0.4.1 — research preview, 2026-10-20
