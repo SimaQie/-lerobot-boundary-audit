@@ -1,5 +1,11 @@
 # LeRobot Boundary Audit
 
+[![tests](https://github.com/SimaQie/-lerobot-boundary-audit/actions/workflows/tests.yml/badge.svg)](https://github.com/SimaQie/-lerobot-boundary-audit/actions/workflows/tests.yml)
+[![release](https://img.shields.io/github/v/release/SimaQie/-lerobot-boundary-audit?include_prereleases&label=release)](https://github.com/SimaQie/-lerobot-boundary-audit/releases)
+[![license](https://img.shields.io/github/license/SimaQie/-lerobot-boundary-audit)](LICENSE)
+![python](https://img.shields.io/badge/python-3.11%2B-blue)
+![LeRobot](https://img.shields.io/badge/LeRobot-v3-blueviolet)
+
 一个可在 CPU 上运行的 LeRobot v3 视频时间轴与轨迹边界检查工具。
 当前候选版本为 **0.4.2rc1 研究预览**；原 `robot_data_engineering_saved` 保留原样。
 默认支持范围是 CPU 审计与受约束修复；RTX 4090/TorchCodec 是实验性研究，
@@ -32,6 +38,26 @@ python -m venv .venv
 
 完整步骤、每个命令能处理什么、真实数据下载、可选官方 reader 检查和修复/恢复流程：
 [中文使用指南](USAGE.zh-CN.md) · [English guide](USAGE.md)。
+
+## 相同输入下的同类工具对照
+
+在 13 个受控样例（官方录制、官方合并与人工注入故障）上，使用相同输入、
+冻结源码版本的同类工具做了同输入比较（完整配置与原始报告见
+[对比证据](research/results/v040/comparison/README.md)）：
+
+| 受控样例 | lerobot-doctor 0.3.0 | openbot-data 0.0.3 | 本工具 |
+|---|---|---|---|
+| 元数据整体偏移一帧 | 未发现 | 增量报告区间重叠 | 检出（`audit`） |
+| 全局索引错移 / 重复 | 仅 warning | 检出 | 检出（`audit`） |
+| 相机内容交换（时间戳合法） | 未发现 | 无增量发现 | 检出（`conformance`） |
+| 像素帧重复 / 乱序（PTS 合法） | 未发现 | 无增量发现 | 检出（`conformance`） |
+| 动作窗口数据损坏 | 未发现 | 无增量发现 | 检出（`probe-loader`） |
+| 干净官方录制 | 无错误 | 4 条基线形状误报 | 通过 |
+
+冻结提交：lerobot-doctor `3868194`，openbot-data `cd7720d`。openbot-data 在每个
+案例（包括干净样例）都报这些基线形状错误，因此故障归因只统计增量发现。
+这是 13 个合成受控样例上的对照，不是检出率、性能或普适性排名；warning 与
+环境失败一律不计为检出。
 
 它检查视频帧的实际展示时间、轨迹视频起止偏移，以及数据表中的时间戳
 是否一致。输出可离线打开的 HTML 报告和 JSON 证据。日常使用只需要
@@ -129,7 +155,11 @@ TorchCodec 两种读取器；独立完整解码核对了两路视频共 47,316 �
 完整参数、复现实验与限制见 [英文说明](README.md)。
 开源地址：[SimaQie/-lerobot-boundary-audit](https://github.com/SimaQie/-lerobot-boundary-audit)。
 附有 MIT 许可、中英文说明及引用文件；尚未分配 DOI。
-# 0.4.0 研究预览补充
+
+<details>
+<summary><b>0.4.0 研究预览补充</b></summary>
+
+## 0.4.0 研究预览补充
 
 当前代码新增全局索引和数据分片关系检查，修复了“索引整体错移仍显示 PASS”的漏检。
 关键元数据错误现在会生成结构化报告；不完整或无法判定的检查不会算作通过。
@@ -162,6 +192,8 @@ PyAV 参考与 PyAV 被测路径共享颜色转换，两个后端也有 FFmpeg �
 参考图像预算不等于整个进程的内存上限。RTX 4090 上的 CPU 路径与独立 CUDA 实验见下文。
 
 详细实验、比较配置和局限见 [0.4.0 实验说明](research/V040.md)。
+
+</details>
 
 ## ALOHA 真实双臂数据对照
 

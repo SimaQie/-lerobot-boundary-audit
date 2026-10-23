@@ -1,5 +1,11 @@
 # LeRobot Boundary Audit
 
+[![tests](https://github.com/SimaQie/-lerobot-boundary-audit/actions/workflows/tests.yml/badge.svg)](https://github.com/SimaQie/-lerobot-boundary-audit/actions/workflows/tests.yml)
+[![release](https://img.shields.io/github/v/release/SimaQie/-lerobot-boundary-audit?include_prereleases&label=release)](https://github.com/SimaQie/-lerobot-boundary-audit/releases)
+[![license](https://img.shields.io/github/license/SimaQie/-lerobot-boundary-audit)](LICENSE)
+![python](https://img.shields.io/badge/python-3.11%2B-blue)
+![LeRobot](https://img.shields.io/badge/LeRobot-v3-blueviolet)
+
 **Current candidate: `0.4.2rc1` research preview.** The supported product is the
 CPU audit and guarded repair path. The RTX 4090/TorchCodec study is experimental:
 it is not a stable GPU reader, and its microbenchmark is not a full-tool speedup.
@@ -33,6 +39,30 @@ valid; use `conformance` or `probe-loader` for content identity.
 Full walkthrough, what each command detects, real-data download, optional
 official-reader checks and the repair/restore flow:
 [USAGE.md](USAGE.md) · [中文使用指南](USAGE.zh-CN.md).
+
+## Same-input comparison with general validators
+
+On 13 authored controls (clean official recordings, an official merge, and
+injected faults) run against the same inputs, with source-pinned builds
+([full configuration and raw reports](research/results/v040/comparison/README.md)):
+
+| Authored control | lerobot-doctor 0.3.0 | openbot-data 0.0.3 | This tool |
+|---|---|---|---|
+| Metadata shifted one frame | not found | incremental overlap error | found (`audit`) |
+| Global index shifted / duplicated | warning only | found | found (`audit`) |
+| Camera payload swap, valid timestamps | not found | no incremental finding | found (`conformance`) |
+| Duplicated / reordered pixel frames, valid PTS | not found | no incremental finding | found (`conformance`) |
+| Corrupted action window | not found | no incremental finding | found (`probe-loader`) |
+| Clean official recordings | no errors | 4 baseline shape errors | pass |
+
+Pinned commits: lerobot-doctor `3868194`, openbot-data `cd7720d`. openbot-data
+reports those baseline shape errors on every case including clean ones, so
+fault attribution counts incremental findings only. This is a comparison on
+13 synthetic controls, not a prevalence or performance ranking; warnings and
+environment failures are never counted as detections.
+
+<details>
+<summary><b>0.4.x version notes</b></summary>
 
 ## 0.4.1 reader evidence review
 
@@ -117,6 +147,8 @@ Main installation and the older 0.3 protocol follow. The stock reader stays
 CPU-only; see "RTX 4090 / TorchCodec research" below for the separate GPU
 experiment.
 
+</details>
+
 ## Second real-robot sample: ALOHA
 
 Use the pinned official LeRobot re-export of the real bimanual **ALOHA screw-driver**
@@ -149,7 +181,8 @@ FPS and action-vector diversity, not an additional real-data codec family.
 Repeated neighbouring frames remain explicitly unresolved; a protocol's expected
 outcomes do not mean complete frame identity has been certified.
 
-## RTX 4090 / TorchCodec research (2026-10-20)
+<details>
+<summary><b>RTX 4090 / TorchCodec research (2026-10-20)</b></summary>
 
 The default audit and `probe-loader` remain CPU-only: there is no `--device`
 switch, and a CUDA build of Torch does not change the stock LeRobot 0.6.1
@@ -168,6 +201,8 @@ ambiguous). GPU decoding is therefore not enabled by default and is not a stable
 full-reader feature.
 See [the session evidence](research/results/rtx4090/session-001/README.md) and
 [the full report](research/RTX4090_2026-10-20.md).
+
+</details>
 
 Lightweight episode-boundary diagnostics, **independent pixel identity conformance**,
 and guarded repair for **LeRobot v3**.

@@ -19,3 +19,5 @@ demo-suite/
 reports/
 generated-suite/
 conformance-results/
+tmp/
+promo/
