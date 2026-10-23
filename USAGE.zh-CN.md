@@ -30,7 +30,7 @@ LeRobot v3 数据集由 Parquet 行元数据和编码后的 MP4 共同组成。�
 ```sh
 git clone https://github.com/SimaQie/lerobot-boundary-audit.git
 cd lerobot-boundary-audit
-git checkout v0.4.2
+git checkout main
 
 python -m venv .venv
 # Linux/macOS:

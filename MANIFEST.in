@@ -2,7 +2,6 @@ include README.md LICENSE NOTICE.md
 include README.zh-CN.md
 include USAGE.md USAGE.zh-CN.md
 include CITATION.cff CHANGELOG.md CONTRIBUTING.md
-include RELEASE_NOTES_0.4.2.md
 include .github/workflows/tests.yml
 recursive-include examples *.py
 recursive-include examples *.zip *.json

@@ -24,7 +24,7 @@
 ```sh
 git clone https://github.com/SimaQie/lerobot-boundary-audit.git
 cd -- lerobot-boundary-audit
-git checkout v0.4.2
+git checkout main
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
 ```
@@ -133,4 +133,3 @@ GPU 机器上使用的就是上面的 CPU 数据管线。RTX 4090/WSL2 上已验
 
 见 [CONTRIBUTING.md](CONTRIBUTING.md)、[USAGE.zh-CN.md](USAGE.zh-CN.md)、
 [research/CONFORMANCE.md](research/CONFORMANCE.md)、
-[RELEASE_NOTES_0.4.2.md](RELEASE_NOTES_0.4.2.md)。

@@ -29,7 +29,7 @@ cameras and requested checks.
 ```sh
 git clone https://github.com/SimaQie/lerobot-boundary-audit.git
 cd -- lerobot-boundary-audit
-git checkout v0.4.2
+git checkout main
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
 ```
@@ -163,4 +163,3 @@ GPU machines do not need a different code path for the data checks.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [USAGE.md](USAGE.md),
 [research/CONFORMANCE.md](research/CONFORMANCE.md), and
-[RELEASE_NOTES_0.4.2.md](RELEASE_NOTES_0.4.2.md).
