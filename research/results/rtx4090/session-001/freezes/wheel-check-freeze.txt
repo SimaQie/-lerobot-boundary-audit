@@ -1,3 +1,0 @@
-av==16.1.0
-lerobot-boundary-audit @ file://<project>/dist/lerobot_boundary_audit-0.4.2rc1-py3-none-any.whl#sha256=b6aba356bd21724a7e4d3b4561f256f723c09917c509c9f8eb097abf9b9c43f4
-pyarrow==23.0.1

@@ -1,5 +1,0 @@
-{
-  "returncode": 2,
-  "stdout": "Audit saved to <results>\\multi-data-shard\\openbot-data.json\n  errors: 20  warnings: 0  info: 0\n",
-  "stderr": ""
-}

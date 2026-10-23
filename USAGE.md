@@ -19,7 +19,6 @@ claims. This tool checks those relationships and reports the exact evidence.
 | Does the full `LeRobotDataset` return the expected frame/action/padding for windows, batches and workers? | `probe-loader` | yes |
 | Are frames/actions/cameras the identities declared before encoding? | `conformance` on the bundled marker suite | yes |
 | Can a narrow timeline defect be repaired without editing the source? | `repair-plan` → `apply` → `restore` | no |
-| Is GPU decoding faster/correct on this machine? | `research/benchmark_gpu_decode.py` | experimental consumer + CUDA |
 
 `audit` checks **storage and timeline relationships**. It does not prove that a
 camera image is semantically correct: a camera payload swap or duplicated frame
@@ -294,11 +293,6 @@ Use `probe-loader` instead when you need windows, actions, padding or workers.
 | Test one fixture read mode | `verify-loader` |
 | Re-create fixtures from the official recording API | `fixture-suite` |
 | Download the pinned real samples | `download aloha_screw_driver` / `download agibot2026` |
-
-The GPU benchmark is separate and experimental: see
-[`research/benchmark_gpu_decode.py`](research/benchmark_gpu_decode.py) and the
-[RTX 4090 evidence](research/results/rtx4090/session-001/README.md). It is not
-required for any command above and is not a stable GPU reader.
 
 ## 7. Common problems
 

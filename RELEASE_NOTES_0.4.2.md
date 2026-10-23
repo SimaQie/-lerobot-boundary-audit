@@ -1,29 +1,46 @@
-# 0.4.2 — research release, 2026-10-24
+# LeRobot Boundary Audit 0.4.2
 
-Stable promotion of the `0.4.2rc1` research preview. Package code is
-unchanged since the rc tag (`e988306`); this release updates version
-metadata, documentation and release automation only.
+Release date: 2026-10-24. This is the CPU audit/repair release.
 
-## Validation for this release
+## Supported scope
 
-- `pytest`: 133 passed, 1 skipped (Python 3.11, Windows).
-- `ruff check` on src, tests, examples and research scripts: clean.
-- Offline demo (`lerobot-boundary-audit demo`): 13/13 cases pass.
-- Wheel and sdist are rebuilt from this tag by CI; the wheel contains
-  only the `boundary_audit` package, license metadata and the bundled
-  fixture.
+- LeRobot v3 boundary/storage audit with offline HTML/JSON reports.
+- Independent marker identity conformance for the bundled 13-case suite.
+- Optional official LeRobot decoder checks and full-loader probes.
+- Guarded copy-based repair for narrow episode-offset/CFR grid defects, with
+  exact restoration and source hashes.
+- Four pinned real-data presets: AgiBotWorld2026 subset, ALOHA screw driver,
+  CMU Stretch and UTokyo xArm.
 
-## Changes since 0.4.2rc1
+The product is CPU-only. GPU machines run the same CPU pipeline. No explicit
+CUDA decode path or GPU reader is part of this release.
 
-- Documentation: README/README.zh-CN add CI/release/license badges, a
-  same-input comparison table against lerobot-doctor and openbot-data
-  (frozen 0.4.0 evidence), and fold dated version/research sections.
-- Release automation: any `v*` tag publishes its own GitHub release and
-  refuses to overwrite an already published one; rc/a/b tags are marked
-  as prereleases automatically.
-- New opt-in PyPI Trusted Publishing workflow (manual dispatch only).
-- Track the 0.4.2rc1 release review documents and reproducibility
-  scripts; ignore local scratch directories.
+## Install
 
-See [CHANGELOG.md](CHANGELOG.md) for the full history. The RTX 4090 /
-TorchCodec study remains experimental and is not a stable GPU reader.
+```sh
+git clone https://github.com/SimaQie/lerobot-boundary-audit.git
+cd -- lerobot-boundary-audit
+git checkout v0.4.2
+python -m venv .venv
+.venv/bin/python -m pip install ".[repair]"
+.venv/bin/lerobot-boundary-audit demo --out demo-result
+```
+
+See [USAGE.md](USAGE.md) / [USAGE.zh-CN.md](USAGE.zh-CN.md).
+
+## Validation
+
+- Core test suite: 110 passed after removal of exploratory GPU tests.
+- Original fixture conformance: 208/208.
+- CUDA-build CPU-path conformance: 78/78; requested/observed decoder is CPU.
+- Four real sources: audit pass; full validation `expected_outcomes_met`;
+  official PyAV/TorchCodec boundary checks pass; repairs restore exactly;
+  sources unchanged.
+- RTX 4090/WSL2 CPU-path validation: see
+  [research/GPU_MACHINE_VALIDATION.md](research/GPU_MACHINE_VALIDATION.md).
+
+## Limits
+
+Selected cameras only; bounded samples; PARTIAL/ambiguous is retained; no
+physical synchronization, training, robot-success or natural-defect claim.
+GPU decoding is not part of the supported product.

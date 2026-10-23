@@ -18,7 +18,6 @@ LeRobot v3 数据集由 Parquet 行元数据和编码后的 MP4 共同组成。�
 | 完整 `LeRobotDataset` 的窗口、动作、padding、worker 是否正确？ | `probe-loader` | 是 |
 | 画面/动作/相机身份是否与编码前声明一致？ | `conformance` | 是 |
 | 能否不修改源数据地修复窄范围时间轴错误？ | `repair-plan` → `apply` → `restore` | 否 |
-| 本机 GPU 解码是否更快、是否正确？ | 独立 GPU benchmark | 实验性，需要 CUDA consumer |
 
 **重要边界：** `audit` 检查存储和时间轴关系，不证明画面语义正确。相机画面交换、
 重复帧可能保留合法时间戳和索引，因此 `audit` 会 pass；这种情况要用
@@ -276,11 +275,6 @@ Windows 使用 `.consumer-cpu\Scripts\python.exe`；TorchCodec 可能需要
 | 只测一个 fixture 读取方式 | `verify-loader` |
 | 用官方录制 API 重建 fixtures | `fixture-suite` |
 | 下载固定真实样本 | `download aloha_screw_driver` / `download agibot2026` |
-
-GPU benchmark 是独立实验工具，不属于日常使用路径；见
-[`research/benchmark_gpu_decode.py`](research/benchmark_gpu_decode.py) 和
-[RTX 4090 证据](research/results/rtx4090/session-001/README.md)。它不是稳定
-GPU reader。
 
 ## 7. 常见问题
 

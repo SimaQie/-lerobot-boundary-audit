@@ -2,99 +2,43 @@
 
 ## 0.4.2 — 2026-10-24
 
-- Stable promotion of the 0.4.2rc1 research preview. Package code is
-  unchanged since the rc tag; this release updates version metadata,
-  documentation and release automation only.
-- Release automation: any `v*` tag publishes its own GitHub release,
-  refuses to overwrite an already published release, reads
-  `RELEASE_NOTES_<version>.md`, and marks rc/a/b tags as prereleases
-  automatically.
-- Add an opt-in PyPI Trusted Publishing workflow (manual dispatch only).
-- Track the 0.4.2rc1 release review documents and reproducibility
-  scripts; ignore local scratch directories.
+- Add pinned real-data presets for CMU Stretch and UTokyo xArm; accept all
+  `SAMPLES` entries in the download and validation commands.
+- Keep the CPU audit, original marker conformance, official-reader boundary
+  checks, full-loader probes, guarded repair and exact restoration as the
+  supported product path.
+- Validate the CPU path on an RTX 4090/WSL2 machine: 208/208 conformance,
+  78/78 CUDA-build CPU-path conformance, four source audits and four full
+  validations. The official LeRobot reader remains CPU-only.
+- Clean up exploratory GPU/TorchCodec benchmark and review material; document
+  only the validated GPU-machine CPU path.
 
-## 0.4.2rc1 — research preview, 2026-10-20
+## 0.4.1 — 2026-10-20
 
-- Record measured host/timezone, source commit, consumer versions and separate
-  requested/observed decode devices in real-data and sampling reports.
-- Preserve venv interpreter symlinks in validation scripts; on POSIX the old
-  `resolve()` selected the base interpreter and lost the venv's packages.
-- Add a standalone TorchCodec CPU/CUDA research benchmark with explicit
-  unavailable/fallback handling, marker identity, two real-video references,
-  raw and TV-range-adjusted RGB metrics, and native/common-endpoint/end-to-end
-  timings. This is not a default GPU reader or a stable GPU release.
-- Require complete input × device × mode × batch coverage for a benchmark PASS;
-  propagate missing/unavailable/exception/insufficient-repetition performance
-  tasks and source/oracle integrity failures. Preserve a final JSON report and
-  integrity record after soft budget exhaustion or runtime errors.
-- Resolve time requests from sequential PyAV PTS/duration intervals rather than
-  a CPU or GPU decoder's returned PTS. Two decoders returning the same wrong
-  next frame now fail the independent time contract.
-- Keep raw tensors out of report payloads; one-sided time errors are JSON-safe.
-- Add USAGE.md and USAGE.zh-CN.md: a no-download demo quickstart, a
-  command-to-problem table, real-sample instructions, optional official-reader
-  checks and the repair/restore walkthrough.
-- Validate repeats/frames/batch sizes as positive integers, warmup nonnegative
-  and the wall-clock budget finite and positive after CLI overrides. Performance
-  subtasks must explicitly be `pass`; `partial`, unknown, missing and
-  zero-repetition results cannot contribute to a PASS.
-- RTX 4090/WSL2 validation: 208/208 CPU conformance, 78/78 CUDA-build CPU-path
-  conformance, both real-data validations `expected_outcomes_met`; explicit
-  NVDEC produced `cuda:0` tensors. The measured 1.37-2.34x gain applies only to
-  the 32-frame single-video decode + H2D + checksum microbenchmark with a reused
-  decoder; it is not a full-tool or RGB-equivalent speedup. Real-frame identity
-  coverage remained partial and RGB differed.
-  Evidence: `research/results/rtx4090/session-001/`.
-
-## 0.4.1 — research preview, 2026-10-20
-
-- Reject fractional, floating, boolean and other noninteger reader labels instead
-  of truncating them before comparison with the independent row reference.
+- Reject fractional, floating, boolean and other noninteger reader labels.
 - Detect exact matches to repeated wrong neighbours when the expected frame is
   excluded; retain ambiguity when the expected frame is one of the matches.
-- Check action array shapes before values; equal flattened values cannot hide
-  transposed axes. Shape expectations come from stored rows, not feature declarations.
-- Independently account for every requested real-probe query slot, including
-  repeated reads, epochs and padding; incomplete or duplicate evidence cannot PASS.
-- Expose per-camera outcomes/ambiguity reasons, sample scope, and exact/heuristic
-  match counts. Add seeded time-stratified sampling with no image-based selection.
-- Add a dated primary-source research review and reproducible AgiBot/ALOHA
-  mixed-versus-stratified experiments. Preserve historical 0.4.0 evidence.
+- Check action shapes before values; independently account for every requested
+  query slot; retain per-camera ambiguity reasons.
+- Add seeded time-stratified sampling without image-based selection.
 
-## 0.4.0 — research preview, 2026-10-14
+## 0.4.0 — 2026-10-14
 
-- Verify integer, nonnull global row indices against ordinal position across shards;
-  validate episode/data shard references and block unsafe repair of these defects.
-- Persist prerequisite failures as structured audit reports; continue safely across
-  unreadable data shards rather than hiding independent findings.
-- Package a 13-case original fixture and expose an offline `demo` command.
-- Add long windows, seeded random/repeated reads and persistent workers across epochs.
-- Add `probe-loader` for ordinary footage, with bounded sequential ordinal reference,
-  camera projection, action/padding checks and explicit ambiguous pixel results.
-- Add reproducible same-input comparison against frozen third-party sources and
-  the previous storage auditor; preserve raw warnings and incomplete evidence.
-- This preview is validated locally. GPU hardware and broader upstream versions
-  are separate compatibility work, and no natural upstream defect is claimed.
-- Add a pinned real ALOHA bimanual sample and a shared real-data validation script
-  covering both decoders, worker windows, full PTS reference and authored controls.
+- Verify global row indexes, episode ranges and data/video shard references.
+- Persist prerequisite failures as structured reports.
+- Add the offline 13-case fixture, `demo`, long windows, random/repeated reads
+  and persistent workers.
+- Add ordinary-footage `probe-loader` with bounded sequential reference,
+  action/padding checks and explicit ambiguity.
 
 ## 0.3.0 — 2026-10-13
 
-- Original CRC-checked camera/episode/frame pixel identities defined before encoding.
-- Real official recording and merging APIs generate tiny complete LeRobot v3 fixtures.
-- Full installed dataset-loader verification: single rows, temporal windows and padding,
-  batches, spawned workers and nonconsecutive episode subsets; PyAV and TorchCodec.
-- Offset and camera-swap negative controls, guarded repair and byte-exact restoration.
-- Portable conformance HTML/JSON evidence, bundled original fixture, citation metadata.
-- Preserve lightweight normal installation and explicit unavailable results.
-- Keep optional official processes isolated even when invoked from an installed wheel;
-  the audit environment's dependencies are never added to the consumer's search path.
-- Preserve producer fixtures and explicit repair refusals when platform output
-  has a nonuniform B-frame timing grid; never weaken the repair contract.
+- Original CRC-checked camera/episode/frame pixel identities defined before
+  encoding; full installed loader conformance across backends and read modes.
+- Camera-swap/offset negative controls, guarded repair and byte-exact restore.
+- Portable HTML/JSON evidence and bundled fixture.
 
 ## 0.2.0 — 2026-10-13
 
-- LeRobot v3 row/MP4 timeline diagnostics, local seek/decode and offline reports.
-- B-frame presentation ordering and explicit unsupported MP4 layouts.
-- Official singleton decoder verification on a pinned September 2026 public subset.
-- Guarded derivative-copy repair, source hashes and exact restoration.
+- LeRobot v3 row/MP4 timeline diagnostics, local decode, offline reports and
+  explicit unsupported-layout results.

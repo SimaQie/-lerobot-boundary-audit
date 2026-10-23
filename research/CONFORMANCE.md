@@ -22,10 +22,9 @@ frame requests, independently clamp within episode ranges, and verify camera and
 action padding masks. Batch size is four; worker mode spawns two processes and
 does not first open a decoder in the main process.
 
-Reproduction commands are in README.md. Published evidence is under results/v030;
-summary.json links to the full per-check reports. A suite PASS means deliberate
-faults were detected and clean cases passed, not that every input is valid. Runtime
-failures without wrong pixel IDs cannot satisfy a negative control.
+Reproduction commands are in [USAGE.md](../USAGE.md). A suite PASS means
+deliberate faults were detected and clean cases passed, not that every input is
+valid. Runtime failures without wrong pixel IDs cannot satisfy a negative control.
 
 The tested configuration is Windows, Python 3.12.14, LeRobot 0.6.1, PyAV 15.1.0,
 TorchCodec 0.10.0, Torch 2.10.0 CPU and FFmpeg 8.1 shared. This is one version and
@@ -39,7 +38,6 @@ tool's site-packages directory could override the separately installed official
 environment's dependencies. The driver now exposes only this project's package
 directory, and regression tests reject dependency-path leakage. Timing variations
 seen in those initial mixed-environment runs are not attributed to upstream code.
-The published Windows evidence used source drivers and LeRobot 0.6.1/PyAV 15.1.0.
 
 If an official producer/runtime yields a nonuniform grid, the CFR gate still
 refuses unsupported B-frame timeline repair. Generation preserves its five cases

@@ -1,9 +1,0 @@
-{
-  "fixture_sha256": "65f25f25da06e39914aade3ff240a52e8c25015fb0ce3e3e2d759cec44df3569",
-  "evidence_sha256": "dc9d7f984f6d2bd4c5fec3051526c9554d3a6247778f259b94f5336a052160fd",
-  "evidence_bytes": 106728,
-  "matched_expectations": 60,
-  "frame_checks": 7332,
-  "correct_frame_checks": 5666,
-  "note": "Counts include deliberately wrong frames in negative controls."
-}

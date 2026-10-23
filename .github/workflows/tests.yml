@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install ".[repair,dev]"
-      - run: python -m ruff check src tests examples research/validate_agibot2026.py research/validate_real_sample.py research/compare_v040.py research/check_backup.py research/review_v041.py research/benchmark_gpu_decode.py
+      - run: python -m ruff check src tests examples research/validate_real_sample.py
       - run: python -m pytest -q
       - run: python examples/offline_demo.py --out demo-result
   official-loader:
