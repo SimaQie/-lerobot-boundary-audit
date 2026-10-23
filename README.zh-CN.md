@@ -5,7 +5,7 @@
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![LeRobot](https://img.shields.io/badge/LeRobot-v3-blueviolet)
 
-版本 **0.4.2**。一个 CPU 上运行的 LeRobot v3 边界审计、独立帧身份一致性测试和受约束的复制式修复工具。
+源码版本 **0.4.3**（`main`）。一个 CPU 上运行的 LeRobot v3 边界审计、独立帧身份一致性测试和受约束的复制式修复工具。
 
 它能发现“文件能打开，但数据关系不一致”的问题：
 
@@ -27,9 +27,13 @@ cd -- lerobot-boundary-audit
 git checkout main
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
+.venv/bin/lerobot-boundary-audit --version
 ```
 
 Windows 使用 `.venv\Scripts\python.exe` 和 `.venv\Scripts\lerobot-boundary-audit.exe`，参数相同。下面示例使用 POSIX venv 路径。
+
+CI 覆盖 Python 3.11 和 3.12。使用主分支进行实验时，请同时记录 `git rev-parse HEAD`。
+已发布标签及其附件保留为对应版本的快照；现有 `v0.4.2` Release 早于本次源码精简。
 
 ## 快速开始（无需下载数据）
 
@@ -82,6 +86,10 @@ demo 会生成 13 个正常/人工故障案例。第一条审计退出 0（pass�
 
 下载器固定 revision、限制字节数、记录 SHA-256 并拒绝不一致文件。真实视频、动作表和派生数据不随仓库分发。
 
+多数预设仅下载部分相机。运行 `audit` 或 `probe-loader` 时请用 `--camera` 明确选择预设中的相机；
+省略该参数会要求所有声明相机都存在。验证脚本会自动使用预设相机。
+具体 revision、相机名称及字节预算见 [`download.py`](src/boundary_audit/download.py)。
+
 完整真实数据验证：
 
 ```sh
@@ -111,7 +119,9 @@ TorchCodec 需要兼容的 FFmpeg 运行库。Windows 用 `--ffmpeg-bin PATH_TO_
 
 ## GPU 机器
 
-GPU 机器上使用的就是上面的 CPU 数据管线。RTX 4090/WSL2 上已验证：即使安装了 CUDA Torch，官方 LeRobot 0.6.1 reader 仍在 CPU 解码；审计、conformance、probe-loader、四源真实数据验证和修复/恢复流程均通过。见 [GPU 机器验证](research/GPU_MACHINE_VALIDATION.md)。
+GPU 机器上使用同一套 CPU 数据管线。RTX 4090/WSL2 的记录覆盖 conformance 和四源真实数据验证，包括受约束修复与恢复。
+即使安装了 CUDA Torch，官方 LeRobot 0.6.1 reader 仍在 CPU 解码。
+真实画面的帧身份存在歧义时，probe 结果仍会保留为 PARTIAL。见 [验证摘要](research/GPU_MACHINE_VALIDATION.md)。
 
 本仓库没有显式 CUDA 解码路径，也不宣称 GPU reader；GPU 机器不需要为数据检查切换代码路径。
 
@@ -131,5 +141,5 @@ GPU 机器上使用的就是上面的 CPU 数据管线。RTX 4090/WSL2 上已验
 .venv/bin/python -m ruff check src tests examples research/validate_real_sample.py
 ```
 
-见 [CONTRIBUTING.md](CONTRIBUTING.md)、[USAGE.zh-CN.md](USAGE.zh-CN.md)、
-[research/CONFORMANCE.md](research/CONFORMANCE.md)、
+见 [CONTRIBUTING.md](CONTRIBUTING.md)、[使用指南](USAGE.zh-CN.md)、
+[一致性测试协议](research/CONFORMANCE.md)和[验证摘要](research/GPU_MACHINE_VALIDATION.md)。

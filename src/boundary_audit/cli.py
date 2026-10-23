@@ -5,6 +5,7 @@ import json
 import sys
 from pathlib import Path
 
+from . import __version__
 from .audit import audit_dataset
 from .report import write_reports
 from .storage import write_json
@@ -27,7 +28,10 @@ def main(argv=None):
     }
     if argv and argv[0] not in commands and not argv[0].startswith("-"):
         argv.insert(0, "audit")
-    parser = argparse.ArgumentParser(description="LeRobot episode boundary audit and guarded repair")
+    parser = argparse.ArgumentParser(
+        prog="lerobot-boundary-audit", description="LeRobot episode boundary audit and guarded repair"
+    )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ["audit", "verify", "repair-plan"]:
         cmd = sub.add_parser(name)

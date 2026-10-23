@@ -161,14 +161,11 @@ def source_provenance(root: Path) -> dict:
     commit = git("rev-parse", "HEAD")
     status = git("status", "--porcelain")
     files = {}
-    for relative in (
-        "research/review_v041.py",
-        "src/boundary_audit/environment.py",
-        "src/boundary_audit/probe_driver.py",
-    ):
-        path = root / relative
+    paths = sorted((root / "src/boundary_audit").glob("*.py"))
+    paths.append(root / "research/validate_real_sample.py")
+    for path in paths:
         if path.is_file():
-            files[relative] = _sha256(path)
+            files[path.relative_to(root).as_posix()] = _sha256(path)
     return {
         "root": ".",
         "commit": commit.stdout.strip() if commit and commit.returncode == 0 else "unavailable",

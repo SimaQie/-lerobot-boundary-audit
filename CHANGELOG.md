@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.2 — 2026-10-24
+## 0.4.3 — Unreleased
 
 - Add pinned real-data presets for CMU Stretch and UTokyo xArm; accept all
   `SAMPLES` entries in the download and validation commands.
@@ -12,6 +12,18 @@
   validations. The official LeRobot reader remains CPU-only.
 - Clean up exploratory GPU/TorchCodec benchmark and review material; document
   only the validated GPU-machine CPU path.
+- Add `--version` and align package, runtime and citation versions.
+- Fingerprint all audit modules and the current real-sample validation script
+  instead of removed development scripts.
+- Check installed distributions on Windows/Linux: bundled demo, fault detection,
+  guarded repair, exact restoration and unsafe-repair rejection.
+- Clarify partial-camera selection, validation scope and source installs.
+
+## 0.4.2 — 2026-10-24
+
+- Publish the CPU audit and guarded repair tool as a versioned release.
+- Include independent time mapping, complete evidence accounting and JSON-safe
+  failure reports in the accompanying research preview work.
 
 ## 0.4.1 — 2026-10-20
 

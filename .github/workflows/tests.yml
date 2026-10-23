@@ -18,6 +18,38 @@ jobs:
       - run: python -m ruff check src tests examples research/validate_real_sample.py
       - run: python -m pytest -q
       - run: python examples/offline_demo.py --out demo-result
+  distribution:
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install build
+      - run: python -m build
+      - run: python -m venv .package-env
+      - name: Install the wheel in an isolated environment
+        shell: python
+        run: |
+          import os
+          import pathlib
+          import subprocess
+          python = pathlib.Path('.package-env') / ('Scripts/python.exe' if os.name == 'nt' else 'bin/python')
+          wheels = list(pathlib.Path('dist').glob('*.whl'))
+          assert len(wheels) == 1
+          subprocess.run([str(python), '-m', 'pip', 'install', str(wheels[0]) + '[repair]'], check=True)
+          subprocess.run([str(python), '-I', 'examples/check_distribution.py', '--out', 'package-check'], check=True)
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: distribution-${{ matrix.os }}
+          path: |
+            dist/
+            package-check/package-check.json
   official-loader:
     runs-on: ubuntu-latest
     timeout-minutes: 45

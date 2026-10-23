@@ -59,6 +59,23 @@ def test_source_provenance_records_commit_and_dirty_state(tmp_path):
     assert source_provenance(tmp_path)["dirty"] is True
 
 
+def test_source_provenance_identifies_changes_to_audit_and_validation_code(tmp_path):
+    import hashlib
+
+    sources = ("src/boundary_audit/audit.py", "research/validate_real_sample.py")
+    for relative in sources:
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"original source\n")
+    before = source_provenance(tmp_path)
+    for relative in sources:
+        assert before["files_sha256"][relative] == hashlib.sha256(b"original source\n").hexdigest()
+    (tmp_path / sources[0]).write_bytes(b"changed source\n")
+    after = source_provenance(tmp_path)
+    assert after["files_sha256"][sources[0]] != before["files_sha256"][sources[0]]
+    assert after["files_sha256"][sources[1]] == before["files_sha256"][sources[1]]
+
+
 def test_interpreter_path_keeps_a_venv_symlink(tmp_path):
     import os
     import sys

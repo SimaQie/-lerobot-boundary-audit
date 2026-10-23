@@ -90,7 +90,7 @@ def _audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
     start_time = time.perf_counter()
     info = json.loads((root / "meta/info.json").read_text(encoding="utf-8"))
     if info.get("codebase_version") != "v3.0":
-        raise ValueError("This prototype supports LeRobot v3.0 only")
+        raise ValueError("This tool supports LeRobot v3.0 only")
     fps = Fraction(str(info["fps"]))
     if fps <= 0:
         raise ValueError("FPS must be positive")

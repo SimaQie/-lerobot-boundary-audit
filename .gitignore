@@ -21,3 +21,5 @@ generated-suite/
 conformance-results/
 tmp/
 promo/
+.package-env/
+package-check/

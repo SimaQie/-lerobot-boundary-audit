@@ -5,7 +5,7 @@
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![LeRobot](https://img.shields.io/badge/LeRobot-v3-blueviolet)
 
-Version **0.4.2**. A CPU-only LeRobot v3 boundary audit, independent frame-identity
+Source version **0.4.3** (`main`). A CPU-only LeRobot v3 boundary audit, independent frame-identity
 conformance suite, and guarded copy-based repair tool.
 
 It finds cases where the files are readable but the data is inconsistent:
@@ -32,11 +32,16 @@ cd -- lerobot-boundary-audit
 git checkout main
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
+.venv/bin/lerobot-boundary-audit --version
 ```
 
 Windows: use `.venv\Scripts\python.exe` and
 `.venv\Scripts\lerobot-boundary-audit.exe` with the same arguments. The examples
 below use the POSIX venv paths.
+
+Python 3.11 or 3.12 is covered by CI. Record `git rev-parse HEAD` when reporting
+results from `main`. Published tags and their release assets remain versioned
+snapshots; the existing `v0.4.2` release predates this source cleanup.
 
 ## Quick start (no dataset download)
 
@@ -98,6 +103,12 @@ The downloader pins revisions, budgets bytes, records SHA-256 hashes and refuses
 mismatched files. Videos, action tables and derived datasets are not distributed
 with this repository.
 
+Most presets contain only selected cameras. Use the preset's camera names with
+`audit --camera` or `probe-loader --camera`; without an explicit selection those
+commands require every declared camera. The validation script selects the preset
+cameras automatically. Revision, camera names and byte limits are defined in
+[`download.py`](src/boundary_audit/download.py).
+
 Full validation on a real sample:
 
 ```sh
@@ -136,8 +147,9 @@ discoverable (for example via `LD_LIBRARY_PATH`).
 
 The supported path on a GPU machine is the same CPU pipeline used above. On an
 RTX 4090/WSL2 host the official LeRobot 0.6.1 reader still decodes on CPU even
-with CUDA Torch installed; the audit, conformance, probe-loader, four real-source
-validations and repair/restore flow were validated there. See
+with CUDA Torch installed. The recorded runs cover conformance and four real-source
+validation workflows, including guarded repair and restoration. Real-footage
+probes may retain partial results where frame identity is ambiguous. See
 [GPU machine validation](research/GPU_MACHINE_VALIDATION.md).
 
 There is no explicit CUDA decode path in this repository and no GPU reader claim.
@@ -162,4 +174,5 @@ GPU machines do not need a different code path for the data checks.
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [USAGE.md](USAGE.md),
-[research/CONFORMANCE.md](research/CONFORMANCE.md), and
+[conformance protocol](research/CONFORMANCE.md), and
+[validation summary](research/GPU_MACHINE_VALIDATION.md).

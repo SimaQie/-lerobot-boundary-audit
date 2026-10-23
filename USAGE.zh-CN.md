@@ -42,6 +42,9 @@ python -m venv .venv
 安装后的命令是 `.venv/bin/lerobot-boundary-audit`（无需激活虚拟环境）。
 Windows 使用 `.venv\Scripts\lerobot-boundary-audit.exe`；下面示例用 POSIX 路径。
 
+CI 测试 Python 3.11 和 3.12。运行 `.venv/bin/lerobot-boundary-audit --version`
+可查看安装版本；从 `main` 运行实验时，同时记录 `git rev-parse HEAD`。
+
 ## 3. 用自带示例数据跑通（无需下载，约两分钟）
 
 ### 3.1 生成示例套件
@@ -66,6 +69,8 @@ Windows 使用 `.venv\Scripts\lerobot-boundary-audit.exe`；下面示例用 POSI
 
 | 案例 | 人工问题 |
 |---|---|
+| `recorded-a` | 干净的源录制数据集 A |
+| `recorded-b` | 干净的源录制数据集 B |
 | `merged` | 干净的 5 episode、2 相机数据集 |
 | `offset-one-frame` | episode 元数据时间戳偏移一个 tick |
 | `global-index-shift` | 所有全局行号 +1 |
@@ -196,7 +201,33 @@ PASS 只覆盖所选相机和请求的检查，不是整个数据集的质量证
 
 下载器固定 revision，记录来源、许可证、字节数和每个文件哈希。ALOHA 是 AV1、
 50 episodes、20,000 行、50 FPS。AgiBot 也可用：
-`download agibot2026 --out samples/agibot`。不要重新分发下载的视频。
+`download agibot2026 --out samples/agibot`。下载内容遵循其来源的许可证和归属要求，
+本工具的 MIT 许可证不改变外部视频或动作数据的授权范围。
+
+CMU Stretch 和 UTokyo xArm 提供体积更小、帧率更低的例子：
+
+```sh
+.venv/bin/lerobot-boundary-audit download cmu_stretch --out samples/cmu_stretch
+.venv/bin/lerobot-boundary-audit audit samples/cmu_stretch \
+  --camera observation.images.image --decode --out reports/cmu-stretch
+
+.venv/bin/lerobot-boundary-audit download utokyo_xarm --out samples/utokyo_xarm
+.venv/bin/lerobot-boundary-audit audit samples/utokyo_xarm \
+  --camera observation.images.hand_image --camera observation.images.image \
+  --decode --out reports/utokyo-xarm
+```
+
+UTokyo 只下载三个声明相机中的两个。部分相机预设必须明确传递 `--camera`，
+运行 `probe-loader` 和 `verify` 时也使用相同选择。完整验证脚本自动选择预设相机：
+
+```sh
+.venv/bin/python research/validate_real_sample.py utokyo_xarm \
+  --source samples/utokyo_xarm --out reports/utokyo-validation \
+  --consumer-python .consumer-cpu/bin/python
+```
+
+完整验证需要先创建第 5 节的 consumer 环境。它会生成若干派生副本，请预留样本体积数倍的磁盘空间，
+并使用尚不存在的输出目录。该脚本不负责下载缺失的输入数据。
 
 ## 5. 内容 / 官方读取器检查（可选环境）
 

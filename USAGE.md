@@ -46,6 +46,10 @@ The venv-local command is `.venv/bin/lerobot-boundary-audit` (no activation is
 needed). On Windows use `.venv\Scripts\lerobot-boundary-audit.exe`; the examples
 below use the POSIX path.
 
+Python 3.11 and 3.12 are tested in CI. Run
+`.venv/bin/lerobot-boundary-audit --version` to identify the installed source
+version, and record `git rev-parse HEAD` for reproducible runs from `main`.
+
 ## 3. Two-minute quick start with bundled data (no download)
 
 ### 3.1 Generate the example suite
@@ -73,6 +77,8 @@ what different commands detect:
 
 | Case | Intended problem |
 |---|---|
+| `recorded-a` | clean source recording A |
+| `recorded-b` | clean source recording B |
 | `merged` | clean 5-episode, 2-camera dataset |
 | `offset-one-frame` | episode metadata timestamps shifted by one tick |
 | `global-index-shift` | every global row index shifted by one |
@@ -206,8 +212,36 @@ dataset-wide quality certificate.
 
 The downloader pins the revision, records source/license/byte counts and hashes
 every file. ALOHA is AV1, 50 episodes, 20,000 rows at 50 FPS. AgiBot is also
-available: `download agibot2026 --out samples/agibot`. Do not redistribute the
-downloaded videos.
+available: `download agibot2026 --out samples/agibot`. Dataset licenses and
+attribution requirements remain those of the original sources; the project's MIT
+license does not relicense downloaded footage or actions.
+
+CMU Stretch and UTokyo xArm provide smaller, lower-frame-rate examples:
+
+```sh
+.venv/bin/lerobot-boundary-audit download cmu_stretch --out samples/cmu_stretch
+.venv/bin/lerobot-boundary-audit audit samples/cmu_stretch \
+  --camera observation.images.image --decode --out reports/cmu-stretch
+
+.venv/bin/lerobot-boundary-audit download utokyo_xarm --out samples/utokyo_xarm
+.venv/bin/lerobot-boundary-audit audit samples/utokyo_xarm \
+  --camera observation.images.hand_image --camera observation.images.image \
+  --decode --out reports/utokyo-xarm
+```
+
+Camera selection is required for partial-camera presets: UTokyo selects two of
+three declared streams. The same selection must be passed to `probe-loader` or
+`verify`. The full validation script selects preset cameras automatically:
+
+```sh
+.venv/bin/python research/validate_real_sample.py utokyo_xarm \
+  --source samples/utokyo_xarm --out reports/utokyo-validation \
+  --consumer-python .consumer-cpu/bin/python
+```
+
+Create the consumer environment described in section 5 before running full
+validation. It creates derivative copies; allow several times the sample's disk
+size and use a fresh output directory. It does not download missing input data.
 
 ## 5. Content / official-reader checks (optional environment)
 
