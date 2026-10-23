@@ -247,7 +247,7 @@ def run(sample, source, output, python, ffmpeg_bin):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("sample", choices=["agibot2026", "aloha_screw_driver"])
+    parser.add_argument("sample", choices=sorted(SAMPLES))
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--consumer-python", type=Path, required=True)
