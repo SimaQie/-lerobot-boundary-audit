@@ -1,4 +1,4 @@
-﻿# How to use LeRobot Boundary Audit
+# How to use LeRobot Boundary Audit
 
 This guide starts with the bundled example data, so you can try the tool without
 downloading a dataset. The normal audit path is CPU-only.

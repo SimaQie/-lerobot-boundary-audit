@@ -1,4 +1,4 @@
-﻿# LeRobot Boundary Audit 使用指南
+# LeRobot Boundary Audit 使用指南
 
 这份指南先用仓库自带示例数据跑通，再说明怎么处理自己的数据。默认审计路径只需要
 CPU，不需要训练框架或 GPU。

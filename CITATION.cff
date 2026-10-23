@@ -1,4 +1,4 @@
-﻿cff-version: 1.2.0
+cff-version: 1.2.0
 message: "If this software helps your research, please cite this version."
 type: software
 title: "LeRobot Boundary Audit: Independent Frame Identity Conformance and Guarded Repair"

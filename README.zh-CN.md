@@ -1,4 +1,4 @@
-﻿# LeRobot Boundary Audit
+# LeRobot Boundary Audit
 
 [![tests](https://github.com/SimaQie/lerobot-boundary-audit/actions/workflows/tests.yml/badge.svg)](https://github.com/SimaQie/lerobot-boundary-audit/actions/workflows/tests.yml)
 [![release](https://img.shields.io/github/v/release/SimaQie/lerobot-boundary-audit?include_prereleases&label=release)](https://github.com/SimaQie/lerobot-boundary-audit/releases)
