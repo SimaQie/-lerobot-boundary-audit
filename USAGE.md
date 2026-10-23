@@ -1,4 +1,4 @@
-# How to use LeRobot Boundary Audit
+﻿# How to use LeRobot Boundary Audit
 
 This guide starts with the bundled example data, so you can try the tool without
 downloading a dataset. The normal audit path is CPU-only.
@@ -32,8 +32,8 @@ quality score, or an automatic repair system for arbitrary corruption.
 ## 2. Install
 
 ```sh
-git clone https://github.com/SimaQie/-lerobot-boundary-audit.git
-cd -- -lerobot-boundary-audit
+git clone https://github.com/SimaQie/lerobot-boundary-audit.git
+cd lerobot-boundary-audit
 git checkout v0.4.2
 
 python -m venv .venv

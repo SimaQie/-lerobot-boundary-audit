@@ -1,8 +1,8 @@
-# LeRobot Boundary Audit
+﻿# LeRobot Boundary Audit
 
-[![tests](https://github.com/SimaQie/-lerobot-boundary-audit/actions/workflows/tests.yml/badge.svg)](https://github.com/SimaQie/-lerobot-boundary-audit/actions/workflows/tests.yml)
-[![release](https://img.shields.io/github/v/release/SimaQie/-lerobot-boundary-audit?include_prereleases&label=release)](https://github.com/SimaQie/-lerobot-boundary-audit/releases)
-[![license](https://img.shields.io/github/license/SimaQie/-lerobot-boundary-audit)](LICENSE)
+[![tests](https://github.com/SimaQie/lerobot-boundary-audit/actions/workflows/tests.yml/badge.svg)](https://github.com/SimaQie/lerobot-boundary-audit/actions/workflows/tests.yml)
+[![release](https://img.shields.io/github/v/release/SimaQie/lerobot-boundary-audit?include_prereleases&label=release)](https://github.com/SimaQie/lerobot-boundary-audit/releases)
+[![license](https://img.shields.io/github/license/SimaQie/lerobot-boundary-audit)](LICENSE)
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![LeRobot](https://img.shields.io/badge/LeRobot-v3-blueviolet)
 
@@ -12,8 +12,8 @@
 不是稳定 GPU reader，微基准也不代表完整工具加速。
 
 ```sh
-git clone https://github.com/SimaQie/-lerobot-boundary-audit.git
-cd -- -lerobot-boundary-audit
+git clone https://github.com/SimaQie/lerobot-boundary-audit.git
+cd lerobot-boundary-audit
 git checkout v0.4.2
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
@@ -153,7 +153,7 @@ TorchCodec 两种读取器；独立完整解码核对了两路视频共 47,316 �
 相关数据检查工具已存在，本项目不宣称“全球首次”。
 
 完整参数、复现实验与限制见 [英文说明](README.md)。
-开源地址：[SimaQie/-lerobot-boundary-audit](https://github.com/SimaQie/-lerobot-boundary-audit)。
+开源地址：[SimaQie/lerobot-boundary-audit](https://github.com/SimaQie/lerobot-boundary-audit)。
 附有 MIT 许可、中英文说明及引用文件；尚未分配 DOI。
 
 <details>

@@ -1,8 +1,8 @@
-# LeRobot Boundary Audit
+﻿# LeRobot Boundary Audit
 
-[![tests](https://github.com/SimaQie/-lerobot-boundary-audit/actions/workflows/tests.yml/badge.svg)](https://github.com/SimaQie/-lerobot-boundary-audit/actions/workflows/tests.yml)
-[![release](https://img.shields.io/github/v/release/SimaQie/-lerobot-boundary-audit?include_prereleases&label=release)](https://github.com/SimaQie/-lerobot-boundary-audit/releases)
-[![license](https://img.shields.io/github/license/SimaQie/-lerobot-boundary-audit)](LICENSE)
+[![tests](https://github.com/SimaQie/lerobot-boundary-audit/actions/workflows/tests.yml/badge.svg)](https://github.com/SimaQie/lerobot-boundary-audit/actions/workflows/tests.yml)
+[![release](https://img.shields.io/github/v/release/SimaQie/lerobot-boundary-audit?include_prereleases&label=release)](https://github.com/SimaQie/lerobot-boundary-audit/releases)
+[![license](https://img.shields.io/github/license/SimaQie/lerobot-boundary-audit)](LICENSE)
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![LeRobot](https://img.shields.io/badge/LeRobot-v3-blueviolet)
 
@@ -11,8 +11,8 @@ CPU audit and guarded repair path. The RTX 4090/TorchCodec study is experimental
 it is not a stable GPU reader, and its microbenchmark is not a full-tool speedup.
 
 ```sh
-git clone https://github.com/SimaQie/-lerobot-boundary-audit.git
-cd -- -lerobot-boundary-audit
+git clone https://github.com/SimaQie/lerobot-boundary-audit.git
+cd lerobot-boundary-audit
 git checkout v0.4.2
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
@@ -225,7 +225,7 @@ Python 3.11 or later; CPU only. The normal installation needs PyArrow and PyAV,
 with no training framework, GPU, model service, database, or web server.
 
 ```sh
-git clone https://github.com/SimaQie/-lerobot-boundary-audit.git lerobot-boundary-audit
+git clone https://github.com/SimaQie/lerobot-boundary-audit.git lerobot-boundary-audit
 cd lerobot-boundary-audit
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
@@ -416,7 +416,7 @@ Faulty inputs above are **controlled injections**, not defects discovered in
 AgiBotWorld2026. This establishes functionality, not a population-level benchmark.
 The configured GitHub Actions matrix covers Windows/Linux and Python 3.11/3.12.
 A separate Linux job generates the official fixtures and checks both full loaders.
-Current remote results: [Actions](https://github.com/SimaQie/-lerobot-boundary-audit/actions).
+Current remote results: [Actions](https://github.com/SimaQie/lerobot-boundary-audit/actions).
 
 Synthetic conformance: **60 / 60** combinations match their expectations
 (six cases × two decoders × five phases). Clean official recordings/merge and

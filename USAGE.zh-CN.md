@@ -1,4 +1,4 @@
-# LeRobot Boundary Audit 使用指南
+﻿# LeRobot Boundary Audit 使用指南
 
 这份指南先用仓库自带示例数据跑通，再说明怎么处理自己的数据。默认审计路径只需要
 CPU，不需要训练框架或 GPU。
@@ -29,8 +29,8 @@ LeRobot v3 数据集由 Parquet 行元数据和编码后的 MP4 共同组成。�
 ## 2. 安装
 
 ```sh
-git clone https://github.com/SimaQie/-lerobot-boundary-audit.git
-cd -- -lerobot-boundary-audit
+git clone https://github.com/SimaQie/lerobot-boundary-audit.git
+cd lerobot-boundary-audit
 git checkout v0.4.2
 
 python -m venv .venv
