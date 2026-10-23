@@ -215,6 +215,17 @@ Windows 的 TorchCodec 可追加 `--ffmpeg-bin` 指向已安装的共享 FFmpeg 
 重复邻近画面会保留“无法判定”，不会强行显示全部通过。
 详细对比见 [两份真实数据的实验结果](research/results/v040-real-comparison/README.md)。
 
+## 新增固定样本
+
+`download` 还提供两个真实数据源，扩展平台与存储布局覆盖：`cmu_stretch`
+（真实 Stretch 移动操作臂，135 段轨迹、5 FPS、单相机、分块视频布局，
+MIT 许可，约 39 MB）和 `utokyo_xarm`（真实 xArm 抓放数据，102 段轨迹、
+10 FPS、三选二相机、分片数据/视频布局，Apache-2.0 许可，约 30 MB）。
+
+本地 Windows 验证：两份数据审计全部通过，边界查询全部解码核对
+（cmu_stretch 405/405，utokyo_xarm 612/612）；报告存于
+`research/results/new-samples-2026-10/`。
+
 ## RTX 4090 / TorchCodec 实验（2026-10-20）
 
 默认审计与 `probe-loader` 仍是 CPU 路径：没有 `--device` 参数，安装 CUDA 版 Torch

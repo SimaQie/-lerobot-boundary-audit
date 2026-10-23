@@ -181,6 +181,23 @@ FPS and action-vector diversity, not an additional real-data codec family.
 Repeated neighbouring frames remain explicitly unresolved; a protocol's expected
 outcomes do not mean complete frame identity has been certified.
 
+## Additional pinned samples
+
+`download` also carries two more real-robot sources, adding platform and
+storage-layout coverage: `cmu_stretch` (real Stretch mobile manipulator,
+135 episodes at 5 FPS, one camera, chunked video layout, MIT, ~39 MB) and
+`utokyo_xarm` (real xArm pick-and-place, 102 episodes at 10 FPS, two of three
+cameras, sharded data/video layout, Apache-2.0, ~30 MB).
+
+```sh
+.venv/bin/lerobot-boundary-audit download cmu_stretch --out samples/cmu_stretch
+.venv/bin/lerobot-boundary-audit audit samples/cmu_stretch --camera observation.images.image --decode --out reports/cmu-stretch
+```
+
+Local Windows validation: both audits PASS with every boundary query decoded
+(cmu_stretch 405/405, utokyo_xarm 612/612); reports are kept under
+`research/results/new-samples-2026-10/`.
+
 <details>
 <summary><b>RTX 4090 / TorchCodec research (2026-10-20)</b></summary>
 

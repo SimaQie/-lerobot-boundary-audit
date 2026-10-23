@@ -29,6 +29,23 @@ SAMPLES = {
         "upstream_repo": "agibot-world/AgiBotWorld2026",
         "note": "September 2026 public subset, 10 real G2 episodes; two of seven camera streams selected",
     },
+    "cmu_stretch": {
+        "repo": "lerobot/cmu_stretch",
+        "revision": "d84574233973ea9a292babd008256d2290a3f96e",
+        "cameras": ["observation.images.image"],
+        "license": "mit",
+        "max_bytes": 60_000_000,
+        "upstream_url": "https://robo-affordances.github.io/",
+        "note": "Real Stretch mobile-manipulator episodes, 135 episodes at 5 FPS, single camera, chunked video layout. Adds a wheeled mobile platform and a low frame rate to the audited sources.",
+    },
+    "utokyo_xarm": {
+        "repo": "lerobot/utokyo_xarm_pick_and_place",
+        "revision": "da56c23e1b6d32c101c300b85dc54288b53ea63c",
+        "cameras": ["observation.images.hand_image", "observation.images.image"],
+        "license": "apache-2.0",
+        "max_bytes": 50_000_000,
+        "note": "Real xArm pick-and-place recordings, 102 episodes at 10 FPS, sharded data/video layout; two of three cameras selected. Adds a single 6-DOF arm platform.",
+    },
     "pusht": {
         "repo": "lerobot/pusht",
         "revision": "7628202a2180972f291ba1bc6723834921e72c19",

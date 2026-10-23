@@ -46,7 +46,9 @@ def main(argv=None):
                 "--assume-cfr", action="store_true", help="Assert ordered contiguous frames at declared FPS"
             )
     cmd = sub.add_parser("download")
-    cmd.add_argument("sample", choices=["agibot2026", "aloha_screw_driver", "pusht"])
+    from .download import SAMPLES
+
+    cmd.add_argument("sample", choices=sorted(SAMPLES))
     cmd.add_argument("--out", type=Path, required=True)
     cmd.add_argument("--max-bytes", type=int)
     cmd = sub.add_parser("apply")
