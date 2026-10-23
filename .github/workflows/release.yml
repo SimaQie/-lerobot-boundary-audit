@@ -47,7 +47,7 @@ jobs:
           name: "${{ github.ref_name }}"
           body: ${{ steps.notes.outputs.body }}
           prerelease: ${{ contains(github.ref_name, 'rc') || contains(github.ref_name, 'a') || contains(github.ref_name, 'b') }}
-          make_latest: false
+          make_latest: ${{ !contains(github.ref_name, 'rc') && !contains(github.ref_name, 'a') && !contains(github.ref_name, 'b') }}
           files: |
             dist/*
             USAGE.md

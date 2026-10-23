@@ -34,7 +34,7 @@ quality score, or an automatic repair system for arbitrary corruption.
 ```sh
 git clone https://github.com/SimaQie/-lerobot-boundary-audit.git
 cd -- -lerobot-boundary-audit
-git checkout v0.4.2rc1
+git checkout v0.4.2
 
 python -m venv .venv
 # Linux/macOS:

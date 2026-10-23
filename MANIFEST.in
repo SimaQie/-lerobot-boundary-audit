@@ -4,6 +4,7 @@ include USAGE.md USAGE.zh-CN.md
 include CITATION.cff CHANGELOG.md CONTRIBUTING.md
 include .github/workflows/tests.yml
 include .github/workflows/release.yml
+include .github/workflows/publish.yml
 recursive-include examples *.py
 recursive-include examples *.zip *.json
 recursive-include tests *.py
@@ -22,3 +23,4 @@ recursive-include src/boundary_audit/resources *.zip
 exclude research/backup_fingerprint_before.json
 include research/REVIEW_RESPONSE_2026-10-20.md
 include RELEASE_NOTES_0.4.2rc1.md
+include RELEASE_NOTES_0.4.2.md

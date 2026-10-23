@@ -6,19 +6,19 @@
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![LeRobot](https://img.shields.io/badge/LeRobot-v3-blueviolet)
 
-**Current candidate: `0.4.2rc1` research preview.** The supported product is the
+**Current release: `0.4.2` (research tool).** The supported product is the
 CPU audit and guarded repair path. The RTX 4090/TorchCodec study is experimental:
 it is not a stable GPU reader, and its microbenchmark is not a full-tool speedup.
 
 ```sh
 git clone https://github.com/SimaQie/-lerobot-boundary-audit.git
 cd -- -lerobot-boundary-audit
-git checkout v0.4.2rc1
+git checkout v0.4.2
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
 ```
 
-See [release notes](RELEASE_NOTES_0.4.2rc1.md),
+See [release notes](RELEASE_NOTES_0.4.2.md),
 [RTX 4090 evidence](research/results/rtx4090/session-001/README.md), and
 [known limits](research/RTX4090_2026-10-20.md).
 

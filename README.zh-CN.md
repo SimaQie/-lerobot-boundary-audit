@@ -7,19 +7,19 @@
 ![LeRobot](https://img.shields.io/badge/LeRobot-v3-blueviolet)
 
 一个可在 CPU 上运行的 LeRobot v3 视频时间轴与轨迹边界检查工具。
-当前候选版本为 **0.4.2rc1 研究预览**；原 `robot_data_engineering_saved` 保留原样。
+当前发布版本为 **0.4.2**（研究工具）；原 `robot_data_engineering_saved` 保留原样。
 默认支持范围是 CPU 审计与受约束修复；RTX 4090/TorchCodec 是实验性研究，
 不是稳定 GPU reader，微基准也不代表完整工具加速。
 
 ```sh
 git clone https://github.com/SimaQie/-lerobot-boundary-audit.git
 cd -- -lerobot-boundary-audit
-git checkout v0.4.2rc1
+git checkout v0.4.2
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
 ```
 
-发布说明、证据与限制见 [RELEASE_NOTES_0.4.2rc1.md](RELEASE_NOTES_0.4.2rc1.md)、
+发布说明、证据与限制见 [RELEASE_NOTES_0.4.2.md](RELEASE_NOTES_0.4.2.md)、
 [RTX 4090 证据](research/results/rtx4090/session-001/README.md)、
 [完整报告](research/RTX4090_2026-10-20.md)。
 

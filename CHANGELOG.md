@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.2 — 2026-10-24
+
+- Stable promotion of the 0.4.2rc1 research preview. Package code is
+  unchanged since the rc tag; this release updates version metadata,
+  documentation and release automation only.
+- Release automation: any `v*` tag publishes its own GitHub release,
+  refuses to overwrite an already published release, reads
+  `RELEASE_NOTES_<version>.md`, and marks rc/a/b tags as prereleases
+  automatically.
+- Add an opt-in PyPI Trusted Publishing workflow (manual dispatch only).
+- Track the 0.4.2rc1 release review documents and reproducibility
+  scripts; ignore local scratch directories.
+
 ## 0.4.2rc1 — research preview, 2026-10-20
 
 - Record measured host/timezone, source commit, consumer versions and separate
