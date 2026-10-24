@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.3 — Unreleased
+## 0.4.3 — 2026-10-24
 
 - Add pinned real-data presets for CMU Stretch and UTokyo xArm; accept all
   `SAMPLES` entries in the download and validation commands.
