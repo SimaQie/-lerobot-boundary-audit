@@ -69,6 +69,21 @@ jobs:
       - run: lerobot-boundary-audit conformance generated-suite --python .consumer-env/bin/python --jobs 2 --out conformance-results
       - run: lerobot-boundary-audit demo --out published-suite
       - run: lerobot-boundary-audit conformance published-suite --python .consumer-env/bin/python --jobs 2 --out published-conformance
+      - name: Exercise actual loader pixels and cold/warm reference cache
+        run: |
+          lerobot-boundary-audit probe-loader published-suite/merged --python .consumer-env/bin/python --max-rows 4 --visuals --cache-dir reference-cache --out probe-cold
+          lerobot-boundary-audit probe-loader published-suite/merged --python .consumer-env/bin/python --max-rows 4 --visuals --cache-dir reference-cache --out probe-warm
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          cold, warm = [json.loads(Path(name, 'probe-report.json').read_text()) for name in ('probe-cold', 'probe-warm')]
+          assert cold['records'] == warm['records']
+          assert cold['reference_cache']['writes'] > 0
+          assert warm['reference_cache']['hits'] > 0
+          for report in (cold, warm):
+              assert report['visual_evidence']['status'] == 'complete'
+              assert len({r['camera'] for r in report['visual_evidence']['records']}) == 2
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -79,3 +94,5 @@ jobs:
             generated-suite/suite.json
             generated-suite/producer-audit.json
             generated-suite/repair-control.json
+            probe-cold
+            probe-warm

@@ -1,4 +1,4 @@
-# 0.5.0 — 2026-10-24
+# 0.5.0 — 2026-10-25
 
 The CPU audit path remains the supported product. This release adds official
 loader-returned pixel evidence, a unified environment diagnosis, a bounded
@@ -37,7 +37,7 @@ and identical verdicts and per-check records.
 
 ## Fractional FPS and timescales
 
-Boundary comparisons accept one MP4 sample tick of timestamp quantization for
+Boundary comparisons accept up to one MP4 sample tick (capped at half a frame) of timestamp quantization for
 non-integer FPS or coarse timescales; a real one-frame offset still fails.
 Tests cover 30000/1001 FPS and 30 FPS on a 1,000 tick/s timeline. LeRobot's
 public writer declares integer FPS, so non-integer producer support is not
@@ -45,15 +45,22 @@ claimed.
 
 ## Compatibility and validation
 
-- LeRobot 0.6.1 (latest stable) and 0.6.0: 208/208 bundled conformance each.
+- LeRobot 0.6.1 and 0.6.0: 208/208 bundled conformance each.
 - 96 real-footage probe runs: 72 pass / 24 partial, with no missing or
   unexpected query slots.
 - 16/16 official boundary verifies and 8/8 full real-source validations.
 - Repair restores derived copies byte-exactly; sources remain unchanged.
-- 133 local tests, Ruff, Windows/Linux CI and isolated wheel installation pass.
+- Local regression tests, Ruff, Windows/Linux CI and isolated wheel installation are release gates.
 
 PARTIAL/ambiguous real repeated frames remain PARTIAL; they are not converted to
 PASS. No newer stable LeRobot release than 0.6.1 was available for this round.
+
+## Final release review
+
+- Cap automatic quantization tolerance at half a frame, retaining detection on one-tick-per-frame streams.
+- Invalidate reference caches when PyAV/FFmpeg/NumPy changes and verify cached RGB digests; damaged ZIP entries fall back to decoding.
+- Shorten evidence filenames for Windows source builds and include the release checker and compact results in the sdist.
+- Validate embedded wheel/sdist metadata against the tag; add actual loader pixel and cold/warm cache checks to CI.
 
 ## Release mechanics
 

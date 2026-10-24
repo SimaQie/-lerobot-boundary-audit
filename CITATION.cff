@@ -6,7 +6,7 @@ authors:
   - family-names: Sima
     given-names: Qie
 version: 0.5.0
-date-released: 2026-10-24
+date-released: 2026-10-25
 license: MIT
 repository-code: "https://github.com/SimaQie/lerobot-boundary-audit"
 url: "https://github.com/SimaQie/lerobot-boundary-audit"

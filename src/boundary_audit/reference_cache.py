@@ -12,9 +12,11 @@ import hashlib
 import json
 import os
 import tempfile
+import zipfile
+import zlib
 from pathlib import Path
 
-SCHEMA = "boundary-reference-cache.v1"
+SCHEMA = "boundary-reference-cache.v2"
 
 
 def default_root():
@@ -52,15 +54,23 @@ def cache_path(root, key):
     return Path(root) / key[:2] / (key + ".npz")
 
 
-def load(path, key, required):
+def load(path, key, required, *, max_bytes=268435456, max_file_bytes=268435456):
     import numpy as np
 
     try:
+        if Path(path).stat().st_size > max_file_bytes:
+            return None, "file_budget"
+        with zipfile.ZipFile(path) as archive:
+            # Reject oversize compressed payloads before NumPy materializes arrays.
+            entries = archive.infolist()
+            if sum(entry.file_size for entry in entries) > max_bytes + 512 * len(entries) + 65536:
+                return None, "memory_budget"
         with np.load(path, allow_pickle=False) as payload:
             metadata = json.loads(str(payload["metadata"]))
             if metadata.get("schema") != SCHEMA or metadata.get("key") != key:
                 return None, "metadata_mismatch"
             frames = {}
+            memory_bytes = 0
             for value in metadata.get("targets", []):
                 name = f"frame_{int(value)}"
                 if name not in payload:
@@ -68,11 +78,16 @@ def load(path, key, required):
                 array = payload[name]
                 if array.dtype != np.uint8 or array.ndim != 3 or array.shape[2] != 3:
                     return None, "invalid_frame"
+                memory_bytes += array.nbytes
+                if memory_bytes > max_bytes:
+                    return None, "memory_budget"
+                if hashlib.sha256(array.tobytes()).hexdigest() != metadata.get("frame_hashes", {}).get(name):
+                    return None, "frame_digest_mismatch"
                 frames[int(value)] = array
             if not set(required) <= frames.keys():
                 return None, "missing_required_frame"
             return frames, None
-    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError):
+    except (OSError, ValueError, KeyError, TypeError, EOFError, zipfile.BadZipFile, zlib.error):
         return None, "unreadable"
 
 
@@ -87,6 +102,8 @@ def save(root, key, targets, frames, *, source_sha256, relative, max_bytes):
         "source_sha256": source_sha256,
         "relative": relative,
         "targets": sorted(int(value) for value in targets),
+        "frame_hashes": {f"frame_{int(value)}": hashlib.sha256(frames[int(value)].tobytes()).hexdigest()
+                         for value in targets},
     }
     fd, temporary = tempfile.mkstemp(prefix="." + destination.name, suffix=".tmp", dir=destination.parent)
     temporary = Path(temporary)

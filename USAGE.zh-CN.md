@@ -315,7 +315,7 @@ expected/previous/next 参考帧、图像哈希和 row/episode/camera/delta 标�
 ```
 
 受控故障副本可加 `--allow-audit-failure` 让 loader 继续运行；失败的 preflight
-会被记录，不会隐藏。见 [ALOHA clean/offset/repaired 示例](../docs/real-robot-loader-pixels.md)。
+会被记录，不会隐藏。见 [ALOHA clean/offset/repaired 示例](docs/real-robot-loader-pixels.md)。
 
 参考帧默认缓存到 `$LEROBOT_BOUNDARY_AUDIT_CACHE/reference`（或用户缓存目录）。
 缓存键包含视频 SHA-256、请求 ordinal、FPS 以及 probe/driver 身份，因此视频或

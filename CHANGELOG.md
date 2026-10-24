@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.5.0 — 2026-10-24
+## 0.5.0 — 2026-10-25
+
+- Cap automatic timebase rounding tolerance at half a frame so one-tick-per-frame videos retain offset detection.
+- Invalidate reference caches across PyAV/FFmpeg/NumPy changes; validate cached RGB digests and fall back on damaged ZIP members.
+- Include the release checker, release notes and compact validation summary in source distributions.
+
 
 - Add opt-in bounded local-PyAV boundary frame previews with ordinal, neighbour
   and observed-frame evidence.

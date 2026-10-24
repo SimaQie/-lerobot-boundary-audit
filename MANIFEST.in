@@ -7,6 +7,9 @@ recursive-include examples *.py
 recursive-include examples *.zip *.json
 recursive-include tests *.py
 include research/validate_real_sample.py
+include research/check_release.py
+include RELEASE_NOTES_0.5.0.md
+include research/results/v050/README.md research/results/v050/summary.json research/results/v050/RELEASE_REVIEW.md
 include research/CONFORMANCE.md
 include research/GPU_MACHINE_VALIDATION.md
 recursive-include src/boundary_audit/resources *.zip

@@ -129,3 +129,41 @@ def test_default_root_honours_explicit_cache_environment(monkeypatch, tmp_path):
     monkeypatch.setenv("LEROBOT_BOUNDARY_AUDIT_CACHE", str(tmp_path / "custom"))
     assert default_root() == tmp_path / "custom/reference"
     assert Path(default_root()).is_absolute()
+
+
+def test_decoder_version_change_invalidates_reference_identity(monkeypatch):
+    import av
+
+    before = _tool_identity({})
+    monkeypatch.setattr(av, "__version__", "different-build")
+    assert _tool_identity({}) != before
+
+
+def test_valid_zip_with_altered_pixels_is_redecoded(tmp_path):
+    root = tmp_path / "source"
+    make_video(root / "videos/camera/chunk-000/file-000.mp4")
+    cache = tmp_path / "cache"
+    value = request(root, cache)
+    cold, _, _, stats = reference_frames(value)
+    path = cache_path(cache, stats["entries"][0]["key"])
+    with np.load(path, allow_pickle=False) as payload:
+        arrays = {name: payload[name] for name in payload.files}
+    arrays["frame_1"] = np.zeros_like(arrays["frame_1"])
+    np.savez_compressed(path, **arrays)
+    warm, decoded, _, stats = reference_frames(value)
+    assert decoded > 0 and stats["corrupt"] == 1
+    assert all(np.array_equal(cold[key][n], warm[key][n]) for key in cold for n in cold[key])
+
+
+def test_truncated_zip_member_falls_back_to_decode(tmp_path):
+    root = tmp_path / "source"
+    make_video(root / "videos/camera/chunk-000/file-000.mp4")
+    cache = tmp_path / "cache"
+    value = request(root, cache)
+    _, _, _, stats = reference_frames(value)
+    path = cache_path(cache, stats["entries"][0]["key"])
+    data = bytearray(path.read_bytes())
+    data[0:4] = b"XXXX"  # central directory still exists; reading a member raises BadZipFile
+    path.write_bytes(data)
+    _, decoded, _, stats = reference_frames(value)
+    assert decoded > 0 and stats["corrupt"] == 1

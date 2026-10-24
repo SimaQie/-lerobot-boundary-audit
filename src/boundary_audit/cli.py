@@ -91,7 +91,7 @@ def main(argv=None):
     cmd.add_argument("--max-reference-bytes", type=int, default=268435456)
     cmd.add_argument("--max-view-bytes", type=int, default=314572800)
     cmd.add_argument("--visuals", action="store_true", help="Capture actual loader-returned pixels and references")
-    cmd.add_argument("--visual-queries", type=int, default=4)
+    cmd.add_argument("--visual-queries", type=int, default=4, help="Maximum row/camera preview pairs")
     cmd.add_argument("--visual-max-bytes", type=int, default=20_000_000)
     cmd.add_argument(
         "--allow-audit-failure",

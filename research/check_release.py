@@ -6,7 +6,10 @@ import argparse
 import ast
 import json
 import re
+import tarfile
 import tomllib
+import zipfile
+from email.parser import Parser
 from pathlib import Path
 
 
@@ -50,8 +53,27 @@ def check(root, tag, dist=None):
         if len(wheels) != 1 or len(sdists) != 1:
             problems.append(f"expected one wheel and one sdist, found {len(wheels)} wheel(s) and {len(sdists)} sdist(s)")
         for path in wheels + sdists:
-            if version not in path.name:
+            expected = (f"lerobot_boundary_audit-{version}-py3-none-any.whl" if path.suffix == ".whl"
+                        else f"lerobot_boundary_audit-{version}.tar.gz")
+            if path.name != expected:
                 problems.append(f"artifact does not carry tag version: {path.name}")
+                continue
+            try:
+                if path.suffix == ".whl":
+                    with zipfile.ZipFile(path) as archive:
+                        names = [n for n in archive.namelist() if n.endswith(".dist-info/METADATA")]
+                        if len(names) != 1:
+                            raise ValueError("expected one wheel METADATA")
+                        metadata = archive.read(names[0]).decode("utf-8")
+                else:
+                    with tarfile.open(path) as archive:
+                        member = archive.getmember(f"lerobot_boundary_audit-{version}/PKG-INFO")
+                        metadata = archive.extractfile(member).read().decode("utf-8")
+                parsed = Parser().parsestr(metadata)
+                if parsed["Version"] != version or parsed["Name"] != "lerobot-boundary-audit":
+                    raise ValueError("embedded package name/version disagrees with tag")
+            except (OSError, ValueError, KeyError, zipfile.BadZipFile, tarfile.TarError) as exc:
+                problems.append(f"invalid artifact {path.name}: {exc}")
         artifacts = {"wheels": [path.name for path in wheels], "sdists": [path.name for path in sdists]}
     if problems:
         raise ValueError("; ".join(problems))

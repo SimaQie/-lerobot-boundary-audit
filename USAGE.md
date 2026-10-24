@@ -343,7 +343,7 @@ and the HTML uses relative paths, so it opens offline:
 
 A controlled-fault copy can be supplied with `--allow-audit-failure` so the
 loader still runs; the failed preflight is recorded and is not hidden. See the
-[ALOHA clean/offset/repaired example](../docs/real-robot-loader-pixels.md).
+[ALOHA clean/offset/repaired example](docs/real-robot-loader-pixels.md).
 
 Reference frames are cached by default under
 `$LEROBOT_BOUNDARY_AUDIT_CACHE/reference` (or the user cache directory). The

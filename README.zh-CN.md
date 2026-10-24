@@ -24,7 +24,7 @@
 ```sh
 git clone https://github.com/SimaQie/lerobot-boundary-audit.git
 cd -- lerobot-boundary-audit
-git checkout main
+git checkout v0.5.0
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
 .venv/bin/lerobot-boundary-audit --version
@@ -85,7 +85,7 @@ demo 会生成 13 个正常/人工故障案例。第一条审计退出 0（pass�
 | CMU Stretch | 1 / 1 | 5 | MIT |
 | UTokyo xArm | 2 / 3 | 10 | Apache-2.0 |
 
-下载器固定 revision、限制字节数、记录 SHA-256 并拒绝不一致文件。真实视频、动作表和派生数据不随仓库分发。
+下载器固定 revision、限制字节数、记录 SHA-256 并拒绝不一致文件。完整源视频、动作表和派生数据不随仓库分发；文档中明确标注来源的预览图片与 ALOHA 短片是媒体例外。
 
 多数预设仅下载部分相机。运行 `audit` 或 `probe-loader` 时请用 `--camera` 明确选择预设中的相机；
 省略该参数会要求所有声明相机都存在。验证脚本会自动使用预设相机。
@@ -144,7 +144,7 @@ GPU 机器上使用同一套 CPU 数据管线。RTX 4090/WSL2 的记录覆盖 co
 
 ## 范围与限制
 
-- 测试上游版本为 LeRobot 0.6.1（最新稳定版）和 0.6.0；其他版本需单独验证。
+- 测试上游版本为 LeRobot 0.6.1 和 0.6.0；其他版本需单独验证。
 - marker 套件是合成 H.264；真实样本是 AV1。marker 不是任意真实画面的通用内容检测器。
 - 非整数 FPS 或粗 timescale 下，`audit` 允许一个 MP4 sample tick 的时间戳量化；这不会掩盖一帧偏移。官方 LeRobot writer 声明整数 FPS，因此非整数数据集在 producer API 支持前只作为只读元数据实验。
 - 不证明物理同步、训练收益、机器人成功率或自然数据缺陷。
@@ -162,7 +162,7 @@ GPU 机器上使用同一套 CPU 数据管线。RTX 4090/WSL2 的记录覆盖 co
 见 [CONTRIBUTING.md](CONTRIBUTING.md)、[使用指南](USAGE.zh-CN.md)、
 [一致性测试协议](research/CONFORMANCE.md)和[验证摘要](research/GPU_MACHINE_VALIDATION.md)。
 
-## 真实机器人边界画面（开发版 main）
+## 真实机器人边界画面
 
 `audit --visuals` 会自动启用解码，最多为四个边界查询保存预期帧、相邻帧与根据本地 PyAV 返回 PTS 顺序重建的帧。打开输出目录的 report.html，分享时保留同目录 JPEG。画面不是官方 loader 的像素采集，不改变审计结论；重复画面不能证明唯一帧身份。总解码预算 50,000 帧，未完成情况显式报告。该功能已包含在 v0.5.0 中。生成画面仍受原数据集许可约束。
 

@@ -92,6 +92,13 @@ def test_rounded_timescale_does_not_hide_a_real_one_frame_offset(tmp_path):
     assert "BOUNDARY_QUERY_MISMATCH" in report["finding_counts"]
 
 
+def test_one_tick_per_frame_cannot_hide_a_one_frame_offset(tmp_path):
+    report = audit_dataset(dataset(tmp_path, runs=[(6, 1)], scale=30, shift=True))
+    assert report["status"] == "fail"
+    assert report["finding_counts"]["EPISODE_START_MISMATCH"] == 1
+    assert report["finding_counts"]["BOUNDARY_QUERY_MISMATCH"] == 3
+
+
 def test_one_frame_offset_is_localized_to_changed_episode(tmp_path):
     report = audit_dataset(dataset(tmp_path, shift=True))
     assert report["status"] == "fail"

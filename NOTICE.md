@@ -20,9 +20,9 @@ decoder functions or complete dataset loader. The fixture generator calls its
 recording and merging APIs. Upstream source is not copied or patched. The bundled
 tiny marker videos and scalar actions are original synthetic test data under MIT;
 they contain no downloaded robot footage. No models, Torch, FFmpeg binaries,
-downloaded videos/actions are bundled. The explicitly attributed JPEG previews in
-`docs/assets/aloha-boundary/` are derivatives of the MIT-declared ALOHA sample;
-see `docs/real-robot-example.md` for their source, revision and scope.
+downloaded videos/actions are bundled. The explicitly attributed JPEG previews and short MP4 derivative in
+`docs/assets/aloha-boundary/` and `docs/assets/aloha-loader-pixels/` are derivatives of the MIT-declared ALOHA sample;
+see `docs/real-robot-example.md` and `docs/real-robot-loader-pixels.md` for their source, revision and scope.
 The ALOHA sample's dataset card declares MIT; its full videos and action tables are
 excluded. The pinned CMU Stretch and UTokyo xArm presets declare MIT and
 Apache-2.0 respectively. Download receipts retain each dataset's revision, selected

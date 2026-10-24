@@ -59,9 +59,14 @@ def projected_view(request):
 
 def _tool_identity(request):
     """Invalidate cache entries when the reference decoder code changes."""
-    if request.get("tool_identity"):
-        return str(request["tool_identity"])
+    import av
+    import numpy as np
+
     digest = hashlib.sha256()
+    digest.update(json.dumps({"av": av.__version__, "ffmpeg": av.library_versions,
+                              "numpy": np.__version__, "platform": sys.platform}, sort_keys=True).encode())
+    if request.get("tool_identity"):
+        digest.update(str(request["tool_identity"]).encode())
     for path in (Path(__file__), Path(reference_cache.__file__)):
         digest.update(path.read_bytes())
     return digest.hexdigest()
@@ -112,7 +117,10 @@ def reference_frames(request):
         if cache_enabled:
             cached_path = reference_cache.cache_path(cache_root, key)
             if cached_path.exists():
-                loaded, reason = reference_cache.load(cached_path, key, targets)
+                loaded, reason = reference_cache.load(
+                    cached_path, key, targets, max_bytes=request["max_reference_bytes"] - stored_bytes,
+                    max_file_bytes=max_cache_bytes,
+                )
                 if loaded is not None and targets <= loaded.keys():
                     frames = loaded
                     entry["status"] = "hit"
@@ -301,11 +309,12 @@ def run(request):
 
     def capture_visual(query, camera, labels, pixels, relative, sample, comparison):
         nonlocal visual_evidence
-        if visual_evidence is None or query["index"] in visual_selected:
+        selection = (query["index"], camera)
+        if visual_evidence is None or selection in visual_selected:
             return
         if len(visual_selected) >= visual_evidence["max_queries"]:
             return
-        visual_selected.add(query["index"])
+        visual_selected.add(selection)
         expected_row = request["rows"][str(query["index"])]
         record = {
             "row_index": query["index"],
@@ -315,6 +324,7 @@ def run(request):
             "delta": 0,
             "expected_ordinal": sample,
             "expected_pts_seconds": sample / request["fps"],
+            "expected_pts_source": "Nominal CFR ordinal/FPS, not a measured container PTS",
             "expected_row_labels": {
                 key: request["rows"][str(query["index"])].get(key)
                 for key in ("index", "episode_index", "frame_index")
@@ -349,7 +359,10 @@ def run(request):
                 if visual_evidence["written_bytes"] + len(data) > visual_evidence["max_bytes"]:
                     raise BudgetExceeded("Visual output byte budget exhausted")
                 digest = hashlib.sha256(data).hexdigest()
-                name = f"boundary-{len(visual_evidence['records'])}-{camera.replace('.', '_')}-{role}-{digest[:16]}.jpg"
+                camera_id = hashlib.sha256(camera.encode()).hexdigest()[:6]
+                role_id = {"loader_returned": "a", "expected_reference": "e",
+                           "previous_reference": "p", "next_reference": "n"}[role]
+                name = f"boundary-{len(visual_evidence['records'])}-{camera_id}-{role_id}-{digest[:12]}.jpg"
                 (visual_output / name).write_bytes(data)
                 visual_evidence["written_bytes"] += len(data)
                 record["images"].append(

@@ -61,7 +61,7 @@ def audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
                 "video_files_checked": 0,
             },
             "decoder": {"requested": decode, "status": "not_completed", "backend": "pyav"},
-            "boundary_tolerance_seconds": "max(requested tolerance, one sample tick)",
+            "boundary_tolerance_seconds": "max(requested tolerance, min(one sample tick, half a frame))",
             "limitations": ["Prerequisite failure prevented complete audit; no unperformed check passed"],
             "findings": [
                 {
@@ -209,7 +209,7 @@ def _audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
             expected_end = float(Fraction(timeline.end_tick_at(cursor + length - 1), timeline.timescale))
             # A declared timestamp can only be represented on the sample-tick
             # grid. Allow one tick, without masking a one-frame offset.
-            frame_tolerance = max(tolerance, 1.0 / timeline.timescale)
+            frame_tolerance = max(tolerance, min(1.0 / timeline.timescale, 0.5 / float(fps)))
             if abs(begin - expected_begin) > frame_tolerance:
                 add(
                     "EPISODE_START_MISMATCH",
@@ -523,7 +523,7 @@ def _audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
             "decoded_queries": decoded_checks,
         },
         "tolerance_seconds": tolerance,
-        "boundary_tolerance_seconds": "max(requested tolerance, one sample tick)",
+        "boundary_tolerance_seconds": "max(requested tolerance, min(one sample tick, half a frame))",
         "decoder": decoder_info,
         "limitations": [
             "Fragmented MP4, trimming/multiple edits and large composition tables are unsupported",

@@ -29,8 +29,8 @@ TorchCodec 0.10.0, PyAV 15.1.0, FFmpeg 7.1.x shared.
 
 ## Actual-loader pixel evidence (ALOHA episode 25, left wrist)
 
-See [docs/real-robot-loader-pixels.md](../../docs/real-robot-loader-pixels.md)
-and [assets](../../docs/assets/aloha-loader-pixels).
+See [docs/real-robot-loader-pixels.md](../../../docs/real-robot-loader-pixels.md)
+and [assets](../../../docs/assets/aloha-loader-pixels).
 
 | Group | Probe | Visual | Loader pixels |
 |---|---|---|---|
@@ -120,3 +120,12 @@ was created in this round. Current-code reruns also passed 133 tests, Ruff,
 
 Raw local runs are under `research/runs/v050/` (not committed); public compact
 summary is `research/results/v050/summary.json`.
+
+## Release review, 2026-10-25
+
+The tables above record the remote workstation baseline, not fresh timings for
+every subsequent release fix. Final review caps automatic quantization tolerance
+at half a frame, adds PyAV/FFmpeg/NumPy identity to reference-cache keys, validates
+cached RGB hashes and handles malformed ZIP members as cache misses. Cache schema
+v2 invalidates previous entries; rerun cold/warm measurements for current timings.
+The source distribution also includes its release checker, notes and this summary.

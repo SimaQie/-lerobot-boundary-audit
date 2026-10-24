@@ -29,7 +29,7 @@ cameras and requested checks.
 ```sh
 git clone https://github.com/SimaQie/lerobot-boundary-audit.git
 cd -- lerobot-boundary-audit
-git checkout main
+git checkout v0.5.0
 python -m venv .venv
 .venv/bin/python -m pip install ".[repair]"
 .venv/bin/lerobot-boundary-audit --version
@@ -101,8 +101,9 @@ Four pinned sources can be downloaded (selected cameras only):
 | UTokyo xArm | 2 / 3 | 10 | Apache-2.0 |
 
 The downloader pins revisions, budgets bytes, records SHA-256 hashes and refuses
-mismatched files. Videos, action tables and derived datasets are not distributed
-with this repository.
+mismatched files. Full source videos, action tables and derived datasets are not
+distributed with this repository; the attributed documentation previews and short
+ALOHA clip are the explicit media exceptions.
 
 Most presets contain only selected cameras. Use the preset's camera names with
 `audit --camera` or `probe-loader --camera`; without an explicit selection those
@@ -189,7 +190,7 @@ GPU machines do not need a different code path for the data checks.
 
 ## Scope and limits
 
-- Tested upstream versions are LeRobot 0.6.1 (latest stable) and 0.6.0; other
+- Tested upstream versions are LeRobot 0.6.1 and 0.6.0; other
   versions need their own run.
 - The marker suite is synthetic H.264; real samples are AV1. Marker identity is
   not a general content detector for arbitrary footage.
@@ -214,7 +215,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md), [USAGE.md](USAGE.md),
 [conformance protocol](research/CONFORMANCE.md), and
 [validation summary](research/GPU_MACHINE_VALIDATION.md).
 
-## Boundary frame previews (development main)
+## Boundary frame previews
 
 Add `--visuals` to `audit` to save up to four boundary previews (implies
 `--decode`). Open `report.html` beside its generated JPEG files. These show

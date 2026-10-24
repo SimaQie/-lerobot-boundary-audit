@@ -118,6 +118,15 @@ def main():
             "report": f"{group_dirs[name]}/report.html",
             "json": f"{group_dirs[name]}/probe-report.json",
         }
+        visual = report.get("visual_evidence", {})
+        expected_pixel_status = "wrong_frame" if allow_failure else "pass"
+        summary["groups"][name]["expected_outcome_met"] = (
+            report["status"] in ({"fail"} if allow_failure else {"pass", "partial"})
+            and visual.get("status") == "complete"
+            and len(visual.get("records", [])) == 2
+            and all(record.get("comparison", {}).get("status") == expected_pixel_status
+                    for record in visual.get("records", []))
+        )
     summary["source_unchanged"] = fingerprint(source) == before
 
     if args.ffmpeg_bin:
@@ -143,8 +152,13 @@ def main():
             }
         else:
             summary["clip_error"] = completed.stderr[-500:]
+    summary["expected_outcomes_met"] = summary["source_unchanged"] and all(
+        group["expected_outcome_met"] for group in summary["groups"].values()
+    )
     write_json(output / "summary.json", summary)
     print(json.dumps(summary, indent=2))
+    if not summary["expected_outcomes_met"]:
+        raise SystemExit("Loader evidence did not reproduce the expected controls; inspect summary.json")
 
 
 if __name__ == "__main__":

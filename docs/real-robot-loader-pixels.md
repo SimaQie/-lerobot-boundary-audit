@@ -22,13 +22,13 @@ pixels were frame 1. Row labels alone do not prove pixel identity.
 
 | Loader-returned (`loader_returned`) | Independent expected reference |
 |---|---|
-| ![clean loader](assets/aloha-loader-pixels/clean-evidence/visuals/boundary-0-observation_images_cam_left_wrist-loader_returned-2156bbde499d7842.jpg) | ![clean expected](assets/aloha-loader-pixels/clean-evidence/visuals/boundary-0-observation_images_cam_left_wrist-expected_reference-2156bbde499d7842.jpg) |
+| ![clean loader](assets/aloha-loader-pixels/clean-evidence/visuals/boundary-0-45aedf-a-2156bbde499d.jpg) | ![clean expected](assets/aloha-loader-pixels/clean-evidence/visuals/boundary-0-45aedf-e-2156bbde499d.jpg) |
 
 ### Authored offset: loader return is the next frame
 
 | Expected reference | Loader-returned |
 |---|---|
-| ![offset expected](assets/aloha-loader-pixels/authored-offset-evidence/visuals/boundary-0-observation_images_cam_left_wrist-expected_reference-2156bbde499d7842.jpg) | ![offset actual](assets/aloha-loader-pixels/authored-offset-evidence/visuals/boundary-0-observation_images_cam_left_wrist-loader_returned-9e898f3cd5019204.jpg) |
+| ![offset expected](assets/aloha-loader-pixels/authored-offset-evidence/visuals/boundary-0-45aedf-e-2156bbde499d.jpg) | ![offset actual](assets/aloha-loader-pixels/authored-offset-evidence/visuals/boundary-0-45aedf-a-9e898f3cd501.jpg) |
 
 The actual image hash equals the `next_reference` image hash
 `9e898f3cd5019204…`; the expected image hash is `2156bbde499d7842…`.
@@ -37,7 +37,7 @@ The actual image hash equals the `next_reference` image hash
 
 | Loader-returned | Expected reference |
 |---|---|
-| ![repaired loader](assets/aloha-loader-pixels/repaired-evidence/visuals/boundary-0-observation_images_cam_left_wrist-loader_returned-2156bbde499d7842.jpg) | ![repaired expected](assets/aloha-loader-pixels/repaired-evidence/visuals/boundary-0-observation_images_cam_left_wrist-expected_reference-2156bbde499d7842.jpg) |
+| ![repaired loader](assets/aloha-loader-pixels/repaired-evidence/visuals/boundary-0-45aedf-a-2156bbde499d.jpg) | ![repaired expected](assets/aloha-loader-pixels/repaired-evidence/visuals/boundary-0-45aedf-e-2156bbde499d.jpg) |
 
 ## Offline reports and JSON
 
@@ -59,7 +59,7 @@ exposed by `LeRobotDataset`; the report does not invent one from a re-decode.
 ## 20-second source clip
 
 [aloha-20s.mp4](assets/aloha-loader-pixels/aloha-20s.mp4) is a 20-second H.264
-derivative of the ALOHA left-wrist source (MIT, resized/re-encoded; not a new
+derivative of the ALOHA left-wrist source (MIT, re-encoded; not a new
 robot dataset). Its SHA-256 and rebuild command are in `summary.json`.
 
 ## Rebuild
@@ -75,7 +75,7 @@ robot dataset). Its SHA-256 and rebuild command are in `summary.json`.
 
 The script makes a fresh copy for the controlled offset, applies the guarded
 repair to another copy, and captures actual loader tensors for all three groups.
-It requires approximately 260 MB free space for the derived copies. The clean
+It requires approximately 1 GB free space for both derived copies, the temporary consumer view and reports. The clean
 source is verified unchanged.
 
 ## Limits

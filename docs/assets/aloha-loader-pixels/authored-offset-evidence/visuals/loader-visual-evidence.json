@@ -36,25 +36,25 @@
       "images": [
         {
           "role": "loader_returned",
-          "path": "visuals/boundary-0-observation_images_cam_left_wrist-loader_returned-9e898f3cd5019204.jpg",
+          "path": "visuals/boundary-0-45aedf-a-9e898f3cd501.jpg",
           "sha256": "9e898f3cd5019204764dda6ee3dce2f16df133c86d37ebf621732b6fc1b07060",
           "bytes": 12325
         },
         {
           "role": "previous_reference",
-          "path": "visuals/boundary-0-observation_images_cam_left_wrist-previous_reference-643823ca697ac8d2.jpg",
+          "path": "visuals/boundary-0-45aedf-p-643823ca697a.jpg",
           "sha256": "643823ca697ac8d258dc6b8dec71dabf350d5497fec1ab1adc59432adc782ced",
           "bytes": 9044
         },
         {
           "role": "expected_reference",
-          "path": "visuals/boundary-0-observation_images_cam_left_wrist-expected_reference-2156bbde499d7842.jpg",
+          "path": "visuals/boundary-0-45aedf-e-2156bbde499d.jpg",
           "sha256": "2156bbde499d7842e1d0ec0d4f86dca668a7ef944c25f71be8f470475b2e8b1a",
           "bytes": 12340
         },
         {
           "role": "next_reference",
-          "path": "visuals/boundary-0-observation_images_cam_left_wrist-next_reference-9e898f3cd5019204.jpg",
+          "path": "visuals/boundary-0-45aedf-n-9e898f3cd501.jpg",
           "sha256": "9e898f3cd5019204764dda6ee3dce2f16df133c86d37ebf621732b6fc1b07060",
           "bytes": 12325
         }
@@ -97,25 +97,25 @@
       "images": [
         {
           "role": "loader_returned",
-          "path": "visuals/boundary-1-observation_images_cam_left_wrist-loader_returned-8c17f93dc9062379.jpg",
+          "path": "visuals/boundary-1-45aedf-a-8c17f93dc906.jpg",
           "sha256": "8c17f93dc9062379783e1aaf5cfeda5d4dd124e9705c8c266274f359e7ebcb48",
           "bytes": 12262
         },
         {
           "role": "previous_reference",
-          "path": "visuals/boundary-1-observation_images_cam_left_wrist-previous_reference-2156bbde499d7842.jpg",
+          "path": "visuals/boundary-1-45aedf-p-2156bbde499d.jpg",
           "sha256": "2156bbde499d7842e1d0ec0d4f86dca668a7ef944c25f71be8f470475b2e8b1a",
           "bytes": 12340
         },
         {
           "role": "expected_reference",
-          "path": "visuals/boundary-1-observation_images_cam_left_wrist-expected_reference-9e898f3cd5019204.jpg",
+          "path": "visuals/boundary-1-45aedf-e-9e898f3cd501.jpg",
           "sha256": "9e898f3cd5019204764dda6ee3dce2f16df133c86d37ebf621732b6fc1b07060",
           "bytes": 12325
         },
         {
           "role": "next_reference",
-          "path": "visuals/boundary-1-observation_images_cam_left_wrist-next_reference-8c17f93dc9062379.jpg",
+          "path": "visuals/boundary-1-45aedf-n-8c17f93dc906.jpg",
           "sha256": "8c17f93dc9062379783e1aaf5cfeda5d4dd124e9705c8c266274f359e7ebcb48",
           "bytes": 12262
         }
