@@ -207,7 +207,7 @@ GPU machines do not need a different code path for the data checks.
 ```sh
 .venv/bin/python -m pip install ".[repair,dev]"
 .venv/bin/python -m pytest -q
-.venv/bin/python -m ruff check src tests examples research/validate_real_sample.py tools
+.venv/bin/python -m ruff check src tests examples research/validate_real_sample.py research/check_release.py
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [USAGE.md](USAGE.md),

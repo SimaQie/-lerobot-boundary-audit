@@ -185,7 +185,7 @@
     "writer_note": "LeRobot public create() declares fps: int; non-integer producer support is not claimed."
   },
   "release_gate": {
-    "checker": "tools/check_release.py",
+    "checker": "research/check_release.py",
     "checks": [
       "tag vs pyproject/runtime/CITATION",
       "release notes present",

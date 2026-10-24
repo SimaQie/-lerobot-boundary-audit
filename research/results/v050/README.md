@@ -92,7 +92,7 @@ code changes invalidate it. Corrupt/missing entries fall back to decoding;
 
 ## Release gate
 
-`tools/check_release.py` checks tag/package/runtime/CITATION versions, release
+`research/check_release.py` checks tag/package/runtime/CITATION versions, release
 notes and whether exactly one wheel/sdist carries the tag version. The release
 workflow now runs lint/tests and these checks, then installs the wheel in an
 isolated environment and runs `check_distribution.py` before publishing assets.

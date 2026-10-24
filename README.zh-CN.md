@@ -156,7 +156,7 @@ GPU 机器上使用同一套 CPU 数据管线。RTX 4090/WSL2 的记录覆盖 co
 ```sh
 .venv/bin/python -m pip install ".[repair,dev]"
 .venv/bin/python -m pytest -q
-.venv/bin/python -m ruff check src tests examples research/validate_real_sample.py tools
+.venv/bin/python -m ruff check src tests examples research/validate_real_sample.py research/check_release.py
 ```
 
 见 [CONTRIBUTING.md](CONTRIBUTING.md)、[使用指南](USAGE.zh-CN.md)、
