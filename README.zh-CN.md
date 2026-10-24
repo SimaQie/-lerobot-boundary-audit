@@ -5,7 +5,7 @@
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![LeRobot](https://img.shields.io/badge/LeRobot-v3-blueviolet)
 
-源码版本 **0.4.3**（`main`）。一个 CPU 上运行的 LeRobot v3 边界审计、独立帧身份一致性测试和受约束的复制式修复工具。
+源码版本 **0.5.0**（`main`）。一个 CPU 上运行的 LeRobot v3 边界审计、独立帧身份一致性测试和受约束的复制式修复工具。
 
 它能发现“文件能打开，但数据关系不一致”的问题：
 
@@ -164,7 +164,7 @@ GPU 机器上使用同一套 CPU 数据管线。RTX 4090/WSL2 的记录覆盖 co
 
 ## 真实机器人边界画面（开发版 main）
 
-`audit --visuals` 会自动启用解码，最多为四个边界查询保存预期帧、相邻帧与根据本地 PyAV 返回 PTS 顺序重建的帧。打开输出目录的 report.html，分享时保留同目录 JPEG。画面不是官方 loader 的像素采集，不改变审计结论；重复画面不能证明唯一帧身份。总解码预算 50,000 帧，未完成情况显式报告。该功能晚于 v0.4.3，需安装当前 main。生成画面仍受原数据集许可约束。
+`audit --visuals` 会自动启用解码，最多为四个边界查询保存预期帧、相邻帧与根据本地 PyAV 返回 PTS 顺序重建的帧。打开输出目录的 report.html，分享时保留同目录 JPEG。画面不是官方 loader 的像素采集，不改变审计结论；重复画面不能证明唯一帧身份。总解码预算 50,000 帧，未完成情况显式报告。该功能已包含在 v0.5.0 中。生成画面仍受原数据集许可约束。
 
 **官方 loader 实际返回像素**要用官方 consumer 的 `probe-loader --visuals`：它会保存
 `LeRobotDataset` 实际返回张量、独立的 expected/previous/next 参考、哈希、返回标签和

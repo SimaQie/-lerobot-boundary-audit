@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased (planned 0.5.0)
+## 0.5.0 — 2026-10-24
 
 - Add opt-in bounded local-PyAV boundary frame previews with ordinal, neighbour
   and observed-frame evidence.

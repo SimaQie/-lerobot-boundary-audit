@@ -5,7 +5,7 @@ title: "LeRobot Boundary Audit: Independent Frame Identity Conformance and Guard
 authors:
   - family-names: Sima
     given-names: Qie
-version: 0.4.3
+version: 0.5.0
 date-released: 2026-10-24
 license: MIT
 repository-code: "https://github.com/SimaQie/lerobot-boundary-audit"

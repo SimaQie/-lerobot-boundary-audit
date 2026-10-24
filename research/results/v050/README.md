@@ -96,7 +96,7 @@ code changes invalidate it. Corrupt/missing entries fall back to decoding;
 notes and whether exactly one wheel/sdist carries the tag version. The release
 workflow now runs lint/tests and these checks, then installs the wheel in an
 isolated environment and runs `check_distribution.py` before publishing assets.
-A local 0.4.3 wheel/sdist build and isolated install passed; no tag or Release
+A local 0.5.0 wheel/sdist build and isolated install passed; no tag or Release
 was created in this round. Current-code reruns also passed 133 tests, Ruff,
 208/208 conformance on both 0.6.1 and 0.6.0, and an ALOHA TorchCodec verify with
 300 boundary queries.

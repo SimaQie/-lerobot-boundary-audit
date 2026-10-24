@@ -427,7 +427,7 @@ the expected ordinal frame, neighbours and the frame at the recorded **local PyA
 sequential decoding, not an official-loader pixel capture. Previews do not change audit verdicts;
 repeated images do not establish unique frame identity. Additional preview decoding is bounded to
 50,000 frames, and incomplete previews are labelled explicitly. Generated
-media retains the source dataset's license. This feature is newer than v0.4.3.
+media retains the source dataset's license. This feature is included in v0.5.0.
 
 ```sh
 .venv/bin/lerobot-boundary-audit audit samples/aloha_screw_driver \
