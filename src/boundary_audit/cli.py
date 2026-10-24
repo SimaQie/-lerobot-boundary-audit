@@ -40,6 +40,7 @@ def main(argv=None):
         cmd.add_argument("--camera", action="append", dest="cameras")
         if name == "audit":
             cmd.add_argument("--decode", action="store_true")
+            cmd.add_argument("--visuals", action="store_true", help="Save up to four boundary previews (implies --decode)")
             cmd.add_argument("--tolerance", type=float, default=0.0001)
         elif name == "verify":
             cmd.add_argument("--python", required=True, help="Interpreter with official LeRobot installed")
@@ -199,7 +200,11 @@ def main(argv=None):
             summary = result
         else:
             if args.command == "audit":
-                result = audit_dataset(args.root, decode=args.decode, tolerance=args.tolerance, cameras=args.cameras)
+                result = audit_dataset(args.root, decode=args.decode or args.visuals, tolerance=args.tolerance, cameras=args.cameras)
+                if args.visuals:
+                    from .visuals import add_visual_evidence
+
+                    add_visual_evidence(result, args.root, args.out)
             else:
                 from .verify import verify_consumer
 

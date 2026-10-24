@@ -176,3 +176,25 @@ GPU machines do not need a different code path for the data checks.
 See [CONTRIBUTING.md](CONTRIBUTING.md), [USAGE.md](USAGE.md),
 [conformance protocol](research/CONFORMANCE.md), and
 [validation summary](research/GPU_MACHINE_VALIDATION.md).
+
+## Boundary frame previews (development main)
+
+Add `--visuals` to `audit` to save up to four boundary previews (implies
+`--decode`). Open `report.html` beside its generated JPEG files. These show
+the expected ordinal frame, neighbours and the frame at the recorded **local PyAV** seek PTS, reconstructed by
+sequential decoding, not an official-loader pixel capture. Previews do not change audit verdicts;
+repeated images do not establish unique frame identity. Additional preview decoding is bounded to
+50,000 frames, and incomplete previews are labelled explicitly. Generated
+media retains the source dataset's license. This feature is newer than v0.4.3.
+
+```sh
+.venv/bin/lerobot-boundary-audit audit samples/aloha_screw_driver \
+  --camera observation.images.cam_left_wrist --visuals --out reports/aloha-frames
+```
+
+See the [real robot example](docs/real-robot-example.md) and
+[next-stage agent SOP](research/NEXT_VERSION_SOP.zh-CN.md).
+
+![Real ALOHA robot boundary frame](docs/assets/aloha-boundary/boundary-0-10400-ca02fbb6e8e83b7b.jpg)
+
+Real ALOHA footage from the controlled-offset example; source and scope: [example](docs/real-robot-example.md).

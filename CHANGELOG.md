@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add opt-in bounded local-PyAV boundary frame previews with ordinal, neighbour and observed-frame evidence.
+- Add an attributed real ALOHA report example and the next-stage agent development SOP.
+
+
 ## 0.4.3 — 2026-10-24
 
 - Add pinned real-data presets for CMU Stretch and UTokyo xArm; accept all

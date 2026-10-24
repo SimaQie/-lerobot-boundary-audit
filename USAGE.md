@@ -364,3 +364,21 @@ matched the bounded reference for the requested queries. A conformance PASS
 includes expected detection of authored faults. None of these proves physical
 sensor synchronization, dataset-wide correctness, training benefit or robot
 success. Ambiguity is preserved and reported explicitly.
+
+## Boundary frame previews (development main)
+
+Add `--visuals` to `audit` to save up to four boundary previews (implies
+`--decode`). Open `report.html` beside its generated JPEG files. These show
+the expected ordinal frame, neighbours and the frame at the recorded **local PyAV** seek PTS, reconstructed by
+sequential decoding, not an official-loader pixel capture. Previews do not change audit verdicts;
+repeated images do not establish unique frame identity. Additional preview decoding is bounded to
+50,000 frames, and incomplete previews are labelled explicitly. Generated
+media retains the source dataset's license. This feature is newer than v0.4.3.
+
+```sh
+.venv/bin/lerobot-boundary-audit audit samples/aloha_screw_driver \
+  --camera observation.images.cam_left_wrist --visuals --out reports/aloha-frames
+```
+
+See the [real robot example](docs/real-robot-example.md) and
+[next-stage agent SOP](research/NEXT_VERSION_SOP.zh-CN.md).

@@ -336,3 +336,9 @@ Windows 使用 `.consumer-cpu\Scripts\python.exe`；TorchCodec 可能需要
 PASS 表示官方 reader 在请求范围内匹配参考；conformance PASS 包含对人工故障的
 预期检出。它们都不证明物理传感器同步、数据集整体正确、训练收益或机器人成功率。
 无法判定的情况会被保留并明确报告。
+
+## 真实机器人边界画面（开发版 main）
+
+`audit --visuals` 会自动启用解码，最多为四个边界查询保存预期帧、相邻帧与根据本地 PyAV 返回 PTS 顺序重建的帧。打开输出目录的 report.html，分享时保留同目录 JPEG。画面不是官方 loader 的像素采集，不改变审计结论；重复画面不能证明唯一帧身份。总解码预算 50,000 帧，未完成情况显式报告。该功能晚于 v0.4.3，需安装当前 main。生成画面仍受原数据集许可约束。
+
+真实 ALOHA 示例及命令见 [真实机器人示例](docs/real-robot-example.md)。下一阶段开发与实验见 [远方 agent SOP](research/NEXT_VERSION_SOP.zh-CN.md)。
