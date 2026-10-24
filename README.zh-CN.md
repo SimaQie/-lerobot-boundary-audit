@@ -58,6 +58,7 @@ demo 会生成 13 个正常/人工故障案例。第一条审计退出 0（pass�
 | 检查官方解码器边界 | `verify` |
 | 检查完整 loader 窗口/动作/padding/worker | `probe-loader` |
 | 跑 13 案例 marker/故障矩阵 | `conformance` |
+| 诊断宿主、consumer 与数据集前置条件 | `doctor` |
 | 修复支持的时间轴缺陷 | `repair-plan` → `apply` → `restore` |
 | 创建离线示例 | `demo` |
 | 下载固定真实样本 | `download aloha_screw_driver` |
@@ -115,6 +116,22 @@ python -m venv .consumer-cpu
 
 把 `.consumer-cpu/bin/python` 传给 `--python`；不要把 Torch 装进审计 venv。缺包、版本不兼容或运行时失败会明确报告 `unavailable`，不会伪装成 PASS。
 
+## 运行前诊断
+
+`doctor` 是宿主、可选 consumer 和数据集前置条件的只读统一入口。它在 consumer 进程中导入官方 `LeRobotDataset`；提供 `--dataset` 时同时跑存储审计；提供 `--out` 时写出离线 `doctor.json`/`doctor.html`：
+
+```sh
+.venv/bin/lerobot-boundary-audit doctor \
+  --dataset samples/aloha_screw_driver \
+  --camera observation.images.cam_left_wrist \
+  --consumer-python .consumer-cpu/bin/python \
+  --out reports/doctor
+```
+
+缺失 Torch/PyAV/FFmpeg 或不支持的数据集会被明确标出；它不执行 loader 像素探测，也不声称物理同步。省略 `--dataset` 时只诊断环境。
+
+`probe-loader` 默认把参考帧缓存到 `$LEROBOT_BOUNDARY_AUDIT_CACHE/reference`（或平台缓存目录）。缓存键包含视频 SHA-256、请求 ordinal、FPS 以及 probe/driver 身份；视频或代码变化会使条目失效。用 `--no-cache` 关闭，用 `--cache-dir` 指定位置，用 `--max-cache-bytes` 限制单条大小。JSON 报告记录命中/未命中、解码秒数、缓存字节和峰值 RSS；缓存缺失或损坏只算 miss，不改变结论，缓存开关也不改变 probe 结论。
+
 TorchCodec 需要兼容的 FFmpeg 运行库。Windows 用 `--ffmpeg-bin PATH_TO_SHARED_FFMPEG_BIN`；Linux 让共享库可被发现（例如设置 `LD_LIBRARY_PATH`）。
 
 ## GPU 机器
@@ -127,8 +144,9 @@ GPU 机器上使用同一套 CPU 数据管线。RTX 4090/WSL2 的记录覆盖 co
 
 ## 范围与限制
 
-- 测试上游版本为 LeRobot 0.6.1；其他版本需单独验证。
+- 测试上游版本为 LeRobot 0.6.1（最新稳定版）和 0.6.0；其他版本需单独验证。
 - marker 套件是合成 H.264；真实样本是 AV1。marker 不是任意真实画面的通用内容检测器。
+- 非整数 FPS 或粗 timescale 下，`audit` 允许一个 MP4 sample tick 的时间戳量化；这不会掩盖一帧偏移。官方 LeRobot writer 声明整数 FPS，因此非整数数据集在 producer API 支持前只作为只读元数据实验。
 - 不证明物理同步、训练收益、机器人成功率或自然数据缺陷。
 - PARTIAL/ambiguous 会保留，不会强行改成 PASS。
 - 修复只支持窄范围 episode offset/CFR tick-grid 缺陷，始终写新目录，源文件不修改。
@@ -138,7 +156,7 @@ GPU 机器上使用同一套 CPU 数据管线。RTX 4090/WSL2 的记录覆盖 co
 ```sh
 .venv/bin/python -m pip install ".[repair,dev]"
 .venv/bin/python -m pytest -q
-.venv/bin/python -m ruff check src tests examples research/validate_real_sample.py
+.venv/bin/python -m ruff check src tests examples research/validate_real_sample.py tools
 ```
 
 见 [CONTRIBUTING.md](CONTRIBUTING.md)、[使用指南](USAGE.zh-CN.md)、

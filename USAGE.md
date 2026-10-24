@@ -50,6 +50,25 @@ Python 3.11 and 3.12 are tested in CI. Run
 `.venv/bin/lerobot-boundary-audit --version` to identify the installed source
 version, and record `git rev-parse HEAD` for reproducible runs from `main`.
 
+### 2.1 Diagnose before running
+
+`doctor` is read-only. It reports Python, audit/decode dependencies, FFmpeg CLI,
+an optional official consumer and, when `--dataset` is supplied, the storage
+audit. `--out` writes offline JSON and HTML:
+
+```sh
+.venv/bin/lerobot-boundary-audit doctor \
+  --dataset samples/aloha \
+  --camera observation.images.cam_left_wrist \
+  --consumer-python .consumer-cpu/bin/python \
+  --out reports/doctor
+```
+
+A missing optional component is `partial`, a missing required component or a
+failed dataset prerequisite is `fail`. The doctor does not run a loader pixel
+probe and does not certify physical synchronization. The same report is printed
+to stdout when `--out` is omitted.
+
 ## 3. Two-minute quick start with bundled data (no download)
 
 ### 3.1 Generate the example suite
@@ -200,6 +219,13 @@ Exit codes:
 A PASS is scoped to selected cameras and requested checks. It is not a
 dataset-wide quality certificate.
 
+For non-integer FPS or coarse MP4 timescales, boundary comparisons allow one
+sample tick of quantization (for example 1 ms at a 1000 tick/s timeline). This
+keeps legal rounded timestamps from becoming false errors while a full frame
+offset (about 33 ms at 30 FPS) still fails. LeRobot's public writer declares
+integer FPS; non-integer datasets should be treated as read-only experiments
+until the producer API is confirmed to support them.
+
 ### Download a pinned real sample
 
 ```sh
@@ -319,6 +345,16 @@ A controlled-fault copy can be supplied with `--allow-audit-failure` so the
 loader still runs; the failed preflight is recorded and is not hidden. See the
 [ALOHA clean/offset/repaired example](../docs/real-robot-loader-pixels.md).
 
+Reference frames are cached by default under
+`$LEROBOT_BOUNDARY_AUDIT_CACHE/reference` (or the user cache directory). The
+content-addressed key includes the video SHA-256, requested ordinals, FPS and
+probe/driver identity, so a changed video or code version cannot reuse stale
+pixels. Use `--no-cache` to force decoding, `--cache-dir` to choose a directory,
+and `--max-cache-bytes` to bound one entry. `probe-report.json` records cache
+hits/misses, decode seconds, read/write/disk bytes and peak RSS. Missing or
+corrupt entries fall back to decoding, and cache on/off does not alter the
+verdict.
+
 ### 5.3 Official decoder boundary check
 
 ```sh
@@ -340,6 +376,7 @@ Use `probe-loader` instead when you need windows, actions, padding or workers.
 | Repair only episode video offsets / small CFR grid defects | `repair-plan` → `apply` → `restore` |
 | Test a dataset against the installed official reader | `verify` |
 | Test full loader windows/actions/padding/workers | `probe-loader` |
+| Diagnose host/consumer/dataset prerequisites | `doctor` |
 | Run the full original marker/fault matrix | `conformance` |
 | Test one fixture read mode | `verify-loader` |
 | Re-create fixtures from the official recording API | `fixture-suite` |

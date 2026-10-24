@@ -15,6 +15,7 @@ if not __package__:
     owned_package = types.ModuleType("boundary_audit")
     owned_package.__path__ = [str(Path(__file__).resolve().parent)]
     sys.modules["boundary_audit"] = owned_package
+from boundary_audit import reference_cache  # noqa: E402
 from boundary_audit.row_contract import row_label_errors  # noqa: E402
 from boundary_audit.visuals import encode_rgb_jpeg, prepare_visual_output  # noqa: E402
 
@@ -56,10 +57,39 @@ def projected_view(request):
     return view, size
 
 
+def _tool_identity(request):
+    """Invalidate cache entries when the reference decoder code changes."""
+    if request.get("tool_identity"):
+        return str(request["tool_identity"])
+    digest = hashlib.sha256()
+    for path in (Path(__file__), Path(reference_cache.__file__)):
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
 def reference_frames(request):
+    import time
+
     import av
 
     result, decoded, stored_bytes = {}, 0, 0
+    cache_root = request.get("reference_cache")
+    cache_enabled = bool(cache_root) and request.get("reference_cache_enabled", True)
+    max_cache_bytes = int(request.get("max_cache_bytes", 268435456))
+    identity = _tool_identity(request)
+    stats = {
+        "enabled": cache_enabled,
+        "schema": reference_cache.SCHEMA,
+        "hits": 0,
+        "misses": 0,
+        "corrupt": 0,
+        "writes": 0,
+        "write_bytes": 0,
+        "read_bytes": 0,
+        "decode_seconds": 0.0,
+        "hash_seconds": 0.0,
+        "entries": [],
+    }
     for relative, spec in request["videos"].items():
         path = (Path(request["root"]) / relative).resolve()
         if not path.is_relative_to(Path(request["root"]).resolve()):
@@ -67,25 +97,83 @@ def reference_frames(request):
         targets = set(spec["targets"].values())
         wanted = {n + delta for n in targets for delta in (-1, 0, 1) if n + delta >= 0}
         frames = {}
-        with av.open(str(path)) as container:
-            stream = container.streams.video[0]
-            stream.codec_context.thread_count = 1
-            for index, frame in enumerate(container.decode(stream)):
-                decoded += 1
-                if decoded > request["max_decode_frames"]:
-                    raise BudgetExceeded("Sequential reference decode frame budget exhausted")
-                if index in wanted:
-                    pixels = frame.to_ndarray(format="rgb24")
-                    stored_bytes += pixels.nbytes
+        hash_start = time.perf_counter()
+        source_sha256 = reference_cache.file_sha256(path)
+        stats["hash_seconds"] += time.perf_counter() - hash_start
+        key = reference_cache.cache_key(
+            source_sha256=source_sha256,
+            relative=relative,
+            targets=wanted,
+            fps=request["fps"],
+            tool_identity=identity,
+        )
+        entry = {"video": relative, "key": key, "status": "disabled", "source_sha256": source_sha256}
+        hit = False
+        if cache_enabled:
+            cached_path = reference_cache.cache_path(cache_root, key)
+            if cached_path.exists():
+                loaded, reason = reference_cache.load(cached_path, key, targets)
+                if loaded is not None and targets <= loaded.keys():
+                    frames = loaded
+                    entry["status"] = "hit"
+                    entry["cache_file_bytes"] = cached_path.stat().st_size
+                    entry["memory_bytes"] = sum(frame.nbytes for frame in frames.values())
+                    stored_bytes += entry["memory_bytes"]
                     if stored_bytes > request["max_reference_bytes"]:
                         raise BudgetExceeded("Reference image memory budget exhausted")
-                    frames[index] = pixels
-                if index >= max(wanted):
-                    break
-        if not targets <= frames.keys():
-            raise ValueError("Sequential decode did not cover requested ordinal frames")
+                    stats["hits"] += 1
+                    stats["read_bytes"] += entry["cache_file_bytes"]
+                    hit = True
+                else:
+                    stats["misses"] += 1
+                    stats["corrupt"] += 1
+                    entry["cache_error"] = reason
+            else:
+                stats["misses"] += 1
+        if not hit:
+            decode_start = time.perf_counter()
+            with av.open(str(path)) as container:
+                stream = container.streams.video[0]
+                stream.codec_context.thread_count = 1
+                for index, frame in enumerate(container.decode(stream)):
+                    decoded += 1
+                    if decoded > request["max_decode_frames"]:
+                        raise BudgetExceeded("Sequential reference decode frame budget exhausted")
+                    if index in wanted:
+                        pixels = frame.to_ndarray(format="rgb24")
+                        stored_bytes += pixels.nbytes
+                        if stored_bytes > request["max_reference_bytes"]:
+                            raise BudgetExceeded("Reference image memory budget exhausted")
+                        frames[index] = pixels
+                    if index >= max(wanted):
+                        break
+            stats["decode_seconds"] += time.perf_counter() - decode_start
+            if not targets <= frames.keys():
+                raise ValueError("Sequential decode did not cover requested ordinal frames")
+            entry["status"] = "decoded" if not cache_enabled else "miss"
+            entry["memory_bytes"] = sum(frame.nbytes for frame in frames.values())
+            if cache_enabled:
+                try:
+                    write = reference_cache.save(
+                        cache_root,
+                        key,
+                        wanted & frames.keys(),
+                        frames,
+                        source_sha256=source_sha256,
+                        relative=relative,
+                        max_bytes=max_cache_bytes,
+                    )
+                    entry["cache_write"] = write["status"]
+                    entry["cache_file_bytes"] = write["bytes"] if write["status"] == "written" else 0
+                    if write["status"] == "written":
+                        stats["writes"] += 1
+                        stats["write_bytes"] += write["bytes"]
+                except OSError as exc:
+                    entry["cache_write"] = f"error:{type(exc).__name__}"
+        stats["entries"].append(entry)
         result[relative] = frames
-    return result, decoded, stored_bytes
+    stats["disk_bytes"] = sum(entry.get("cache_file_bytes", 0) for entry in stats["entries"])
+    return result, decoded, stored_bytes, stats
 
 
 def compare_pixels(actual, frames, expected):
@@ -152,7 +240,7 @@ def run(request):
     from torch.utils.data import DataLoader
 
     view, view_bytes = projected_view(request)
-    references, decoded, reference_bytes = reference_frames(request)
+    references, decoded, reference_bytes, cache_stats = reference_frames(request)
     phase = request["phase"]
     window = phase != "single"
     cameras, offsets = request["cameras"], request["offsets"]
@@ -380,6 +468,13 @@ def run(request):
     versions["official_video_utils_sha256"] = hashlib.sha256(Path(video_utils.__file__).read_bytes()).hexdigest()
     wrong = any(r["status"] in {"wrong_frame", "wrong_shape"} for r in records)
     partial = errors or any(r["status"] == "ambiguous" for r in records) or checked != len(order) * epochs
+    try:
+        import resource
+
+        peak_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        peak_rss_bytes = peak_rss if sys.platform == "darwin" else peak_rss * 1024
+    except (ImportError, OSError):
+        peak_rss_bytes = None
     result = {
         "status": "fail" if wrong or row_errors else "partial" if partial else "pass",
         "backend": request["backend"],
@@ -393,12 +488,14 @@ def run(request):
         "records": records,
         "row_errors": row_errors,
         "errors": errors,
+        "resource": {"peak_rss_bytes": peak_rss_bytes},
         "reference": {
             "backend": "sequential-pyav",
             "decoded_frames": decoded,
             "image_bytes": reference_bytes,
             "projected_view_bytes": view_bytes,
             "projected_cameras": cameras,
+            "cache": cache_stats,
             "shared_dependency": "FFmpeg; PyAV matches share PyAV RGB conversion",
             "approximate_rgb_rule": "uint8 MAE <= 2 and >= 0.25 separation; heuristic, not identity proof",
         },
@@ -433,10 +530,15 @@ def main():
         with contextlib.redirect_stdout(sys.stderr):
             result = run(request)
     except Exception as exc:
+        error = {"type": type(exc).__name__, "message": str(exc)[:1200]}
+        if os.environ.get("BOUNDARY_AUDIT_DEBUG"):
+            import traceback
+
+            error["traceback"] = traceback.format_exc()[-4000:]
         result = {
             "status": "partial" if isinstance(exc, BudgetExceeded) else "unavailable",
             "checked_rows": 0,
-            "errors": [{"type": type(exc).__name__, "message": str(exc)[:1200]}],
+            "errors": [error],
         }
     serialized = json.dumps(result, allow_nan=False)
     for path in (request["root"], request["cache"]):

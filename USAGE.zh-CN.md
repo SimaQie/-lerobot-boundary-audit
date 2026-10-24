@@ -45,6 +45,22 @@ Windows 使用 `.venv\Scripts\lerobot-boundary-audit.exe`；下面示例用 POSI
 CI 测试 Python 3.11 和 3.12。运行 `.venv/bin/lerobot-boundary-audit --version`
 可查看安装版本；从 `main` 运行实验时，同时记录 `git rev-parse HEAD`。
 
+### 2.1 运行前诊断
+
+`doctor` 是只读入口，报告 Python、审计/解码依赖、FFmpeg CLI、可选官方 consumer；
+提供 `--dataset` 时还会跑存储审计。`--out` 写出离线 JSON 和 HTML：
+
+```sh
+.venv/bin/lerobot-boundary-audit doctor \
+  --dataset samples/aloha \
+  --camera observation.images.cam_left_wrist \
+  --consumer-python .consumer-cpu/bin/python \
+  --out reports/doctor
+```
+
+可选组件缺失报告 `partial`；必需组件或数据集前置条件失败报告 `fail`。doctor
+不执行 loader 像素探测，也不证明物理同步。省略 `--out` 时同样把报告打印到 stdout。
+
 ## 3. 用自带示例数据跑通（无需下载，约两分钟）
 
 ### 3.1 生成示例套件
@@ -189,6 +205,11 @@ JSON 证据在 `report.json`。
 
 PASS 只覆盖所选相机和请求的检查，不是整个数据集的质量证书。
 
+非整数 FPS 或较粗 MP4 timescale 下，边界比较允许一个 sample tick 的量化
+（例如 1000 tick/s 时间轴上的 1 ms）。这样合法的舍入时间戳不会变成误报，而完整
+一帧偏移（30 FPS 下约 33 ms）仍会失败。LeRobot 公开 writer 声明整数 FPS；
+在确认 producer API 支持前，非整数数据集只应作为只读实验。
+
 ### 下载固定版本真实样本
 
 ```sh
@@ -296,6 +317,13 @@ expected/previous/next 参考帧、图像哈希和 row/episode/camera/delta 标�
 受控故障副本可加 `--allow-audit-failure` 让 loader 继续运行；失败的 preflight
 会被记录，不会隐藏。见 [ALOHA clean/offset/repaired 示例](../docs/real-robot-loader-pixels.md)。
 
+参考帧默认缓存到 `$LEROBOT_BOUNDARY_AUDIT_CACHE/reference`（或用户缓存目录）。
+缓存键包含视频 SHA-256、请求 ordinal、FPS 以及 probe/driver 身份，因此视频或
+代码变化不会复用过期像素。用 `--no-cache` 强制重新解码，用 `--cache-dir`
+指定目录，用 `--max-cache-bytes` 限制单条大小。`probe-report.json` 记录
+命中/未命中、解码秒数、读写/磁盘字节和峰值 RSS。缺失或损坏条目会回退解码；
+缓存开关不改变结论。
+
 ### 5.3 官方解码器边界检查
 
 ```sh
@@ -317,6 +345,7 @@ expected/previous/next 参考帧、图像哈希和 row/episode/camera/delta 标�
 | 窄范围 episode offset / CFR tick 修复 | `repair-plan` → `apply` → `restore` |
 | 检查官方 reader 的边界返回 | `verify` |
 | 检查完整 loader 窗口/动作/padding/worker | `probe-loader` |
+| 诊断宿主/consumer/数据集前置条件 | `doctor` |
 | 跑完整原创 marker/故障矩阵 | `conformance` |
 | 只测一个 fixture 读取方式 | `verify-loader` |
 | 用官方录制 API 重建 fixtures | `fixture-suite` |

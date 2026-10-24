@@ -10,6 +10,7 @@ from pathlib import Path
 from .audit import audit_dataset
 from .conformance import invoke
 from .probe_evidence import summarize_probe
+from .reference_cache import default_root
 from .repair import fingerprint
 
 
@@ -151,6 +152,9 @@ def probe_loader(
     visual_max_bytes=20_000_000,
     visual_output=None,
     allow_audit_failure=False,
+    reference_cache=None,
+    use_reference_cache=False,
+    max_cache_bytes=268435456,
     ffmpeg_bin=None,
     timeout=300,
 ):
@@ -167,6 +171,8 @@ def probe_loader(
         raise ValueError("Probe budgets must be positive integers")
     if type(visual_queries) is not int or visual_queries < 1 or type(visual_max_bytes) is not int or visual_max_bytes < 1:
         raise ValueError("Visual budgets must be positive integers")
+    if type(max_cache_bytes) is not int or max_cache_bytes < 1:
+        raise ValueError("Reference cache byte budget must be a positive integer")
     root = Path(root).resolve()
     if visuals and visual_output is None:
         raise ValueError("Visual output is required when visuals are enabled")
@@ -174,6 +180,11 @@ def probe_loader(
         visual_output = Path(visual_output).resolve()
         if visual_output.is_relative_to(root):
             raise ValueError("Visual output must be outside the source dataset")
+    cache_path = None
+    if reference_cache or use_reference_cache:
+        cache_path = Path(reference_cache).resolve() if reference_cache else default_root().resolve()
+        if cache_path.is_relative_to(root):
+            raise ValueError("Reference cache must be outside the source dataset")
     start = time.perf_counter()
     before = fingerprint(root)
     audit = audit_dataset(root, cameras=cameras)
@@ -207,6 +218,9 @@ def probe_loader(
         max_decode_frames=max_decode_frames,
         max_reference_bytes=max_reference_bytes,
         max_view_bytes=max_view_bytes,
+        reference_cache=str(cache_path) if cache_path else None,
+        reference_cache_enabled=bool(cache_path),
+        max_cache_bytes=max_cache_bytes,
         ffmpeg_bin=str(Path(ffmpeg_bin).resolve()) if ffmpeg_bin else None,
         visuals={
             "enabled": bool(visuals),
@@ -248,6 +262,8 @@ def probe_loader(
         preflight_status=audit["status"],
         elapsed_seconds=time.perf_counter() - start,
     )
+    if isinstance(report.get("reference"), dict) and "cache" in report["reference"]:
+        report["reference_cache"] = report["reference"]["cache"]
     if visuals:
         report["visual_evidence"] = visual_evidence or {
             "status": "unavailable",

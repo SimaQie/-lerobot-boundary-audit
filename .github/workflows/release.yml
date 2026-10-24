@@ -26,20 +26,35 @@ jobs:
             echo "Release ${GITHUB_REF_NAME} already exists and is published; refusing to overwrite."
             exit 1
           fi
+      - name: Verify tag, runtime, citation and release notes
+        run: python tools/check_release.py --tag "${GITHUB_REF_NAME}"
       - name: Locate release notes (RELEASE_NOTES_<tag>.md or RELEASE_NOTES_<version>.md)
         id: notes
         run: |
           {
             echo 'body<<RELEASE_NOTES_EOF'
             cat "RELEASE_NOTES_${GITHUB_REF_NAME}.md" 2>/dev/null \
-              || cat "RELEASE_NOTES_${GITHUB_REF_NAME#v}.md" 2>/dev/null \
-              || echo "(no release notes file found)"
+              || cat "RELEASE_NOTES_${GITHUB_REF_NAME#v}.md" 2>/dev/null
             echo 'RELEASE_NOTES_EOF'
           } >> "$GITHUB_OUTPUT"
+      - name: Run release-blocking tests
+        run: |
+          python -m pip install ".[repair,dev]"
+          python -m ruff check src tests examples research/validate_real_sample.py tools
+          python -m pytest -q
       - name: Build wheel and sdist from the fixed tag
         run: |
           python -m pip install build
           python -m build
+      - name: Verify built artifact names and versions
+        run: python tools/check_release.py --tag "${GITHUB_REF_NAME}" --dist dist
+      - name: Install the wheel in an isolated environment and run smoke checks
+        run: |
+          python -m venv .release-env
+          .release-env/bin/python -m pip install --upgrade pip
+          WHEEL=$(ls dist/*.whl)
+          .release-env/bin/python -m pip install "${WHEEL}[repair]"
+          .release-env/bin/python -I examples/check_distribution.py --out release-check
       - name: Publish the tagged release
         uses: softprops/action-gh-release@v2
         with:

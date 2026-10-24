@@ -126,12 +126,86 @@
   "legal_controls": {
     "action_window_fault": "detected by conformance fixture; repair-plan returns no_changes (outside repair scope)",
     "subset_padding": ": covered by conformance subset and probe phases; no missing/unexpected query slots",
-    "repeated_frames": "ALOHA probes remain partial/ambiguous; not converted to PASS"
+    "repeated_frames": "ALOHA probes remain partial/ambiguous; not converted to PASS",
+    "noninteger_and_rounding": "Triangular 30000/1001 and 1 ms timescale controls pass; a real one-frame offset still fails."
   },
   "open_items": [
-    "environment doctor/unified entry not added in this round",
-    "reference cache/invalidation not added in this round",
-    "non-integer FPS/timebase rounding fixture not added",
-    "no newer stable LeRobot than 0.6.1 was available to test"
-  ]
+    "No newer stable LeRobot than 0.6.1 was available to test; 0.6.0 is the previous stable.",
+    "Visual evidence covers selected query rows, not whole-dataset or physical synchronization.",
+    "No tag or GitHub Release was created in this development round."
+  ],
+  "environment_doctor": {
+    "status": "partial",
+    "dataset_status": "pass",
+    "consumer_status": "pass",
+    "ffmpeg_cli": "partial without an ffmpeg executable on PATH; pass with --ffmpeg-bin (FFmpeg 7.1.1)",
+    "consumer_version": "0.6.1",
+    "note": "Read-only diagnosis includes GPU inventory but does not claim GPU decode or loader pixels.",
+    "full_doctor_status_with_ffmpeg": "pass"
+  },
+  "reference_cache": {
+    "dataset": "aloha_screw_driver",
+    "camera": "observation.images.cam_left_wrist",
+    "selected_episodes": 50,
+    "dataset_rows": 20000,
+    "fps": 50,
+    "max_rows": 6,
+    "phase": "window",
+    "cold": {
+      "elapsed_seconds": 19.620229174994165,
+      "decode_seconds": 16.1554611279862,
+      "cache_misses": 1,
+      "cache_writes": 1,
+      "cache_bytes": 3567087,
+      "peak_rss_bytes": 996261888
+    },
+    "warm": {
+      "elapsed_seconds": 3.2943623189930804,
+      "decode_seconds": 0.0,
+      "cache_hits": 1,
+      "cache_read_bytes": 3567087,
+      "peak_rss_bytes": 986300416
+    },
+    "probe_conclusion": {
+      "status": "partial",
+      "checked_rows": 6,
+      "pass": 7,
+      "ambiguous": 11,
+      "errors": 0
+    },
+    "conclusions_identical": true,
+    "records_identical": true,
+    "note": "Content-addressed cache; key includes source SHA-256, ordinals, FPS and driver/tool identity. Warm run reused pixels without decoding."
+  },
+  "timebase_rounding": {
+    "policy": "Accept one MP4 sample tick of timestamp quantization; a one-frame offset still fails.",
+    "fractional_fps": "30000/1001 audit PASS",
+    "millisecond_timescale": "30 FPS on a 1000 tick/s timeline audit PASS",
+    "one_frame_offset": "same rounded timeline with a one-frame shift audit FAIL",
+    "writer_note": "LeRobot public create() declares fps: int; non-integer producer support is not claimed."
+  },
+  "release_gate": {
+    "checker": "tools/check_release.py",
+    "checks": [
+      "tag vs pyproject/runtime/CITATION",
+      "release notes present",
+      "exactly one wheel and sdist with tag version"
+    ],
+    "local_artifacts": "wheel and sdist built for 0.4.3; isolated wheel install + check_distribution PASS",
+    "published": false,
+    "note": "Release workflow now runs metadata checks, lint/tests, artifact checks and isolated install before publishing. No tag or Release was created in this round."
+  },
+  "current_code_checks": {
+    "pytest": {
+      "passed": 133,
+      "failed": 0
+    },
+    "ruff": "pass",
+    "conformance_rerun": {
+      "0.6.1": "208/208",
+      "0.6.0": "208/208"
+    },
+    "official_verify_rerun": "ALOHA, TorchCodec: pass (300 boundary queries)",
+    "release_artifacts": "0.4.3 wheel/sdist metadata check pass; isolated wheel install and check_distribution pass"
+  }
 }

@@ -24,6 +24,7 @@ def main(argv=None):
         "verify-loader",
         "conformance",
         "probe-loader",
+        "doctor",
         "demo",
     }
     if argv and argv[0] not in commands and not argv[0].startswith("-"):
@@ -65,6 +66,13 @@ def main(argv=None):
     cmd.add_argument("--out", type=Path, required=True)
     cmd = sub.add_parser("demo")
     cmd.add_argument("--out", type=Path, required=True)
+    cmd = sub.add_parser("doctor")
+    cmd.add_argument("--dataset", type=Path, action="append", dest="datasets")
+    cmd.add_argument("--camera", action="append", dest="cameras")
+    cmd.add_argument("--consumer-python", help="Interpreter with official LeRobot installed")
+    cmd.add_argument("--ffmpeg-bin", type=Path)
+    cmd.add_argument("--tolerance", type=float, default=0.0001)
+    cmd.add_argument("--out", type=Path, help="Optional directory for doctor.json and doctor.html")
     cmd = sub.add_parser("probe-loader")
     cmd.add_argument("root", type=Path)
     cmd.add_argument("--out", type=Path, required=True)
@@ -90,6 +98,9 @@ def main(argv=None):
         action="store_true",
         help="Run loader pixel evidence on a controlled-fault copy even when preflight audit fails",
     )
+    cmd.add_argument("--cache-dir", type=Path, help="Persistent reference-frame cache directory")
+    cmd.add_argument("--no-cache", action="store_true", help="Decode every reference frame without reading or writing cache")
+    cmd.add_argument("--max-cache-bytes", type=int, default=268435456)
     cmd.add_argument("--timeout", type=int, default=300)
     cmd.add_argument("--ffmpeg-bin", type=Path)
     for name in ["fixture-suite", "verify-loader", "conformance"]:
@@ -125,8 +136,25 @@ def main(argv=None):
         "probe-loader",
     } and args.out.resolve().is_relative_to(args.root.resolve()):
         parser.error("Output must be outside the source dataset")
+    if args.command == "doctor" and args.out:
+        for root in args.datasets or []:
+            if args.out.resolve().is_relative_to(root.resolve()):
+                parser.error("Output must be outside every diagnosed dataset")
     try:
-        if args.command == "demo":
+        if args.command == "doctor":
+            from .doctor import diagnose, write_doctor
+
+            result = diagnose(
+                datasets=args.datasets or (),
+                cameras=args.cameras,
+                tolerance=args.tolerance,
+                consumer_python=args.consumer_python,
+                ffmpeg_bin=args.ffmpeg_bin,
+            )
+            if args.out:
+                write_doctor(result, args.out)
+            summary = result
+        elif args.command == "demo":
             from .fixtures import export_demo
 
             result = export_demo(args.out)
@@ -136,7 +164,9 @@ def main(argv=None):
             summary = result
         elif args.command == "probe-loader":
             from .probe import probe_loader
+            from .reference_cache import default_root
 
+            cache_dir = None if args.no_cache else (args.cache_dir or default_root())
             result = probe_loader(
                 args.root,
                 args.python,
@@ -156,6 +186,9 @@ def main(argv=None):
                 visual_max_bytes=args.visual_max_bytes,
                 visual_output=args.out / "visuals" if args.visuals else None,
                 allow_audit_failure=args.allow_audit_failure,
+                reference_cache=cache_dir,
+                use_reference_cache=not args.no_cache,
+                max_cache_bytes=args.max_cache_bytes,
                 timeout=args.timeout,
                 ffmpeg_bin=args.ffmpeg_bin,
             )

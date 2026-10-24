@@ -101,6 +101,35 @@ def test_cli_ambiguous_probe_is_partial_with_reports_and_exit_two(tmp_path, monk
     assert "ambiguous" in (output / "report.html").read_text()
 
 
+def test_probe_forwards_bounded_reference_cache_configuration(tmp_path, monkeypatch):
+    root = tmp_path / "demo"
+    export_demo(root)
+    captured = {}
+
+    def invoke(driver, python, request, **kwargs):
+        captured.update(request)
+        return {"status": "pass", "checked_rows": 0}
+
+    monkeypatch.setattr("boundary_audit.probe.invoke", invoke)
+    cache = tmp_path / "cache"
+    probe_loader(
+        root / "merged",
+        "stub",
+        max_rows=1,
+        reference_cache=cache,
+        use_reference_cache=True,
+        max_cache_bytes=1234,
+    )
+    assert captured["reference_cache"] == str(cache.resolve())
+    assert captured["reference_cache_enabled"] is True
+    assert captured["max_cache_bytes"] == 1234
+    with pytest.raises(ValueError, match="outside"):
+        probe_loader(root / "merged", "stub", reference_cache=root / "merged/cache", use_reference_cache=True)
+    probe_loader(root / "merged", "stub", max_rows=1)
+    assert captured["reference_cache"] is None
+    assert captured["reference_cache_enabled"] is False
+
+
 def test_no_source_write_even_if_official_process_changes_its_input(tmp_path, monkeypatch):
     root = tmp_path / "demo"
     export_demo(root)

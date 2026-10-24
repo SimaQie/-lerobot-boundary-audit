@@ -70,6 +70,7 @@ checks and repair/restore:
 | Check an official decoder at boundaries | `verify` |
 | Check full loader windows/actions/padding/workers | `probe-loader` |
 | Run the 13-case marker/fault matrix | `conformance` |
+| Diagnose host, consumer and dataset prerequisites | `doctor` |
 | Repair supported timeline defects | `repair-plan` → `apply` → `restore` |
 | Create the offline example suite | `demo` |
 | Download a pinned real sample | `download aloha_screw_driver` |
@@ -146,6 +147,34 @@ TorchCodec needs a compatible FFmpeg runtime. On Windows pass
 `--ffmpeg-bin PATH_TO_SHARED_FFMPEG_BIN`; on Linux make the shared libraries
 discoverable (for example via `LD_LIBRARY_PATH`).
 
+## Diagnose before a run
+
+`doctor` is the read-only entry point for host, optional consumer and dataset
+prerequisites. It imports the official `LeRobotDataset` in the consumer process,
+runs the storage audit when `--dataset` is supplied, and writes an offline
+`doctor.json`/`doctor.html` when `--out` is supplied:
+
+```sh
+.venv/bin/lerobot-boundary-audit doctor \
+  --dataset samples/aloha_screw_driver \
+  --camera observation.images.cam_left_wrist \
+  --consumer-python .consumer-cpu/bin/python \
+  --out reports/doctor
+```
+
+It reports missing Torch/PyAV/FFmpeg pieces and unsupported datasets explicitly;
+it does not run a loader pixel probe or claim physical synchronization. Without
+`--dataset` it diagnoses only the environment.
+
+`probe-loader` caches decoded reference frames by default in
+`$LEROBOT_BOUNDARY_AUDIT_CACHE/reference` (or the platform cache directory).
+The key binds the video SHA-256, requested ordinals, FPS and probe/driver
+identity, so edited video or code invalidates entries. Use `--no-cache` to
+disable it, `--cache-dir` to choose a location, and `--max-cache-bytes` to bound
+each entry. The JSON report records hits/misses, decode seconds, cache bytes and
+peak RSS. A missing or corrupt entry is a miss, and cache on/off does not change
+probe conclusions.
+
 ## GPU machines
 
 The supported path on a GPU machine is the same CPU pipeline used above. On an
@@ -160,9 +189,14 @@ GPU machines do not need a different code path for the data checks.
 
 ## Scope and limits
 
-- One tested upstream version (LeRobot 0.6.1); other versions need their own run.
+- Tested upstream versions are LeRobot 0.6.1 (latest stable) and 0.6.0; other
+  versions need their own run.
 - The marker suite is synthetic H.264; real samples are AV1. Marker identity is
   not a general content detector for arbitrary footage.
+- `audit` accepts one MP4 sample-tick of timestamp quantization at non-integer
+  FPS or coarse timescales. This does not hide a one-frame offset; the official
+  LeRobot writer declares integer FPS, so non-integer datasets are read-only
+  metadata experiments unless the producer API supports them.
 - No physical synchronization, training, robot-success or natural-defect claim.
 - PARTIAL/ambiguous results are retained; they are not converted to PASS.
 - Repair supports only narrow episode-offset/CFR tick-grid defects and always
@@ -173,7 +207,7 @@ GPU machines do not need a different code path for the data checks.
 ```sh
 .venv/bin/python -m pip install ".[repair,dev]"
 .venv/bin/python -m pytest -q
-.venv/bin/python -m ruff check src tests examples research/validate_real_sample.py
+.venv/bin/python -m ruff check src tests examples research/validate_real_sample.py tools
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [USAGE.md](USAGE.md),

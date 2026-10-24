@@ -61,6 +61,7 @@ def audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
                 "video_files_checked": 0,
             },
             "decoder": {"requested": decode, "status": "not_completed", "backend": "pyav"},
+            "boundary_tolerance_seconds": "max(requested tolerance, one sample tick)",
             "limitations": ["Prerequisite failure prevented complete audit; no unperformed check passed"],
             "findings": [
                 {
@@ -206,7 +207,10 @@ def _audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
                 continue
             expected_begin = float(Fraction(timeline.tick_at(cursor), timeline.timescale))
             expected_end = float(Fraction(timeline.end_tick_at(cursor + length - 1), timeline.timescale))
-            if abs(begin - expected_begin) > tolerance:
+            # A declared timestamp can only be represented on the sample-tick
+            # grid. Allow one tick, without masking a one-frame offset.
+            frame_tolerance = max(tolerance, 1.0 / timeline.timescale)
+            if abs(begin - expected_begin) > frame_tolerance:
                 add(
                     "EPISODE_START_MISMATCH",
                     "error",
@@ -215,7 +219,7 @@ def _audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
                     video_seconds=expected_begin,
                     **location,
                 )
-            if abs(end - expected_end) > tolerance:
+            if abs(end - expected_end) > frame_tolerance:
                 add(
                     "EPISODE_END_MISMATCH",
                     "error",
@@ -239,6 +243,7 @@ def _audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
                     "request_seconds": float(requested),
                     "video_pts_seconds": expected_tick / timeline.timescale,
                     "deviation_seconds": deviation,
+                    "timebase_tolerance_seconds": frame_tolerance,
                 }
                 boundaries.append(record)
             checked_episodes += 1
@@ -412,7 +417,7 @@ def _audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
         query["request_seconds"] = query["episode_start_seconds"] + ts
         query["deviation_seconds"] = abs(query["request_seconds"] - query["video_pts_seconds"])
         valid_boundaries.append(query)
-        if query["deviation_seconds"] > tolerance:
+        if query["deviation_seconds"] > query["timebase_tolerance_seconds"]:
             add(
                 "BOUNDARY_QUERY_MISMATCH",
                 "error",
@@ -468,7 +473,10 @@ def _audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
                                 "request_distance_seconds": nearest[0],
                             }
                             decode_evidence.append(record)
-                            if nearest[0] > tolerance or abs(nearest[1] - query["video_pts_seconds"]) > tolerance:
+                            if (
+                                nearest[0] > query["timebase_tolerance_seconds"]
+                                or abs(nearest[1] - query["video_pts_seconds"]) > query["timebase_tolerance_seconds"]
+                            ):
                                 add(
                                     "DECODE_BOUNDARY_MISMATCH",
                                     "error",
@@ -515,6 +523,7 @@ def _audit_dataset(root, *, decode=False, tolerance=0.0001, cameras=None):
             "decoded_queries": decoded_checks,
         },
         "tolerance_seconds": tolerance,
+        "boundary_tolerance_seconds": "max(requested tolerance, one sample tick)",
         "decoder": decoder_info,
         "limitations": [
             "Fragmented MP4, trimming/multiple edits and large composition tables are unsupported",

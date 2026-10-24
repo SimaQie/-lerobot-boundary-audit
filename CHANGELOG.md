@@ -10,6 +10,18 @@
   stale-image cleanup and `--allow-audit-failure` for controlled fault copies.
 - Add a reproducible ALOHA clean/authored-offset/repaired loader-pixel example,
   public images/JSON/HTML, and a 20-second MIT-attributed source clip.
+- Add `doctor`: a read-only host/consumer/dataset diagnosis with missing-item
+  actions and offline JSON/HTML, without claiming a loader probe.
+- Add a content-addressed reference-frame cache for `probe-loader`, including
+  content/code/tool invalidation, corrupt-entry fallback, `--no-cache`,
+  `--cache-dir`, per-entry byte bounds, cold/warm timing, disk bytes and peak RSS.
+  Cache on/off preserves identical verdicts and records.
+- Accept one MP4 sample-tick of timestamp quantization for non-integer FPS and
+  coarse timescales, with tests that a one-frame offset still fails. LeRobot's
+  public writer still declares integer FPS; no producer support is claimed.
+- Harden tag releases: compare tag, package, runtime and CITATION versions,
+  require release notes, run tests/lint, verify artifact names, and install the
+  wheel in an isolated environment before publishing assets.
 - Validate two stable LeRobot generations (0.6.1 latest; 0.6.0 previous; no
   newer stable release exists): 208/208 conformance each, 16/16 official verify,
   96 probe runs (72 pass/24 partial, no missing/unexpected slots), and 8/8 full
