@@ -17,7 +17,7 @@ def test_installed_driver_cannot_import_parent_environment_dependencies(tmp_path
     owned = tmp_path / "site-packages/boundary_audit"
     owned.mkdir(parents=True)
     original = Path(__file__).resolve().parents[1] / "src/boundary_audit"
-    for name in [driver, "identity.py", "storage.py", "row_contract.py"]:
+    for name in [driver, "identity.py", "storage.py", "row_contract.py", "visuals.py", "audit.py", "mp4.py", "__init__.py"]:
         shutil.copyfile(original / name, owned / name)
     (owned.parent / "boundary_poison.py").write_text("raise RuntimeError('parent environment leaked')")
     script = "import runpy, sys, importlib.util; before=list(sys.path); runpy.run_path(sys.argv[1], run_name='driver_only'); assert sys.path == before; assert importlib.util.find_spec('boundary_poison') is None"

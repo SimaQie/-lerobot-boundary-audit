@@ -1,9 +1,19 @@
 # Changelog
 
-## Unreleased
+## Unreleased (planned 0.5.0)
 
-- Add opt-in bounded local-PyAV boundary frame previews with ordinal, neighbour and observed-frame evidence.
-- Add an attributed real ALOHA report example and the next-stage agent development SOP.
+- Add opt-in bounded local-PyAV boundary frame previews with ordinal, neighbour
+  and observed-frame evidence.
+- Add `probe-loader --visuals`: capture actual LeRobotDataset item tensors,
+  independent expected/previous/next references, source/image hashes, returned
+  labels and offline relative HTML evidence. Add bounded byte/query handling,
+  stale-image cleanup and `--allow-audit-failure` for controlled fault copies.
+- Add a reproducible ALOHA clean/authored-offset/repaired loader-pixel example,
+  public images/JSON/HTML, and a 20-second MIT-attributed source clip.
+- Validate two stable LeRobot generations (0.6.1 latest; 0.6.0 previous; no
+  newer stable release exists): 208/208 conformance each, 16/16 official verify,
+  96 probe runs (72 pass/24 partial, no missing/unexpected slots), and 8/8 full
+  real validations. GPU remains out of scope for this CPU product path.
 
 
 ## 0.4.3 — 2026-10-24

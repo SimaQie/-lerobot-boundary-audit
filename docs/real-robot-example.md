@@ -1,5 +1,8 @@
 # Real robot boundary evidence: ALOHA
 
+See [official-loader pixel evidence](real-robot-loader-pixels.md) for actual
+official `LeRobotDataset`-returned pixels (clean, authored offset, repaired).
+
 This reproducible example uses real bimanual screw-driver footage from
 [lerobot/aloha_static_screw_driver](https://huggingface.co/datasets/lerobot/aloha_static_screw_driver),
 revision `21eead16760a8d94d449cadf4bc438b322ab528d`.

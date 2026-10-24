@@ -1,0 +1,137 @@
+{
+  "schema_version": "boundary-v050-results.v1",
+  "base_main_commit": "938d1a1",
+  "versions": {
+    "latest_stable": "0.6.1",
+    "comparison_stable": "0.6.0",
+    "note": "PyPI/GitHub had no stable release newer than 0.6.1 on 2026-10-25; 0.6.0 is the previous stable release."
+  },
+  "conformance": {
+    "061": {
+      "status": "pass",
+      "checks": 208,
+      "matched": 208
+    },
+    "060": {
+      "status": "pass",
+      "checks": 208,
+      "matched": 208
+    }
+  },
+  "verify": {
+    "runs": 16,
+    "statuses": {
+      "pass": 16
+    },
+    "requested": 5508,
+    "checked": 5508
+  },
+  "probe": {
+    "runs": 96,
+    "statuses": {
+      "partial": 24,
+      "pass": 72
+    },
+    "requested_rows": 128,
+    "checked_rows": 128,
+    "frame_checks": 616,
+    "missing_query_slots": 0,
+    "unexpected_query_slots": 0,
+    "errors": 0
+  },
+  "validations": {
+    "agibot2026-060": {
+      "status": "expected_outcomes_met",
+      "official": {
+        "pyav": "pass",
+        "torchcodec": "pass"
+      },
+      "exact_restore": true,
+      "source_unchanged": true
+    },
+    "agibot2026-061": {
+      "status": "expected_outcomes_met",
+      "official": {
+        "pyav": "pass",
+        "torchcodec": "pass"
+      },
+      "exact_restore": true,
+      "source_unchanged": true
+    },
+    "aloha-060": {
+      "status": "expected_outcomes_met",
+      "official": {
+        "pyav": "pass",
+        "torchcodec": "pass"
+      },
+      "exact_restore": true,
+      "source_unchanged": true
+    },
+    "aloha-061": {
+      "status": "expected_outcomes_met",
+      "official": {
+        "pyav": "pass",
+        "torchcodec": "pass"
+      },
+      "exact_restore": true,
+      "source_unchanged": true
+    },
+    "cmu_stretch-060": {
+      "status": "expected_outcomes_met",
+      "official": {
+        "pyav": "pass",
+        "torchcodec": "pass"
+      },
+      "exact_restore": true,
+      "source_unchanged": true
+    },
+    "cmu_stretch-061": {
+      "status": "expected_outcomes_met",
+      "official": {
+        "pyav": "pass",
+        "torchcodec": "pass"
+      },
+      "exact_restore": true,
+      "source_unchanged": true
+    },
+    "utokyo_xarm-060": {
+      "status": "expected_outcomes_met",
+      "official": {
+        "pyav": "pass",
+        "torchcodec": "pass"
+      },
+      "exact_restore": true,
+      "source_unchanged": true
+    },
+    "utokyo_xarm-061": {
+      "status": "expected_outcomes_met",
+      "official": {
+        "pyav": "pass",
+        "torchcodec": "pass"
+      },
+      "exact_restore": true,
+      "source_unchanged": true
+    }
+  },
+  "loader_pixel_evidence": {
+    "groups": [
+      "clean",
+      "authored-offset",
+      "repaired"
+    ],
+    "source": "docs/assets/aloha-loader-pixels",
+    "clip": "docs/assets/aloha-loader-pixels/aloha-20s.mp4",
+    "note": "Actual LeRobotDataset item tensors; clean/offset/repaired ALOHA episode 25, left wrist."
+  },
+  "legal_controls": {
+    "action_window_fault": "detected by conformance fixture; repair-plan returns no_changes (outside repair scope)",
+    "subset_padding": ": covered by conformance subset and probe phases; no missing/unexpected query slots",
+    "repeated_frames": "ALOHA probes remain partial/ambiguous; not converted to PASS"
+  },
+  "open_items": [
+    "environment doctor/unified entry not added in this round",
+    "reference cache/invalidation not added in this round",
+    "non-integer FPS/timebase rounding fixture not added",
+    "no newer stable LeRobot than 0.6.1 was available to test"
+  ]
+}

@@ -148,6 +148,12 @@ GPU 机器上使用同一套 CPU 数据管线。RTX 4090/WSL2 的记录覆盖 co
 
 `audit --visuals` 会自动启用解码，最多为四个边界查询保存预期帧、相邻帧与根据本地 PyAV 返回 PTS 顺序重建的帧。打开输出目录的 report.html，分享时保留同目录 JPEG。画面不是官方 loader 的像素采集，不改变审计结论；重复画面不能证明唯一帧身份。总解码预算 50,000 帧，未完成情况显式报告。该功能晚于 v0.4.3，需安装当前 main。生成画面仍受原数据集许可约束。
 
+**官方 loader 实际返回像素**要用官方 consumer 的 `probe-loader --visuals`：它会保存
+`LeRobotDataset` 实际返回张量、独立的 expected/previous/next 参考、哈希、返回标签和
+可离线打开的相对路径 HTML。ALOHA 的 clean/人工偏移/修复三组证据见
+[official-loader pixel evidence](docs/real-robot-loader-pixels.md)。这与 `audit --visuals`
+的本地 PyAV 重建不同。
+
 真实 ALOHA 示例及命令见 [真实机器人示例](docs/real-robot-example.md)。下一阶段开发与实验见 [远方 agent SOP](research/NEXT_VERSION_SOP.zh-CN.md)。
 
 ![Real ALOHA robot boundary frame](docs/assets/aloha-boundary/boundary-0-10400-ca02fbb6e8e83b7b.jpg)

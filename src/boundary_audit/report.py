@@ -111,6 +111,45 @@ def write_probe_html(report, path):
             ]
             content += "<tr>" + "".join("<td>" + escape(str(v)) + "</td>" for v in cells) + "</tr>"
         content += "</table>"
+    visual = report.get("visual_evidence")
+    if visual:
+        content += (
+            "<h2>Official loader returned pixels</h2><p>Preview status: <strong>"
+            + escape(str(visual.get("status")))
+            + "</strong>. "
+            + escape(str(visual.get("pixel_provenance", "")))
+            + " Images are relative to this report. This is a bounded preview, not whole-dataset coverage.</p>"
+        )
+        for record in visual.get("records", []):
+            content += (
+                "<article><h3>"
+                + escape(f"{record.get('camera')} · row {record.get('row_index')} · episode "
+                         f"{record.get('episode_index')} · frame {record.get('frame_index')}")
+                + "</h3><p>Expected ordinal "
+                + escape(str(record.get("expected_ordinal")))
+                + " · expected nominal PTS "
+                + escape(str(record.get("expected_pts_seconds")))
+                + " s · actual loader labels "
+                + escape(json.dumps(record.get("actual_returned_labels"), ensure_ascii=False))
+                + " · comparison "
+                + escape(str((record.get("comparison") or {}).get("status")))
+                + "</p>"
+            )
+            if record.get("error"):
+                content += "<p><strong>Preview error:</strong> " + escape(str(record["error"])) + "</p>"
+            content += '<div style="display:flex;flex-wrap:wrap;gap:12px">'
+            for image in record.get("images", []):
+                content += (
+                    '<figure style="max-width:320px;margin:0"><img style="width:100%" src="'
+                    + escape(str(image.get("path")), quote=True)
+                    + '" alt="Loader evidence frame">'
+                    + "<figcaption>"
+                    + escape(str(image.get("role")))
+                    + " · sha256 "
+                    + escape(str(image.get("sha256"))[:16])
+                    + "</figcaption></figure>"
+                )
+            content += "</div></article>"
     content += (
         "<details><summary>Scope, budgets, versions and row evidence</summary><pre>"
         + escape(json.dumps(summary, indent=2, ensure_ascii=False))

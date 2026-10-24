@@ -281,6 +281,21 @@ Windows 使用 `.consumer-cpu\Scripts\python.exe`；TorchCodec 可能需要
 解码参考比较画面、动作和 padding。真实视频的重复邻帧/跨后端颜色差异可能得到
 `ambiguous`/`partial`，这是有效结果，不应强行改成 PASS。该结果不是物理同步证明。
 
+加 `--visuals --visual-queries 2` 会保存**实际 loader 返回像素**，以及独立的
+expected/previous/next 参考帧、图像哈希和 row/episode/camera/delta 标签。图像
+写入报告目录，HTML 使用相对路径，可离线打开：
+
+```sh
+.venv/bin/lerobot-boundary-audit probe-loader samples/aloha \
+  --camera observation.images.cam_left_wrist --episode 25 \
+  --python .consumer-cpu/bin/python --backend torchcodec \
+  --phase window --max-rows 2 --visuals --visual-queries 2 \
+  --out reports/aloha-loader-pixels
+```
+
+受控故障副本可加 `--allow-audit-failure` 让 loader 继续运行；失败的 preflight
+会被记录，不会隐藏。见 [ALOHA clean/offset/repaired 示例](../docs/real-robot-loader-pixels.md)。
+
 ### 5.3 官方解码器边界检查
 
 ```sh

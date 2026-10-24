@@ -12,4 +12,4 @@ include research/GPU_MACHINE_VALIDATION.md
 recursive-include src/boundary_audit/resources *.zip
 
 include research/NEXT_VERSION_SOP.zh-CN.md
-recursive-include docs *.md *.json *.jpg *.html
+recursive-include docs *.md *.json *.jpg *.html *.mp4

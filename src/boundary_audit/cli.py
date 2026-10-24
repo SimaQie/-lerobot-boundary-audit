@@ -82,6 +82,14 @@ def main(argv=None):
     cmd.add_argument("--max-decode-frames", type=int, default=50000)
     cmd.add_argument("--max-reference-bytes", type=int, default=268435456)
     cmd.add_argument("--max-view-bytes", type=int, default=314572800)
+    cmd.add_argument("--visuals", action="store_true", help="Capture actual loader-returned pixels and references")
+    cmd.add_argument("--visual-queries", type=int, default=4)
+    cmd.add_argument("--visual-max-bytes", type=int, default=20_000_000)
+    cmd.add_argument(
+        "--allow-audit-failure",
+        action="store_true",
+        help="Run loader pixel evidence on a controlled-fault copy even when preflight audit fails",
+    )
     cmd.add_argument("--timeout", type=int, default=300)
     cmd.add_argument("--ffmpeg-bin", type=Path)
     for name in ["fixture-suite", "verify-loader", "conformance"]:
@@ -143,6 +151,11 @@ def main(argv=None):
                 max_decode_frames=args.max_decode_frames,
                 max_reference_bytes=args.max_reference_bytes,
                 max_view_bytes=args.max_view_bytes,
+                visuals=args.visuals,
+                visual_queries=args.visual_queries,
+                visual_max_bytes=args.visual_max_bytes,
+                visual_output=args.out / "visuals" if args.visuals else None,
+                allow_audit_failure=args.allow_audit_failure,
                 timeout=args.timeout,
                 ffmpeg_bin=args.ffmpeg_bin,
             )

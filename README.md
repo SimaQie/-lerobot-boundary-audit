@@ -122,6 +122,9 @@ This runs the storage/decode audit, official PyAV and TorchCodec boundary checks
 full PTS reference, authored offset control, repair, official recheck, exact
 restore and index-corruption rejection.
 
+For actual loader-returned pixel evidence, including a clean/authored-offset/repaired ALOHA example, see
+[docs/real-robot-loader-pixels.md](docs/real-robot-loader-pixels.md).
+
 ## Optional official reader environment
 
 The audit environment intentionally does not install Torch. For `verify`,
@@ -191,6 +194,13 @@ media retains the source dataset's license. This feature is newer than v0.4.3.
 .venv/bin/lerobot-boundary-audit audit samples/aloha_screw_driver \
   --camera observation.images.cam_left_wrist --visuals --out reports/aloha-frames
 ```
+
+For **actual official-loader pixels**, use `probe-loader --visuals` with an
+official consumer. It captures the `LeRobotDataset` returned tensor plus
+independent expected/previous/next references, hashes, returned labels and
+offline relative HTML; see the ALOHA clean/authored-offset/repaired example in
+[official-loader pixel evidence](docs/real-robot-loader-pixels.md). This is
+different from `audit --visuals`, which shows local PyAV reconstruction.
 
 See the [real robot example](docs/real-robot-example.md) and
 [next-stage agent SOP](research/NEXT_VERSION_SOP.zh-CN.md).

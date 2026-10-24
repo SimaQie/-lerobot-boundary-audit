@@ -1,0 +1,58 @@
+{
+  "schema_version": "boundary-loader-pixel-evidence.v1",
+  "source": {
+    "repository": "lerobot/aloha_static_screw_driver",
+    "revision": "21eead16760a8d94d449cadf4bc438b322ab528d",
+    "license": "mit",
+    "total_bytes": 258967368,
+    "selected_cameras": [
+      "observation.images.cam_left_wrist",
+      "observation.images.cam_right_wrist"
+    ]
+  },
+  "camera": "observation.images.cam_left_wrist",
+  "episode": 25,
+  "authored_fault": {
+    "kind": "episode_start_end_offset",
+    "shift_seconds": 0.02,
+    "copy": "authored-offset"
+  },
+  "groups": {
+    "clean": {
+      "status": "partial",
+      "preflight_status": "pass",
+      "preflight_override": null,
+      "visual_status": "complete",
+      "visual_records": 2,
+      "report": "clean-evidence/report.html",
+      "json": "clean-evidence/probe-report.json"
+    },
+    "authored-offset": {
+      "status": "fail",
+      "preflight_status": "fail",
+      "preflight_override": "Audit failed; loader pixel evidence was requested explicitly for a controlled fault",
+      "visual_status": "complete",
+      "visual_records": 2,
+      "report": "authored-offset-evidence/report.html",
+      "json": "authored-offset-evidence/probe-report.json"
+    },
+    "repaired": {
+      "status": "partial",
+      "preflight_status": "pass",
+      "preflight_override": null,
+      "visual_status": "complete",
+      "visual_records": 2,
+      "report": "repaired-evidence/report.html",
+      "json": "repaired-evidence/probe-report.json"
+    }
+  },
+  "source_unchanged": true,
+  "note": "Actual LeRobotDataset item tensors; controlled copy offset, not an upstream defect.",
+  "clip": {
+    "path": "aloha-20s.mp4",
+    "seconds": 20,
+    "bytes": 737601,
+    "sha256": "5ed9fde0b2e65156b934b0a08f2c81e742a1282d520f5757a01eefa361a90572",
+    "rebuild": "ffmpeg -ss 0 -t 20 -i SOURCE_VIDEO -an -c:v libx264 -crf 30 -pix_fmt yuv420p aloha-20s.mp4"
+  }
+}

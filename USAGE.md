@@ -302,6 +302,23 @@ reference. It also checks action values and padding masks. Repeated or
 near-repeated real frames can be reported as `ambiguous` / `partial`; that is a
 valid result, not a hidden failure. A probe PASS is not physical synchronization.
 
+Add `--visuals --visual-queries 2` to capture the **actual loader-returned
+pixels** plus independent expected/previous/next references, image hashes and the
+row/episode/camera/delta labels. Images are written under the report directory
+and the HTML uses relative paths, so it opens offline:
+
+```sh
+.venv/bin/lerobot-boundary-audit probe-loader samples/aloha \
+  --camera observation.images.cam_left_wrist --episode 25 \
+  --python .consumer-cpu/bin/python --backend torchcodec \
+  --phase window --max-rows 2 --visuals --visual-queries 2 \
+  --out reports/aloha-loader-pixels
+```
+
+A controlled-fault copy can be supplied with `--allow-audit-failure` so the
+loader still runs; the failed preflight is recorded and is not hidden. See the
+[ALOHA clean/offset/repaired example](../docs/real-robot-loader-pixels.md).
+
 ### 5.3 Official decoder boundary check
 
 ```sh

@@ -146,6 +146,11 @@ def probe_loader(
     max_decode_frames=50000,
     max_reference_bytes=268435456,
     max_view_bytes=314572800,
+    visuals=False,
+    visual_queries=4,
+    visual_max_bytes=20_000_000,
+    visual_output=None,
+    allow_audit_failure=False,
     ffmpeg_bin=None,
     timeout=300,
 ):
@@ -160,11 +165,19 @@ def probe_loader(
         raise ValueError("Unsupported probe backend or phase")
     if any(type(n) is not int or n <= 0 for n in (max_decode_frames, max_reference_bytes, max_view_bytes, timeout)):
         raise ValueError("Probe budgets must be positive integers")
+    if type(visual_queries) is not int or visual_queries < 1 or type(visual_max_bytes) is not int or visual_max_bytes < 1:
+        raise ValueError("Visual budgets must be positive integers")
     root = Path(root).resolve()
+    if visuals and visual_output is None:
+        raise ValueError("Visual output is required when visuals are enabled")
+    if visuals:
+        visual_output = Path(visual_output).resolve()
+        if visual_output.is_relative_to(root):
+            raise ValueError("Visual output must be outside the source dataset")
     start = time.perf_counter()
     before = fingerprint(root)
     audit = audit_dataset(root, cameras=cameras)
-    if audit["status"] != "pass":
+    if audit["status"] != "pass" and not allow_audit_failure:
         return {
             "schema_version": "boundary-real-probe.v1",
             "backend": backend,
@@ -176,9 +189,12 @@ def probe_loader(
             "checked_rows": 0,
             "note": "Storage prerequisites did not pass; full loader probe was not run",
         }
+    checked_cameras = cameras or audit.get("selection", {}).get("checked_cameras")
+    if not checked_cameras:
+        raise ValueError("No checked cameras are available for the probe")
     request = prepare_probe(
         root,
-        cameras=audit["selection"]["checked_cameras"],
+        cameras=checked_cameras,
         episodes=episodes,
         max_rows=max_rows,
         radius=0 if phase == "single" else radius,
@@ -192,6 +208,13 @@ def probe_loader(
         max_reference_bytes=max_reference_bytes,
         max_view_bytes=max_view_bytes,
         ffmpeg_bin=str(Path(ffmpeg_bin).resolve()) if ffmpeg_bin else None,
+        visuals={
+            "enabled": bool(visuals),
+            "output": str(visual_output) if visuals else None,
+            "relative_prefix": "visuals",
+            "max_queries": visual_queries,
+            "max_bytes": visual_max_bytes,
+        },
     )
     with tempfile.TemporaryDirectory(prefix="boundary-probe-") as cache:
         request["cache"] = cache
@@ -209,6 +232,7 @@ def probe_loader(
                 "checked_rows": 0,
                 "errors": [{"type": "TimeoutExpired", "message": str(exc)[:1200]}],
             }
+    visual_evidence = report.pop("visual_evidence", None)
     report = summarize_probe(report, request)
     report.update(
         backend=backend,
@@ -224,6 +248,15 @@ def probe_loader(
         preflight_status=audit["status"],
         elapsed_seconds=time.perf_counter() - start,
     )
+    if visuals:
+        report["visual_evidence"] = visual_evidence or {
+            "status": "unavailable",
+            "reason": "Consumer returned no loader pixel evidence",
+        }
+        if visual_evidence and visual_evidence.get("status") == "partial":
+            report["visual_evidence_note"] = "Preview evidence is partial; the probe verdict is unchanged"
+    if allow_audit_failure and audit["status"] != "pass":
+        report["preflight_override"] = "Audit failed; loader pixel evidence was requested explicitly for a controlled fault"
     if not report["source_unchanged"]:
         report["status"] = "fail"
     return report

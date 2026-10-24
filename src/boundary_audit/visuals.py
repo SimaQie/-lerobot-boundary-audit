@@ -3,12 +3,38 @@
 import hashlib
 from pathlib import Path
 
-from .audit import contained
+
+def encode_rgb_jpeg(pixels, max_width=480):
+    """Encode HWC uint8 RGB to MJPEG bytes without Pillow or NumPy dependencies."""
+    import av
+
+    frame = av.VideoFrame.from_ndarray(pixels, format="rgb24")
+    width = min(max_width, frame.width)
+    width -= width % 2
+    height = max(2, int(frame.height * width / frame.width) // 2 * 2)
+    codec = av.CodecContext.create("mjpeg", "w")
+    codec.width, codec.height, codec.pix_fmt = width, height, "yuvj420p"
+    converted = frame.reformat(width=width, height=height, format="yuvj420p")
+    return b"".join(bytes(packet) for packet in list(codec.encode(converted)) + list(codec.encode(None)))
+
+
+def prepare_visual_output(output):
+    """Create the tool-owned visual directory and remove only its stale images."""
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    for path in output.glob("boundary-*.jpg"):
+        path.unlink()
+    legacy = output / "loader-visual-evidence.json"
+    if legacy.exists():
+        legacy.unlink()
+    return output
 
 
 def add_visual_evidence(report, root, output, *, max_queries=4, max_frames=50000):
     """Save expected ordinal and observed local-PyAV frames; never change verdicts."""
     import av
+
+    from .audit import contained
 
     output = Path(output)
     if output.resolve().is_relative_to(Path(root).resolve()):

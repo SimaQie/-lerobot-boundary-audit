@@ -1,0 +1,371 @@
+{
+  "status": "partial",
+  "backend": "torchcodec",
+  "phase": "window",
+  "versions": {
+    "lerobot": "0.6.1",
+    "torch": "2.10.0+cpu",
+    "av": "15.1.0",
+    "datasets": "4.8.5",
+    "python": "3.12.15",
+    "platform": "linux",
+    "torchcodec": "0.10.0",
+    "ffmpeg_libraries": {
+      "libavutil": [
+        59,
+        39,
+        100
+      ],
+      "libavcodec": [
+        61,
+        19,
+        101
+      ],
+      "libavformat": [
+        61,
+        7,
+        100
+      ],
+      "libavdevice": [
+        61,
+        3,
+        100
+      ],
+      "libavfilter": [
+        10,
+        4,
+        100
+      ],
+      "libswscale": [
+        8,
+        3,
+        100
+      ],
+      "libswresample": [
+        5,
+        3,
+        100
+      ]
+    },
+    "torch_cuda_build": null,
+    "torch_cuda_available": false,
+    "requested_decode_device": "cpu",
+    "observed_decode_device": "cpu",
+    "observed_output_device": "cpu",
+    "device_used": "cpu",
+    "decode_device_evidence": "Stock LeRobot 0.6.1 reader; probe inputs carry no device argument and rows are consumed on CPU",
+    "official_reader_sha256": "3a477dae6aa887449f09be25b385485b065861d13c5448b9369a0ba09f01bb5d",
+    "official_video_utils_sha256": "82d0ced8f3f9adc754d4388122b044d36f2feeadda28d4ddad933cead7cc54d1"
+  },
+  "requested_rows": 2,
+  "checked_rows": 2,
+  "frame_checks": 6,
+  "passed_frame_checks": 5,
+  "ambiguous_frame_checks": 1,
+  "records": [
+    {
+      "index": 10000,
+      "camera": "observation.images.cam_left_wrist",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 10000,
+      "matched_sample": 10000
+    },
+    {
+      "index": 10000,
+      "camera": "observation.images.cam_left_wrist",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 10000,
+      "matched_sample": 10000
+    },
+    {
+      "index": 10000,
+      "camera": "observation.images.cam_left_wrist",
+      "delta": 1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 10001,
+      "matched_sample": 10001
+    },
+    {
+      "index": 10001,
+      "camera": "observation.images.cam_left_wrist",
+      "delta": -1,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 10000,
+      "matched_sample": 10000
+    },
+    {
+      "index": 10001,
+      "camera": "observation.images.cam_left_wrist",
+      "delta": 0,
+      "status": "pass",
+      "match": "exact",
+      "expected_sample": 10001,
+      "matched_sample": 10001
+    },
+    {
+      "index": 10001,
+      "camera": "observation.images.cam_left_wrist",
+      "delta": 1,
+      "status": "ambiguous",
+      "reason": "identical neighbouring frames",
+      "expected_sample": 10002
+    }
+  ],
+  "row_errors": [],
+  "errors": [],
+  "reference": {
+    "backend": "sequential-pyav",
+    "decoded_frames": 10004,
+    "image_bytes": 4608000,
+    "projected_view_bytes": 129756060,
+    "projected_cameras": [
+      "observation.images.cam_left_wrist"
+    ],
+    "shared_dependency": "FFmpeg; PyAV matches share PyAV RGB conversion",
+    "approximate_rgb_rule": "uint8 MAE <= 2 and >= 0.25 separation; heuristic, not identity proof"
+  },
+  "coverage": {
+    "requested_rows": 2,
+    "checked_rows": 2,
+    "requested_frame_checks": 6,
+    "observed_frame_checks": 6,
+    "missing_query_slots": 0,
+    "unexpected_query_slots": 0,
+    "query_slots_complete": true,
+    "dataset_rows": 20000,
+    "selected_episode_rows": 400,
+    "unique_query_rows": 2,
+    "unique_window_rows": 3,
+    "sampled_episode_ids": [
+      25
+    ],
+    "statuses": {
+      "pass": 5,
+      "ambiguous": 1
+    },
+    "per_camera": {
+      "observation.images.cam_left_wrist": {
+        "requested_checks": 6,
+        "observed_checks": 6,
+        "statuses": {
+          "pass": 5,
+          "ambiguous": 1
+        },
+        "match_rules": {
+          "exact": 5,
+          "unresolved": 1
+        },
+        "ambiguous_reasons": {
+          "identical neighbouring frames": 1
+        }
+      }
+    },
+    "note": "Counts describe requested query slots, including repeats/padding; not whole-dataset correctness."
+  },
+  "schema_version": "boundary-real-probe.v1",
+  "source_unchanged": true,
+  "cameras": [
+    "observation.images.cam_left_wrist"
+  ],
+  "episodes": [
+    25
+  ],
+  "seed": 20261014,
+  "sampling": "mixed",
+  "offsets": [
+    -1,
+    0,
+    1
+  ],
+  "scope": "Relative to sequential PyAV ordinal reference; no pre-encoding identity or physical synchronization claim",
+  "preflight_status": "pass",
+  "elapsed_seconds": 11.138425846991595,
+  "visual_evidence": {
+    "schema_version": "boundary-loader-visual-evidence.v1",
+    "status": "complete",
+    "pixel_provenance": "Actual loader-returned item[camera] tensor at delta 0; references are independent sequential PyAV frames at expected ordinal and neighbours",
+    "records": [
+      {
+        "row_index": 10000,
+        "episode_index": 25,
+        "frame_index": 0,
+        "camera": "observation.images.cam_left_wrist",
+        "delta": 0,
+        "expected_ordinal": 10000,
+        "expected_pts_seconds": 200.0,
+        "expected_row_labels": {
+          "index": 10000,
+          "episode_index": 25,
+          "frame_index": 0
+        },
+        "actual_returned_labels": {
+          "index": 10000,
+          "episode_index": 25,
+          "frame_index": 0
+        },
+        "actual_pts_seconds": null,
+        "actual_pts_source": "Not exposed by the LeRobotDataset row/item; no timestamp is inferred as pixel evidence",
+        "comparison": {
+          "status": "pass",
+          "match": "exact",
+          "expected_sample": 10000,
+          "matched_sample": 10000
+        },
+        "images": [
+          {
+            "role": "loader_returned",
+            "path": "visuals/boundary-0-observation_images_cam_left_wrist-loader_returned-2156bbde499d7842.jpg",
+            "sha256": "2156bbde499d7842e1d0ec0d4f86dca668a7ef944c25f71be8f470475b2e8b1a",
+            "bytes": 12340
+          },
+          {
+            "role": "previous_reference",
+            "path": "visuals/boundary-0-observation_images_cam_left_wrist-previous_reference-643823ca697ac8d2.jpg",
+            "sha256": "643823ca697ac8d258dc6b8dec71dabf350d5497fec1ab1adc59432adc782ced",
+            "bytes": 9044
+          },
+          {
+            "role": "expected_reference",
+            "path": "visuals/boundary-0-observation_images_cam_left_wrist-expected_reference-2156bbde499d7842.jpg",
+            "sha256": "2156bbde499d7842e1d0ec0d4f86dca668a7ef944c25f71be8f470475b2e8b1a",
+            "bytes": 12340
+          },
+          {
+            "role": "next_reference",
+            "path": "visuals/boundary-0-observation_images_cam_left_wrist-next_reference-9e898f3cd5019204.jpg",
+            "sha256": "9e898f3cd5019204764dda6ee3dce2f16df133c86d37ebf621732b6fc1b07060",
+            "bytes": 12325
+          }
+        ],
+        "source": {
+          "path": "videos/observation.images.cam_left_wrist/chunk-000/file-000.mp4",
+          "sha256": "aabbc4ab572f97bf368226db78d3a89b4e8669d42004ed81fe97ee9663b8e9af"
+        }
+      },
+      {
+        "row_index": 10001,
+        "episode_index": 25,
+        "frame_index": 1,
+        "camera": "observation.images.cam_left_wrist",
+        "delta": 0,
+        "expected_ordinal": 10001,
+        "expected_pts_seconds": 200.02,
+        "expected_row_labels": {
+          "index": 10001,
+          "episode_index": 25,
+          "frame_index": 1
+        },
+        "actual_returned_labels": {
+          "index": 10001,
+          "episode_index": 25,
+          "frame_index": 1
+        },
+        "actual_pts_seconds": null,
+        "actual_pts_source": "Not exposed by the LeRobotDataset row/item; no timestamp is inferred as pixel evidence",
+        "comparison": {
+          "status": "pass",
+          "match": "exact",
+          "expected_sample": 10001,
+          "matched_sample": 10001
+        },
+        "images": [
+          {
+            "role": "loader_returned",
+            "path": "visuals/boundary-1-observation_images_cam_left_wrist-loader_returned-9e898f3cd5019204.jpg",
+            "sha256": "9e898f3cd5019204764dda6ee3dce2f16df133c86d37ebf621732b6fc1b07060",
+            "bytes": 12325
+          },
+          {
+            "role": "previous_reference",
+            "path": "visuals/boundary-1-observation_images_cam_left_wrist-previous_reference-2156bbde499d7842.jpg",
+            "sha256": "2156bbde499d7842e1d0ec0d4f86dca668a7ef944c25f71be8f470475b2e8b1a",
+            "bytes": 12340
+          },
+          {
+            "role": "expected_reference",
+            "path": "visuals/boundary-1-observation_images_cam_left_wrist-expected_reference-9e898f3cd5019204.jpg",
+            "sha256": "9e898f3cd5019204764dda6ee3dce2f16df133c86d37ebf621732b6fc1b07060",
+            "bytes": 12325
+          },
+          {
+            "role": "next_reference",
+            "path": "visuals/boundary-1-observation_images_cam_left_wrist-next_reference-8c17f93dc9062379.jpg",
+            "sha256": "8c17f93dc9062379783e1aaf5cfeda5d4dd124e9705c8c266274f359e7ebcb48",
+            "bytes": 12262
+          }
+        ],
+        "source": {
+          "path": "videos/observation.images.cam_left_wrist/chunk-000/file-000.mp4",
+          "sha256": "aabbc4ab572f97bf368226db78d3a89b4e8669d42004ed81fe97ee9663b8e9af"
+        }
+      }
+    ],
+    "max_queries": 2,
+    "max_bytes": 20000000,
+    "written_bytes": 95301,
+    "scope": "Captured official LeRobotDataset pixels for selected query rows only; not whole-dataset coverage, physical synchronization or original sensor identity",
+    "versions": {
+      "lerobot": "0.6.1",
+      "torch": "2.10.0+cpu",
+      "av": "15.1.0",
+      "datasets": "4.8.5",
+      "python": "3.12.15",
+      "platform": "linux",
+      "torchcodec": "0.10.0",
+      "ffmpeg_libraries": {
+        "libavutil": [
+          59,
+          39,
+          100
+        ],
+        "libavcodec": [
+          61,
+          19,
+          101
+        ],
+        "libavformat": [
+          61,
+          7,
+          100
+        ],
+        "libavdevice": [
+          61,
+          3,
+          100
+        ],
+        "libavfilter": [
+          10,
+          4,
+          100
+        ],
+        "libswscale": [
+          8,
+          3,
+          100
+        ],
+        "libswresample": [
+          5,
+          3,
+          100
+        ]
+      },
+      "torch_cuda_build": null,
+      "torch_cuda_available": false,
+      "requested_decode_device": "cpu",
+      "observed_decode_device": "cpu",
+      "observed_output_device": "cpu",
+      "device_used": "cpu",
+      "decode_device_evidence": "Stock LeRobot 0.6.1 reader; probe inputs carry no device argument and rows are consumed on CPU",
+      "official_reader_sha256": "3a477dae6aa887449f09be25b385485b065861d13c5448b9369a0ba09f01bb5d",
+      "official_video_utils_sha256": "82d0ced8f3f9adc754d4388122b044d36f2feeadda28d4ddad933cead7cc54d1"
+    },
+    "backend": "torchcodec",
+    "phase": "window"
+  }
+}

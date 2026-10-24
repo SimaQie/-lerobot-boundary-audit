@@ -16,6 +16,7 @@ if not __package__:
     owned_package.__path__ = [str(Path(__file__).resolve().parent)]
     sys.modules["boundary_audit"] = owned_package
 from boundary_audit.row_contract import row_label_errors  # noqa: E402
+from boundary_audit.visuals import encode_rgb_jpeg, prepare_visual_output  # noqa: E402
 
 HANDLES = []
 
@@ -185,6 +186,100 @@ def run(request):
         for index, sample in spec["targets"].items():
             mapping[(spec["camera"], int(index))] = (relative, sample)
 
+    visual_request = request.get("visuals") or {}
+    visual_enabled = bool(visual_request.get("enabled"))
+    visual_output = None
+    visual_evidence = None
+    visual_selected = set()
+    visual_hashes = {}
+    if visual_enabled:
+        visual_output = prepare_visual_output(visual_request["output"])
+        visual_evidence = {
+            "schema_version": "boundary-loader-visual-evidence.v1",
+            "status": "complete",
+            "pixel_provenance": (
+                "Actual loader-returned item[camera] tensor at delta 0; references are independent "
+                "sequential PyAV frames at expected ordinal and neighbours"
+            ),
+            "records": [],
+            "max_queries": int(visual_request.get("max_queries", 4)),
+            "max_bytes": int(visual_request.get("max_bytes", 20_000_000)),
+            "written_bytes": 0,
+            "scope": (
+                "Captured official LeRobotDataset pixels for selected query rows only; not whole-dataset "
+                "coverage, physical synchronization or original sensor identity"
+            ),
+        }
+
+    def capture_visual(query, camera, labels, pixels, relative, sample, comparison):
+        nonlocal visual_evidence
+        if visual_evidence is None or query["index"] in visual_selected:
+            return
+        if len(visual_selected) >= visual_evidence["max_queries"]:
+            return
+        visual_selected.add(query["index"])
+        expected_row = request["rows"][str(query["index"])]
+        record = {
+            "row_index": query["index"],
+            "episode_index": query["episode_index"],
+            "frame_index": expected_row.get("frame_index"),
+            "camera": camera,
+            "delta": 0,
+            "expected_ordinal": sample,
+            "expected_pts_seconds": sample / request["fps"],
+            "expected_row_labels": {
+                key: request["rows"][str(query["index"])].get(key)
+                for key in ("index", "episode_index", "frame_index")
+            },
+            "actual_returned_labels": labels,
+            "actual_pts_seconds": None,
+            "actual_pts_source": "Not exposed by the LeRobotDataset row/item; no timestamp is inferred as pixel evidence",
+            "comparison": comparison,
+            "images": [],
+        }
+        if relative not in visual_hashes:
+            source_path = (Path(request["root"]) / relative).resolve()
+            digest = hashlib.sha256()
+            with source_path.open("rb") as stream:
+                for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            visual_hashes[relative] = {"path": relative, "sha256": digest.hexdigest()}
+        record["source"] = visual_hashes[relative]
+        try:
+            references = references_for(relative)
+            wanted = (
+                (sample - 1, "previous_reference"),
+                (sample, "expected_reference"),
+                (sample + 1, "next_reference"),
+            )
+            if sample not in references:
+                raise ValueError("Expected ordinal reference is missing")
+            entries = [("loader_returned", pixels)]
+            entries.extend((role, references[value]) for value, role in wanted if value in references)
+            for role, image in entries:
+                data = encode_rgb_jpeg(image)
+                if visual_evidence["written_bytes"] + len(data) > visual_evidence["max_bytes"]:
+                    raise BudgetExceeded("Visual output byte budget exhausted")
+                digest = hashlib.sha256(data).hexdigest()
+                name = f"boundary-{len(visual_evidence['records'])}-{camera.replace('.', '_')}-{role}-{digest[:16]}.jpg"
+                (visual_output / name).write_bytes(data)
+                visual_evidence["written_bytes"] += len(data)
+                record["images"].append(
+                    {
+                        "role": role,
+                        "path": f"{visual_request.get('relative_prefix', 'visuals')}/{name}",
+                        "sha256": digest,
+                        "bytes": len(data),
+                    }
+                )
+        except Exception as exc:
+            record["error"] = f"{type(exc).__name__}: {exc}"
+            visual_evidence["status"] = "partial"
+        visual_evidence["records"].append(record)
+
+    def references_for(relative):
+        return references[relative]
+
     def inspect(item, query):
         expected = request["rows"][str(query["index"])]
         labels = {key: item[key].item() for key in ("index", "episode_index", "frame_index")}
@@ -203,14 +298,17 @@ def run(request):
             for slot, index in enumerate(query["indices"]):
                 relative, sample = mapping[(camera, index)]
                 pixels = frames[slot].cpu().numpy().transpose(1, 2, 0)
+                comparison = compare_pixels(pixels, references[relative], sample)
                 records.append(
                     {
                         "index": query["index"],
                         "camera": camera,
                         "delta": offsets[slot],
-                        **compare_pixels(pixels, references[relative], sample),
+                        **comparison,
                     }
                 )
+                if visual_enabled and offsets[slot] == 0:
+                    capture_visual(query, camera, labels, pixels, relative, sample, comparison)
         if window:
             for key in cameras + ["action"]:
                 if item[key + "_is_pad"].tolist() != query["padding"]:
@@ -255,7 +353,10 @@ def run(request):
     except importlib.metadata.PackageNotFoundError:
         versions["torchcodec"] = "not installed"
     import av
-    import lerobot.datasets.dataset_reader as reader
+    try:
+        import lerobot.datasets.dataset_reader as reader
+    except ImportError:
+        reader = None
     from lerobot.datasets import video_utils
 
     versions["ffmpeg_libraries"] = av.library_versions
@@ -268,15 +369,18 @@ def run(request):
     versions["observed_output_device"] = "cpu"
     versions["device_used"] = "cpu"
     versions["decode_device_evidence"] = (
-        "Stock LeRobot 0.6.1 reader; probe inputs carry no device argument and rows are consumed on CPU"
+        f"Stock LeRobot {versions['lerobot']} reader; probe inputs carry no device argument "
+        "and rows are consumed on CPU"
     )
     if versions["torch_cuda_available"]:
         versions["torch_device_name"] = torch.cuda.get_device_name(0)
-    versions["official_reader_sha256"] = hashlib.sha256(Path(reader.__file__).read_bytes()).hexdigest()
+    versions["official_reader_sha256"] = (
+        hashlib.sha256(Path(reader.__file__).read_bytes()).hexdigest() if reader is not None else None
+    )
     versions["official_video_utils_sha256"] = hashlib.sha256(Path(video_utils.__file__).read_bytes()).hexdigest()
     wrong = any(r["status"] in {"wrong_frame", "wrong_shape"} for r in records)
     partial = errors or any(r["status"] == "ambiguous" for r in records) or checked != len(order) * epochs
-    return {
+    result = {
         "status": "fail" if wrong or row_errors else "partial" if partial else "pass",
         "backend": request["backend"],
         "phase": phase,
@@ -299,6 +403,17 @@ def run(request):
             "approximate_rgb_rule": "uint8 MAE <= 2 and >= 0.25 separation; heuristic, not identity proof",
         },
     }
+    if visual_evidence is not None:
+        if not visual_evidence["records"]:
+            visual_evidence["status"] = "unavailable"
+        visual_evidence["versions"] = versions
+        visual_evidence["backend"] = request["backend"]
+        visual_evidence["phase"] = phase
+        (visual_output / "loader-visual-evidence.json").write_text(
+            json.dumps(visual_evidence, indent=2, allow_nan=False) + "\n", encoding="utf-8"
+        )
+        result["visual_evidence"] = visual_evidence
+    return result
 
 
 def main():
