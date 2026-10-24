@@ -207,5 +207,7 @@
     },
     "official_verify_rerun": "ALOHA, TorchCodec: pass (300 boundary queries)",
     "release_artifacts": "0.4.3 wheel/sdist metadata check pass; isolated wheel install and check_distribution pass"
-  }
+  },
+  "development_commit": "2e179ff",
+  "development_branch": "feat/v050-loader-pixel-evidence"
 }
